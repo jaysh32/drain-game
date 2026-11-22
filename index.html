@@ -485,11 +485,18 @@ function groundHeight(x, z) {
   return 0;
 }
 function insideBox(x, z, pad = 0) {
-  for (const b of boxes) if (x > b.x0 - pad && x < b.x1 + pad && z > b.z0 - pad && z < b.z1 + pad) return b;
+  for (const b of boxes) if (!b.off && x > b.x0 - pad && x < b.x1 + pad && z > b.z0 - pad && z < b.z1 + pad) return b;
   return null;
 }
 
 // ---- The jobs. Add a new one here to make a new level! ----
+// The muddy patches on a parked car. You wash the two sides and the end that faces the street.
+// The top is too high to aim at and there is no room behind the car, so those bits come clean along with the rest (follow).
+const carWalls = (x, z, f) => [
+  { x: x + .97, y: 1.04, z, w: 4.3, h: 1.38, ry: Math.PI / 2 }, { x: x - .97, y: 1.04, z, w: 4.3, h: 1.38, ry: -Math.PI / 2 },
+  { x, y: .72, z: z + f * 2.17, w: 1.9, h: .75, ry: f > 0 ? 0 : Math.PI }, { x, y: .72, z: z - f * 2.17, w: 1.9, h: .75, ry: f > 0 ? Math.PI : 0, follow: true },
+  { x, y: 1.115, z: z + 1.6, w: 1.9, h: 1.05, flat: true, follow: true }, { x, y: 1.115, z: z - 1.65, w: 1.9, h: 1.0, flat: true, follow: true }, { x, y: 1.78, z: z - .1, w: 1.74, h: 2.24, flat: true, follow: true },
+].map(w => Object.assign(w, { tint: '#6b5132', need: .8 }));
 const JOBS = [
   { id: 'maple', title: 'Storm drain on Maple Street', x: 14, z: -3.95, rot: 0, gw: 1.5, gd: 0.7,
     flood: { kind: 'half', r: 6.5, face: Math.PI / 2 }, leaves: 90, sticks: 8, mud: [8, 3], clog: false, puddleCount: 4,
@@ -523,6 +530,11 @@ const JOBS = [
   { id: 'lot', title: 'Flooded car park', x: 24, z: -42, rot: 0, gw: 1.0, gd: 1.0,
     flood: { kind: 'full', r: 6.5 }, leaves: 110, sticks: 8, mud: [5, 5], clog: true, puddleCount: 5, zone: 13,
     dirt: { cx: 24, cz: -42, w: 18, d: 12, tint: '#5d4a33' }, cart: [36.4, -40], pay: 450, par: 280, clogBase: 3 },
+  // Bonus jobs: neighbours leave muddy cars on their driveways. Wash one for a tip. You do not have to.
+  ...[['car1', 'Muddy car at house 24', 26.5, -9.8, [22.3, -9.4], 0xd33a2c], ['car2', 'Muddy car at house 20', -17.5, -9.8, [-21.9, -9.4], 0x2f6fb0],
+      ['car3', 'Muddy car at house 41', 35.5, 9.8, [39.8, 9.4], 0xf2c21a], ['car4', 'Muddy car at house 23', 17.5, 9.8, [21.8, 9.4], 0x3c7a4a]]
+    .map(([id, title, x, z, cart, color]) => ({ id, title, x, z, rot: 0, gw: 0, gd: 0, flood: null, leaves: 0, sticks: 0, mud: null, clog: false, puddleCount: 0, zone: 7,
+      dirt: null, optional: true, car: { color }, walls: carWalls(x, z, z < 0 ? 1 : -1), cart, pay: 50, par: 90 })),
   { id: 'tunnel', title: 'The big storm tunnel', x: 0, z: -58.5, rot: 0, gw: 0, gd: 0, flood: null, leaves: 0, sticks: 0, mud: null, clog: false, puddleCount: 0, zone: 8,
     tunnel: true, dirt: null, cart: [3.7, -59.6], pay: 500, par: 300 },
 ];
@@ -996,7 +1008,7 @@ const stainMat = new THREE.MeshStandardMaterial({ color: 0x14110d, roughness: .1
 class WashPatch {
   constructor(w, h, o = {}) {
     this.w = w; this.h = h; this.tint = o.tint || '#5d4a33'; this.spots = o.spots || ['#3d2f1e', '#6b5638', '#4a3a26', '#7a6a4a'];
-    this.live = o.live || (() => true); this.onDone = o.onDone || null;
+    this.live = o.live || (() => true); this.onDone = o.onDone || null; this.need = o.need || .88;       // how clean it has to be to count as done
     this.can = document.createElement('canvas'); this.can.width = this.can.height = 128; this.ctx = this.can.getContext('2d');
     this.brush = this.ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
     this.brush.addColorStop(0, 'rgba(0,0,0,1)'); this.brush.addColorStop(.55, 'rgba(0,0,0,.9)'); this.brush.addColorStop(1, 'rgba(0,0,0,0)');
@@ -1030,7 +1042,7 @@ class WashPatch {
     this.tex.needsUpdate = true; this.timer -= dt;
     if (this.timer <= 0) {
       this.timer = .25; this.clean = clamp(1 - this.measure() / this.start, 0, 1);
-      if (this.clean >= .88) { this.done = true; blip(880, 1320, .3, .12, 'triangle'); if (this.onDone) this.onDone(this); }
+      if (this.clean >= this.need) { this.done = true; blip(880, 1320, .3, .12, 'triangle'); if (this.onDone) this.onDone(this); }
     }
   }
   update(dt) {
@@ -1112,9 +1124,10 @@ class Job {
     this.buildInstances();
     if (this.dirt) this.buildDirt();
     this.walls = (cfg.walls || []).map(w => {       // dirty walls, fences and doors that belong to this job
-      const p = new WashPatch(w.w, w.h, { tint: w.tint, live: () => this.inPlay });
-      p.mesh.position.set(w.x, w.y, w.z); p.mesh.rotation.y = w.ry || 0; this.group.add(p.mesh); return p;
+      const p = new WashPatch(w.w, w.h, { tint: w.tint, need: w.need, live: () => this.inPlay && !w.follow }); p.follow = !!w.follow;
+      p.mesh.position.set(w.x, w.y, w.z); p.mesh.rotation.y = w.ry || 0; if (w.flat) p.mesh.rotation.x = -Math.PI / 2; this.group.add(p.mesh); return p;
     });
+    if (cfg.car) this.buildCar();
     this.stains = []; this.stainMesh = new THREE.InstancedMesh(puddleGeo, stainMat, 10); this.stainMesh.frustumCulled = false; this.stainMesh.count = 0; this.group.add(this.stainMesh);
     if (cfg.chalk) {       // a chalk drawing hides under the dirt
       this.chalkCan = document.createElement('canvas'); this.chalkCan.width = this.chalkCan.height = 256;
@@ -1207,6 +1220,18 @@ class Job {
     this.marker.add(this.beam, this.icon); this.group.add(this.marker);
   }
 
+  carClean() { const act = this.walls.filter(p => !p.follow); return act.reduce((a, p) => a + (p.done ? 1 : p.clean), 0) / act.length; }
+  buildCar() {       // a neighbour's muddy car, parked on their driveway
+    const g = new THREE.Group(); g.position.set(this.x, 0, this.z); this.group.add(g);
+    const paint = std({ color: this.car.color, roughness: .28, metalness: .45 });
+    const add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; g.add(m); return m; };
+    add(new THREE.BoxGeometry(1.9, .75, 4.3), paint, 0, .72, 0); add(new THREE.BoxGeometry(1.7, .6, 2.2), MAT.glass, 0, 1.4, -.1); add(new THREE.BoxGeometry(1.74, .08, 2.24), paint, 0, 1.72, -.1);
+    const wheel = new THREE.CylinderGeometry(.36, .36, .26, 14); wheel.rotateZ(Math.PI / 2);
+    for (const wx of [-.9, .9]) for (const wz of [-1.4, 1.4]) add(wheel, MAT.tire, wx, .36, wz);
+    for (const sx of [-.6, .6]) { add(new THREE.BoxGeometry(.4, .16, .06), MAT.lamp, sx, .8, 2.16); add(new THREE.BoxGeometry(.4, .16, .06), MAT.red, sx, .8, -2.16); }
+    this.carBox = aabb(this.x - 1.05, this.x + 1.05, this.z - 2.25, this.z + 2.25, 1.8); this.carBox.car = true; this.carBox.off = true; boxes.push(this.carBox);
+  }
+
   // ---------- starting fresh ----------
   reset() {
     this.done = false; this.rakeDone = false; this.flow = 0;
@@ -1248,7 +1273,8 @@ class Job {
     this.stains = [];       // oil stains that only the narrow nozzle can shift
     if (this.dirt && this.lvl >= 3) for (let i = 0; i < Math.min(8, this.lvl); i++) this.stains.push({ x: this.dirt.cx + rand(-.42, .42) * this.dirt.w, z: this.dirt.cz + rand(-.42, .42) * this.dirt.d, r: rand(.3, .5), hp: 1 });
     if (this.chalkCan) { drawChalk(this.chalkCan.getContext('2d'), 256); this.chalkTex.needsUpdate = true; }
-    this.beamMat.color.setHex(0xffa41c); this.iconMat.color.setHex(0xffa41c); this.iconMat.emissive.setHex(0xff7a00);
+    const col = this.optional ? 0x39a0ff : 0xffa41c;       // bonus jobs have a blue light
+    this.beamMat.color.setHex(col); this.iconMat.color.setHex(col); this.iconMat.emissive.setHex(this.optional ? 0x1f6fd0 : 0xff7a00);
     this.sync(true);
   }
   paintDirt() {
@@ -1328,6 +1354,8 @@ class Job {
       s.push({ id: 'wash', tool: 'washer', label: this.washLabel || 'Pressure wash the grime', pct: rest && st ? .95 : avg, done: rest && !st,
         hint: rest && st ? `Oil stains! Switch to the NARROW nozzle${coarse ? '' : ' (T)'} and blast them.` : 'Pick the WASHER and blast every dirty spot until it is clean.' });
     }
+    if (this.car) s.push({ id: 'car', tool: 'washer', label: 'Pressure wash the muddy car', pct: this.carClean(), done: this.walls.every(p => p.follow || p.done),
+      hint: 'Pick the WASHER. Wash both sides of the car and the end that faces the street.' });
     if (this.tunnel) s.push({ id: 'tunnel', tool: 'washer', label: 'Wash the big storm tunnel clean', pct: this.tunnelDone ? 1 : sewer.pct || 0, done: !!this.tunnelDone,
       hint: sewer.active ? 'Wash the floor and both walls. Grab the coins too!' : `Stand by the tunnel door and tap ENTER THE TUNNEL${coarse ? '' : ' (C)'}.` });
     if (this.tunnel) s.push({ id: 'boss', tool: 'washer', label: 'Beat the giant fatberg', pct: boss.alive ? 1 - Math.max(0, boss.hp) / boss.max : 1, done: !boss.alive, hint: 'It lives at the far end of the tunnel. Blast it with the washer and step sideways to dodge the gunk!' });
@@ -1553,7 +1581,8 @@ class Job {
       }
     }
 
-    if (!this.flood && !this.puddles.length && !this.sludge.length && (this.puddleCount || this.done)) this.spawnPrize();      // something was hiding in the mud
+    if (!this.flood && !this.puddles.length && !this.sludge.length && (this.puddleCount || this.done) && !this.car) this.spawnPrize();      // something was hiding in the mud
+    if (this.car) { const k = this.carClean(); for (const p of this.walls) if (p.follow && !p.done) { p.mat.opacity = 1 - k * .9; if (k >= 1) p.done = true; } }       // the roof comes clean with the sides
     for (const p of this.walls) p.update(dt);
     if (this.iceOn && this.iceDone && this.iceMesh.visible) { this.iceMat.opacity -= dt; if (this.iceMat.opacity <= 0) this.iceMesh.visible = false; }
     if (this.petObj) { this.petObj.position.y = .3 + Math.abs(Math.sin(T * 5)) * .25; this.petObj.rotation.y += dt; }
@@ -1577,7 +1606,7 @@ class Job {
     const par = this.parTime();          // faster = more stars = more money
     this.stars = this.timer < par ? 3 : this.timer < par * 1.7 ? 2 : 1;
     this.earned = Math.round(this.pay * (1 + .2 * (this.lvl - 1)) * [1, 1.2, 1.5][this.stars - 1] / 5) * 5;
-    addCash(this.earned); stats.jobs++; stats.stars += this.stars; store.set('stats', stats);
+    addCash(this.earned); stats.jobs++; stats.stars += this.stars; store.set('stats', stats); if (this.car) count('car');
     this.beamMat.color.setHex(0x3ddc6a); this.iconMat.color.setHex(0x3ddc6a); this.iconMat.emissive.setHex(0x1f9f45);
     onJobDone(this);
   }
@@ -1833,15 +1862,15 @@ addEventListener('resize', resize);
 // ---- Job finished! ----
 function onJobDone(job) {
   jingle(); spawnConfetti(job.x, job.z); buzz(80);
-  $('bannerBig').textContent = 'JOB DONE!  ' + '⭐'.repeat(job.stars);
-  $('bannerSub').textContent = `${job.title}  +$${job.earned}`;
+  $('bannerBig').textContent = (job.optional ? 'SHINY!  ' : 'JOB DONE!  ') + '⭐'.repeat(job.stars);
+  $('bannerSub').textContent = job.optional ? `The neighbour is thrilled and tips you $${job.earned}!` : `${job.title}  +$${job.earned}`;
   $('again').classList.add('hide');
   $('banner').classList.remove('hide');
   clearTimeout(onJobDone.timer);
   onJobDone.timer = setTimeout(() => $('banner').classList.add('hide'), 4200);
   const r = rankName();
   if (r !== onJobDone.rank) { onJobDone.rank = r; setTimeout(() => toast(`You got a new rank: ${r}!`, 3500), 4600); }
-  if (jobs.every(j => !j.inPlay || j.done)) levelDoneAt = T + 2.6;       // that was the last one!
+  if (jobs.every(j => !j.inPlay || j.done || j.optional)) levelDoneAt = T + 2.6;       // that was the last one!
 }
 onJobDone.rank = rankName();
 
@@ -1852,7 +1881,7 @@ let level = clamp(store.get('level', 1) | 0, 1, 999), levelDone = false, levelDo
 const LEVEL_PLAN = [['maple'], ['court', 'fence'], ['drive', 'elm'], ['oak', 'mural', 'drive2'], ['lot', 'maple', 'drive', 'fence']];
 function jobsForLevel(n) {       // which drains are blocked on this level?
   if (n <= LEVEL_PLAN.length) return LEVEL_PLAN[n - 1];
-  const r = seededRandom(n * 7919 + 13), ids = jobs.filter(j => !j.tunnel).map(j => j.id), count = Math.min(ids.length, 4 + Math.floor((n - 6) / 3));
+  const r = seededRandom(n * 7919 + 13), ids = jobs.filter(j => !j.tunnel && !j.optional).map(j => j.id), count = Math.min(ids.length, 4 + Math.floor((n - 6) / 3));
   for (let i = ids.length - 1; i > 0; i--) { const k = Math.floor(r() * (i + 1)); [ids[i], ids[k]] = [ids[k], ids[i]]; }
   const picked = ids.slice(0, count);
   if (!picked.some(id => jobs.find(j => j.id === id).clog)) picked[0] = 'drive';      // always at least one pipe to snake
@@ -1861,23 +1890,27 @@ function jobsForLevel(n) {       // which drains are blocked on this level?
 }
 function startLevel(n, quiet) {
   level = n; levelDone = false; levelDoneAt = 0; store.set('level', level);
-  const ids = jobsForLevel(n);
+  const ids = [...jobsForLevel(n)], need = ids.length;
+  if (n >= 2) {       // one or two neighbours leave a muddy car out for you to wash
+    const cars = jobs.filter(j => j.optional).map(j => j.id), r = seededRandom(n * 131 + 7);
+    for (let k = 0; k < (n >= 5 ? 2 : 1); k++) ids.push(cars.splice(Math.floor(r() * cars.length), 1)[0]);
+  }
   WINTER = n % 5 === 0;       // every fifth level is frozen
-  for (const j of jobs) { j.inPlay = ids.includes(j.id); j.group.visible = j.inPlay; if (j.inPlay) { j.lvl = n; j.reset(); } }
+  for (const j of jobs) { j.inPlay = ids.includes(j.id); j.group.visible = j.inPlay; if (j.inPlay) { j.lvl = n; j.reset(); } if (j.carBox) j.carBox.off = !j.inPlay; }
   $('nextLvl').classList.add('hide'); $('banner').classList.add('hide'); lastSteps = null;
   if (n > 1) muddyVan();
   setNight(n % 4 === 0);       // every fourth level is a night shift
   setWinter(WINTER);
   if (!quiet && WINTER) setTimeout(() => toast('\u2744\uFE0F Winter storm! The floods have frozen. Melt the ice with the hot jet.', 5000), 4300);
   if (!quiet) {
-    toast(`${n % 4 === 0 ? '\u{1F319} Night shift! ' : '\u26C8\uFE0F '}Level ${n}: ${ids.length} job${ids.length > 1 ? 's' : ''} to do!`, 4000);
+    toast(`${n % 4 === 0 ? '\u{1F319} Night shift! ' : '\u26C8\uFE0F '}Level ${n}: ${need} job${need > 1 ? 's' : ''} to do${ids.length > need ? ', and a muddy car to wash for tips' : ''}!`, 4000);
     [0, 180, 600, 780].forEach(t => setTimeout(() => blip(880, 880, .12, .1, 'square'), t));
   }
 }
 function onLevelDone() {
   if (levelDone) return;
   levelDone = true;
-  const mine = jobs.filter(j => j.inPlay), stars = mine.reduce((s, j) => s + j.stars, 0), bonus = 40 * level + 15 * stars;
+  const mine = jobs.filter(j => j.inPlay && !j.optional), stars = mine.reduce((s, j) => s + j.stars, 0), bonus = 40 * level + 15 * stars;
   addCash(bonus); store.set('level', level + 1); if (TIME.night) count('night');        // your progress is saved even if you stop here
   $('bannerBig').textContent = `LEVEL ${level} COMPLETE!`;
   $('bannerSub').textContent = `⭐ ${stars} of ${mine.length * 3} stars   ·   Bonus +$${bonus}`;
@@ -2292,7 +2325,7 @@ const mapBg = (() => {
   g.fillStyle = '#c9c6be'; for (const r of raised) g.fillRect(MX(r.x0), MX(r.z0), (r.x1 - r.x0) * MAP_S, (r.z1 - r.z0) * MAP_S);
   g.fillStyle = '#3a3d42'; g.fillRect(0, MX(-4.5), 150, 9 * MAP_S); g.fillRect(MX(-4.5), 0, 9 * MAP_S, 150);
   g.fillStyle = '#b9b6ad'; g.fillRect(MX(-28), MX(11.5), 12 * MAP_S, 9 * MAP_S);
-  for (const b of boxes) { g.fillStyle = b.h > 3 ? '#e6d2b0' : '#2a5a2c'; g.fillRect(MX(b.x0), MX(b.z0), (b.x1 - b.x0) * MAP_S, (b.z1 - b.z0) * MAP_S); }
+  for (const b of boxes) { if (b.car) continue; g.fillStyle = b.h > 3 ? '#e6d2b0' : '#2a5a2c'; g.fillRect(MX(b.x0), MX(b.z0), (b.x1 - b.x0) * MAP_S, (b.z1 - b.z0) * MAP_S); }
   return c;
 })();
 function drawMap() {
@@ -2300,7 +2333,7 @@ function drawMap() {
   g.drawImage(mapBg, 0, 0);
   g.fillStyle = '#ffd23a'; for (const c of coins) if (c.on) g.fillRect(MX(c.x) - 1.5, MX(c.z) - 1.5, 3, 3);
   g.strokeStyle = '#fff'; g.lineWidth = 1.5;
-  for (const j of jobs) { if (!j.inPlay) continue; g.fillStyle = j.done ? '#3ddc6a' : '#ffa41c'; g.beginPath(); g.arc(MX(j.x), MX(j.z), j.done ? 4 : 5 + 1.5 * Math.abs(Math.sin(T * 3)), 0, TAU); g.fill(); g.stroke(); }
+  for (const j of jobs) { if (!j.inPlay) continue; g.fillStyle = j.done ? '#3ddc6a' : j.optional ? '#39a0ff' : '#ffa41c'; g.beginPath(); g.arc(MX(j.x), MX(j.z), j.done ? 4 : 5 + 1.5 * Math.abs(Math.sin(T * 3)), 0, TAU); g.fill(); g.stroke(); }
   for (const v of vehicles) { if (!v.owned) continue; g.save(); g.translate(MX(v.x), MX(v.z)); g.rotate(-v.yaw); g.fillStyle = v === truck ? '#f2c21a' : '#fff'; g.fillRect(-2.5, -4, 5, 9); g.fillStyle = '#ff7a1a'; g.fillRect(-2.5, 2, 5, 3); g.restore(); }
   if (emer.on && Math.sin(T * 9) > 0) { g.fillStyle = '#ff2a2a'; g.beginPath(); g.arc(MX(emer.x), MX(emer.z), 6, 0, TAU); g.fill(); g.stroke(); }
   if (dumpBeam.visible) { g.fillStyle = '#39a0ff'; g.beginPath(); g.arc(MX(DUMP.x), MX(DUMP.z), 5, 0, TAU); g.fill(); g.stroke(); }
@@ -2377,6 +2410,7 @@ const STICKERS = [
   ['fix', '\u{1F527}', 'Pipe fixer (3 pipes repaired)', () => (counts.fix || 0) >= 3],
   ['ice', '\u2744\uFE0F', 'Ice breaker (melt a frozen flood)', () => (counts.ice || 0) >= 1],
   ['boss', '\u{1F479}', 'Fatberg buster', () => (counts.boss || 0) >= 1],
+  ['valet', '\u{1F697}', 'Car valet (5 cars washed)', () => (counts.car || 0) >= 5],
 ];
 const stickers = store.get('stickers', []);
 function checkStickers() {       // did you just earn a new sticker?
@@ -2497,7 +2531,7 @@ $('siren').addEventListener('pointerdown', e => { e.preventDefault(); toggleSire
 // =====================================================================
 let lastSteps = '', hudTimer = 0, navJob = null;
 const mmss = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
-function nextJob() { let best = null, bd = 1e9; for (const j of jobs) { if (j.done || !j.inPlay) continue; const d = Math.hypot(j.x - P.x, j.z - P.z); if (d < bd) { bd = d; best = j; } } return best; }
+function nextJob() { let best = null, bd = 1e9; for (const j of jobs) { if (j.done || !j.inPlay || j.optional) continue; const d = Math.hypot(j.x - P.x, j.z - P.z); if (d < bd) { bd = d; best = j; } } return best; }
 function refreshHud() {
   const j = activeJob; let want = null, html = '', sub = '';
   if (j && !j.done) {
@@ -2510,7 +2544,7 @@ function refreshHud() {
     want = next ? next.tool : null;
   } else {
     navJob = nextJob();
-    const leftN = jobs.filter(x => x.inPlay && !x.done).length;
+    const leftN = jobs.filter(x => x.inPlay && !x.done && !x.optional).length;
     $('jt').textContent = navJob ? `Level ${level}: ${leftN} job${leftN > 1 ? 's' : ''} left` : `Level ${level} complete!`;
     $('nav').classList.toggle('hide', !navJob);
     if (navJob) $('navText').textContent = `${navJob.title} · ${Math.round(Math.hypot(navJob.x - P.x, navJob.z - P.z))} m`;
@@ -2538,7 +2572,8 @@ function refreshHud() {
   $('tunnelBtn').classList.toggle('hide', !atDoor);
   $('tunnelBtn').textContent = (sewer.active ? '\u2B06 Climb out' : '\u2B07 Enter the tunnel') + (coarse ? '' : ' (C)');
   const muddy = vanMud.some(p => !p.done);
-  $('bonus').textContent = muddy ? 'Bonus: your van is muddy! Park it at a job and wash it.' : truck.owned && truck.tank > 0 ? `Vac truck tank: ${Math.round(truck.tank)}% full` : '';
+  const carOut = jobs.some(x => x.inPlay && x.optional && !x.done);
+  $('bonus').textContent = carOut ? 'Bonus: a neighbour left a muddy car out. Find the blue light and wash it for a tip!' : muddy ? 'Bonus: your van is muddy! Park it at a job and wash it.' : truck.owned && truck.tank > 0 ? `Vac truck tank: ${Math.round(truck.tank)}% full` : '';
   $('bonus').classList.toggle('hide', !$('bonus').textContent);
 }
 
@@ -2548,6 +2583,7 @@ function refreshHud() {
 function collide() {
   const r = .42;
   for (const b of boxes) {
+    if (b.off) continue;
     if (P.x > b.x0 - r && P.x < b.x1 + r && P.z > b.z0 - r && P.z < b.z1 + r) {
       const dl = P.x - (b.x0 - r), dr = (b.x1 + r) - P.x, dn = P.z - (b.z0 - r), df = (b.z1 + r) - P.z, m = Math.min(dl, dr, dn, df);
       if (m === dl) P.x = b.x0 - r; else if (m === dr) P.x = b.x1 + r; else if (m === dn) P.z = b.z0 - r; else P.z = b.z1 + r;
@@ -2561,7 +2597,7 @@ function collide() {
   }
   P.x = clamp(P.x, -66, 66); P.z = clamp(P.z, -66, 66);
 }
-function camBlocked(x, y, z) { for (const b of boxes) if (y < b.h + .3 && x > b.x0 - .3 && x < b.x1 + .3 && z > b.z0 - .3 && z < b.z1 + .3) return true; return false; }
+function camBlocked(x, y, z) { for (const b of boxes) if (!b.off && y < b.h + .3 && x > b.x0 - .3 && x < b.x1 + .3 && z > b.z0 - .3 && z < b.z1 + .3) return true; return false; }
 
 let fpsTime = 0, fpsFrames = 0, lastWall = null;
 const ringOf = t => t === 'rake' ? U.rakeR() : t === 'jet' ? U.jetR() : t === 'vac' ? (blowMode ? 1.6 : U.vacR() * .95) : t === 'washer' ? (nozzle === 'narrow' ? .3 : U.washR()) : .4;
