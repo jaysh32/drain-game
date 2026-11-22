@@ -6,10 +6,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 <title>Storm Drain Squad</title>
 <style>
-  :root { --pan: rgba(14,22,32,.80); --line: rgba(255,255,255,.18); --acc: #ffb020; }
+  :root { --pan: rgba(14,22,32,.80); --line: rgba(255,255,255,.18); --acc: #ffb020; --mid: calc(50% + 90px); }       /* --mid: the middle of the gap between the job list and the map */
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; overflow: hidden; background: #9cc3e6; color: #fff;
-    font-family: system-ui, "Segoe UI", Roboto, sans-serif; -webkit-user-select: none; user-select: none; touch-action: none; }
+    font-family: system-ui, "Segoe UI", Roboto, sans-serif; -webkit-user-select: none; user-select: none; touch-action: none;
+    -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
   #view { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
   .hide { display: none !important; }
   .pan { position: fixed; z-index: 5; background: var(--pan); border: 1px solid var(--line); border-radius: 14px; }
@@ -57,19 +58,19 @@
   body.touch #stick, body.touch #use { display: block; }
   body.touch .tool .k { display: none; }
 
-  #bossBar { position: fixed; left: 50%; top: 64px; transform: translateX(-50%); z-index: 7; text-align: center; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 0 1px 3px #000; }
+  #bossBar { position: fixed; left: var(--mid); top: 64px; transform: translateX(-50%); z-index: 7; text-align: center; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 0 1px 3px #000; }
   #bossBar > div { width: min(420px, 50vw); height: 18px; border-radius: 9px; background: rgba(0,0,0,.6); border: 2px solid #fff; overflow: hidden; margin-top: 3px; }
   #bossFill { height: 100%; width: 100%; background: linear-gradient(90deg, #7ad94a, #d9c94a); }
   #splat { position: fixed; inset: 0; z-index: 4; pointer-events: none; opacity: 0; background: radial-gradient(ellipse at center, rgba(90,62,26,.15) 20%, rgba(74,49,25,.92) 100%); }
-  #alarm { position: fixed; left: 50%; top: 12px; transform: translateX(-50%); z-index: 7; background: #d62828; color: #fff; font-weight: 900; font-size: 15px;
+  #alarm { position: fixed; left: var(--mid); top: 64px; transform: translateX(-50%); z-index: 7; background: #d62828; color: #fff; font-weight: 900; font-size: 15px;
     padding: 8px 16px; border-radius: 999px; border: 2px solid #fff; display: flex; gap: 10px; align-items: center; white-space: nowrap; animation: pulse .9s infinite; }
   #alarmArrow { display: inline-block; font-size: 18px; }
   body.piping #alarm { display: none !important; }
-  #toast { position: fixed; left: 50%; bottom: 232px; transform: translateX(-50%); z-index: 7; background: #fff; color: #222; font-weight: 800;
-    padding: 10px 18px; border-radius: 999px; opacity: 0; transition: opacity .25s; pointer-events: none; max-width: 90vw; text-align: center; }
+  #toast { position: fixed; left: var(--mid); top: 112px; transform: translateX(-50%); z-index: 7; background: #fff; color: #222; font-weight: 800;
+    padding: 10px 18px; border-radius: 999px; opacity: 0; transition: opacity .25s; pointer-events: none; max-width: min(400px, 90vw); text-align: center; border-radius: 18px; }
   #toast.show { opacity: 1; }
 
-  #banner { position: fixed; left: 50%; top: 30%; transform: translate(-50%,-50%); z-index: 8; text-align: center;
+  #banner { position: fixed; left: var(--mid); top: 40%; transform: translate(-50%,-50%); z-index: 8; text-align: center;
     background: rgba(14,22,32,.88); border: 3px solid var(--acc); border-radius: 22px; padding: 18px 34px; }
   #banner .big { font-size: 44px; font-weight: 900; color: var(--acc); letter-spacing: 1px; }
   #bannerSub { font-size: 18px; font-weight: 700; margin: 4px 0 10px; }
@@ -81,6 +82,10 @@
   #start p { margin: 8px 0 14px; font-size: 17px; }
   #start .how { font-size: 14px; line-height: 1.7; opacity: .9; margin-bottom: 16px; }
   #play { font: inherit; font-size: 26px; font-weight: 900; padding: 12px 54px; border-radius: 16px; border: 0; background: var(--acc); color: #222; }
+  #turn { display: none; position: fixed; inset: 0; z-index: 40; background: #14202b; align-items: center; justify-content: center; text-align: center; font-size: 24px; font-weight: 800; padding: 30px; }
+  @media (orientation: portrait) and (pointer: coarse) { #turn { display: flex; } }
+  #oops { position: fixed; left: 8px; right: 8px; bottom: 8px; z-index: 50; background: #7a1010; color: #fff; font-size: 12px; padding: 6px 10px; border-radius: 8px; }
+  #ver { font-size: 12px; opacity: .6; margin-top: 10px; } #helpStat { font-size: 12px; opacity: .8; margin-top: 8px; }
   #err { position: fixed; inset: 0; z-index: 30; background: #14202b; display: flex; align-items: center; justify-content: center; text-align: center; padding: 30px; font-size: 18px; }
 
   #jsub { font-size: 12px; opacity: .9; margin-bottom: 4px; }
@@ -113,8 +118,8 @@
   #pipeFade { position: absolute; inset: 0; background: #000; opacity: 0; }
   #pipeMark { position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%); pointer-events: auto; background: #ff7a1a; font-size: 17px; padding: 10px 18px; }
   #planBox { right: 12px; top: 232px; padding: 5px; font-size: 11px; font-weight: 800; text-align: center; } #plan { display: block; border-radius: 8px; margin-top: 3px; }
-  #dyeBtn { bottom: 166px; left: calc(50% - 150px); background: #35ff6a; }
-  #tunnelBtn { bottom: 166px; background: #8fd0ff; }
+  #dyeBtn { bottom: 166px; left: calc(50% - 190px); background: #35ff6a; }
+  #tunnelBtn { bottom: 166px; left: calc(50% + 210px); background: #8fd0ff; }
   body.sewer #tools, body.sewer #map, body.sewer #vac, body.sewer #drive, body.sewer #dyeBtn, body.sewer #planBox, body.sewer #alarm, body.piping #tunnelBtn { display: none !important; }
   body.piping #planBox, body.piping #dyeBtn, body.driving #dyeBtn { display: none !important; }
   body.piping #job, body.piping #top, body.piping #map, body.piping #tools, body.piping #vac, body.piping #drive, body.piping #dirt { display: none !important; }
@@ -130,7 +135,7 @@
   #fix { position: fixed; inset: 0; z-index: 16; display: flex; align-items: center; justify-content: center; background: rgba(8,14,22,.6); }
   #fix .card { background: rgba(14,22,32,.97); border: 2px solid var(--line); border-radius: 20px; padding: 14px 18px; width: min(420px, 94vw); }
   #fix h2 { margin: 0 0 4px; color: var(--acc); font-size: 22px; display: flex; justify-content: space-between; align-items: center; }
-  #fixMsg { font-size: 14px; font-weight: 700; } #fixCan { display: block; width: min(360px, 80vw); height: auto; margin: 10px auto 0; border-radius: 12px; touch-action: none; }
+  #fixMsg { font-size: 14px; font-weight: 700; } #fixCan { display: block; width: min(360px, 80vw, calc(100vh - 130px)); height: auto; margin: 10px auto 0; border-radius: 12px; touch-action: none; }
   #help { position: fixed; inset: 0; z-index: 15; display: flex; align-items: center; justify-content: center; background: rgba(8,14,22,.6); }
   #help .card { background: rgba(14,22,32,.97); border: 2px solid var(--line); border-radius: 20px; padding: 14px 18px; width: min(560px, 94vw); max-height: 94vh; overflow: auto; touch-action: pan-y; }
   #help h2 { margin: 0 0 4px; color: var(--acc); font-size: 24px; display: flex; justify-content: space-between; align-items: center; }
@@ -156,10 +161,35 @@
   #trophies { font-size: 20px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
 
   @media (max-width: 720px) {
+    :root { --mid: 50%; }
     .tool { width: 56px; height: 60px; } .tool .ic { font-size: 21px; } .tool .nm { font-size: 9px; }
     #stick { width: 120px; height: 120px; bottom: 96px; left: 14px; } #use { width: 96px; height: 96px; bottom: 100px; right: 14px; font-size: 19px; }
-    #top .btn { padding: 5px 7px; font-size: 12px; } #toast { bottom: 292px; }
+    #top .btn { padding: 5px 7px; font-size: 12px; } #toast { top: auto; bottom: 292px; }
     #mapc { width: 104px; height: 104px; } #map { top: 56px; } #drive { bottom: 230px; }
+  }
+  @media (max-height: 580px) and (min-height: 481px) {       /* a small tablet with the browser bars showing */
+    .st { padding: 1px 0; } .st.done { display: none; }
+    #mapc { width: 124px; height: 124px; } #planBox { top: 206px; }
+    #dyeBtn { bottom: 104px; left: calc(50% - 244px); font-size: 14px; padding: 8px 12px; }
+    #banner { top: 30%; } #nextLvl { bottom: 214px; }
+  }
+  @media (max-height: 480px) and (orientation: landscape) {       /* a phone held sideways */
+    :root { --mid: calc(50% + 80px); }
+    #job { width: min(270px, 40vw); padding: 7px 9px; } .jt { font-size: 13px; margin-bottom: 2px; } #nav { font-size: 12px; } #arrow { font-size: 18px; }
+    .st { font-size: 12px; padding: 1px 0; } .st:not(.next) { display: none; } #hint { font-size: 11px; margin-top: 3px; padding-top: 3px; } #jsub, #bonus { font-size: 11px; }
+    #tools { gap: 5px; padding: 5px; bottom: 6px; } .tool { width: 52px; height: 50px; } .tool .ic { font-size: 20px; } .tool .nm { font-size: 9px; }
+    #stick { width: 120px; height: 120px; left: 14px; bottom: 14px; } #use { width: 100px; height: 100px; right: 14px; bottom: 18px; font-size: 20px; }
+    #top { padding: 4px 6px; gap: 5px; } #top .btn { padding: 4px 7px; font-size: 12px; } #cash { font-size: 14px; }
+    #mapc { width: 96px; height: 96px; } #map { top: 50px; }
+    #vac { bottom: 70px; padding: 5px 8px; } #drive, #siren { bottom: 116px; } #dirt, #nozzle { bottom: 70px; } .big-btn { font-size: 14px; padding: 7px 14px; }
+    #alarm { top: 52px; font-size: 13px; padding: 5px 12px; } #bossBar { top: 52px; } #bossBar > div { width: min(280px, 36vw); }
+    #nextLvl { bottom: 118px; font-size: 16px; padding: 9px 18px; } #banner { top: 34%; }
+    #planBox { top: 160px; padding: 4px; font-size: 10px; } #plan { width: 100px; height: auto; } #dyeBtn { bottom: 116px; left: calc(50% - 150px); } #tunnelBtn { bottom: 116px; left: calc(50% + 150px); }
+    #fix .card { padding: 8px 14px; } #fix h2 { font-size: 17px; } #fixMsg { font-size: 12px; } #fixCan { margin-top: 5px; width: min(360px, 80vw, calc(100vh - 96px)); }
+    #toast { top: 92px; bottom: auto; max-width: min(300px, 40vw); font-size: 13px; padding: 7px 14px; }
+    #banner { padding: 10px 20px; } #banner .big { font-size: 30px; } #bannerSub { font-size: 14px; }
+    #start .card { padding: 14px 22px; } #start h1 { font-size: 34px; } #start p { font-size: 14px; margin: 4px 0 8px; }
+    #start .how { font-size: 12px; line-height: 1.5; margin-bottom: 10px; } #play { font-size: 20px; padding: 8px 40px; }
   }
 </style>
 </head>
@@ -208,6 +238,8 @@
   <h2><span>&#10067; How to play</span><button id="helpClose" class="btn">Close</button></h2>
   <div id="shopInfo2">Follow the arrow to an orange light beam. Do the jobs on the list, top to bottom. Finish every job to beat the level.</div>
   <div id="helpRows"></div>
+  <div id="helpStat"></div>
+  <button id="fullBtn" class="btn" style="margin-top:12px">Fill the whole screen</button>
   <button id="wipe" class="btn" style="margin-top:12px">Start again from level 1</button>
 </div></div>
 <div id="shop" class="hide"><div class="card">
@@ -235,13 +267,20 @@
     <p>Storm after storm is blocking the drains in town. Grab your tools!</p>
     <div class="how" id="how"></div>
     <button id="play">PLAY</button>
+    <div id="ver"></div>
   </div>
 </div>
+<div id="turn">&#128260; Turn your tablet sideways to play</div>
+<div id="oops" class="hide"></div>
 <div id="err" class="hide">The game could not load its 3D engine.<br>Check that this device is connected to the internet, then reload.</div>
 
 <script>
   // If the 3D engine has not started after a while, tell the player why.
-  setTimeout(function () { if (!window.__booted) document.getElementById('err').classList.remove('hide'); }, 12000);
+  setTimeout(function () { if (!window.__booted) document.getElementById('err').classList.remove('hide'); }, 20000);
+  // If something breaks, say so on the screen. A tablet has no error console to look at.
+  window.reportOops = function (msg) { var o = document.getElementById('oops'); if (!o || window.__oops) return; window.__oops = true; o.textContent = 'Oops, something went wrong: ' + msg + '. Tap to hide. Tell Claude this message!'; o.classList.remove('hide'); o.onclick = function () { o.classList.add('hide'); }; };
+  window.addEventListener('error', function (e) { window.reportOops((e.message || 'unknown') + (e.lineno ? ' (line ' + e.lineno + ')' : '')); });
+  window.addEventListener('unhandledrejection', function (e) { window.reportOops(String(e.reason && e.reason.message || e.reason)); });
 </script>
 <script type="importmap">
 { "imports": {
@@ -255,6 +294,7 @@ import { Reflector } from 'three/addons/objects/Reflector.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const GAME_NAME = 'Storm Drain Squad';     // <-- change the name of the game here!
+const VERSION = '2.1';                      // shown on the start screen, so you can tell the tablet has the newest game
 
 // =====================================================================
 //  Little helpers
@@ -812,7 +852,7 @@ function initAudio() {
   // rain
   const rnf = filt('highpass', 1200), rnl = filt('lowpass', 7000); noise.connect(rnf); rnf.connect(rnl); rnl.connect(loop('rain'));
 }
-function setLoop(name, vol) { const g = sfx.loops[name]; if (g) g.gain.setTargetAtTime(vol, sfx.ctx.currentTime, .06); }
+function setLoop(name, vol) { const g = sfx.loops[name]; if (g && g.want !== vol) { g.want = vol; g.gain.setTargetAtTime(vol, sfx.ctx.currentTime, .06); } }
 function blip(f0, f1, dur, vol = .12, type = 'sine') {
   const ac = sfx.ctx; if (!ac || sfx.muted) return;
   const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime;
@@ -821,6 +861,7 @@ function blip(f0, f1, dur, vol = .12, type = 'sine') {
   o.connect(g); g.connect(sfx.master); o.start(t); o.stop(t + dur + .02);
 }
 function plop() { const now = performance.now(); if (now - sfx.lastPlop < 45) return; sfx.lastPlop = now; blip(rand(380, 620), 140, .14, .09); }
+document.addEventListener('visibilitychange', () => { if (sfx.ctx) { const p = document.hidden ? sfx.ctx.suspend() : sfx.ctx.resume(); if (p && p.catch) p.catch(() => {}); } lastFrameAt = 0; });       // no engine noise from a hidden tab
 function jingle() { [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() => blip(f, f, .25, .14, 'triangle'), i * 120)); }
 
 // =====================================================================
@@ -854,9 +895,20 @@ function addCash(n) { cash += n; store.set('cash', cash); }
 function buzz(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} }
 const CLOG_DEPTH = 6;                      // metres of pipe before the clog
 
-function toast(msg, ms = 2400) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.timer); toast.timer = setTimeout(() => t.classList.remove('show'), ms); }
+const toastQ = [];
+function toast(msg, ms = 2400) {       // messages wait their turn, so one does not wipe out another
+  if (toast.now === msg || (toastQ.length && toastQ[toastQ.length - 1].msg === msg)) return;
+  toastQ.push({ msg, ms }); if (toastQ.length > 4) toastQ.splice(0, toastQ.length - 4);
+  if (!toast.busy) nextToast();
+}
+function nextToast() {
+  const n = toastQ.shift(), t = $('toast');
+  if (!n) { toast.busy = false; toast.now = ''; t.classList.remove('show'); return; }
+  toast.busy = true; toast.now = n.msg; t.textContent = n.msg; t.classList.add('show');
+  clearTimeout(toast.timer); toast.timer = setTimeout(nextToast, toastQ.length ? Math.min(n.ms, 1900) : n.ms);
+}
 let lastNag = 0;
-function nag(msg) { if (T - lastNag > 2.6) { lastNag = T; toast(msg, 2200); } }
+function nag(msg) { if (T - lastNag > 2.6 && !toast.busy) { lastNag = T; toast(msg, 2200); } }       // little reminders never interrupt a real message
 
 // =====================================================================
 //  A Job: one blocked drain and everything around it
@@ -875,6 +927,7 @@ const mudGeo = new THREE.BoxGeometry(1, 1, 1);
 const mudMat = new THREE.MeshStandardMaterial({ color: 0x5a3d21, roughness: .3 });
 const puddleGeo = new THREE.CircleGeometry(1, 22); puddleGeo.rotateX(-Math.PI / 2);
 const waterSimpleMat = new THREE.MeshStandardMaterial({ color: 0x5f4f37, roughness: .06, metalness: .35 });
+const puddleMat = waterSimpleMat.clone();       // the same look, kept separate so the graphics card does not have to keep swapping programs
 const trashGeo = new THREE.CylinderGeometry(.09, .09, .32, 8); trashGeo.rotateZ(Math.PI / 2);
 const trashMat = new THREE.MeshStandardMaterial({ roughness: .3, metalness: .2 });
 const TRASH_COLORS = [0x3f8f4f, 0x8a5a2b, 0xd33a2c, 0x2f6fb0, 0xc9ced6].map(c => new THREE.Color(c));       // bottles and cans
@@ -975,6 +1028,9 @@ function senseAhead(n, z, through = true) {       // how many metres to the near
 }
 const petLeft = n => (n.end === 'pet' && !n.rescued) || n.kids.some(petLeft);                                       // is an animal stuck down this way?
 const blockedTo = leaf => { for (let n = leaf; n; n = n.parent) if (n.pieces.some(p => !p.gone)) return true; return false; };   // is there gunk between the drain and here?
+function scrap(obj) {       // give back the graphics memory of something we built just for a moment
+  if (obj) obj.traverse(o => { if (o.geometry && !o.geometry.userData.shared) o.geometry.dispose(); if (o.material && o.material.userData && o.material.userData.temp) o.material.dispose(); });
+}
 function makePet(kind) {
   if (kind !== 'kitten') { const g = makePrize(kind); g.rotation.y = -Math.PI / 2; return g; }
   const g = new THREE.Group(), fur = std({ color: 0x9a9a9a, roughness: .9 });
@@ -1146,6 +1202,10 @@ class Job {
     return Math.abs(lx) < this.gw / 2 + .2 && Math.abs(lz) < this.gd / 2 + .25;
   }
   waterY() { return .03 + .075 * this.level; }
+  owns(x, z) {       // is this spot part of this job's mess (its dirty ground or its flood)?
+    const D = this.dirt;
+    return (!!D && Math.abs(x - D.cx) < D.w / 2 + .4 && Math.abs(z - D.cz) < D.d / 2 + .4) || this.contains(x, z);
+  }
   contains(x, z) {       // is this spot under the flood water?
     if (!this.flood || this.level <= 0) return false;
     const f = this.flood, s = this.ws, dx = x - this.fx, dz = z - this.fz;
@@ -1193,7 +1253,7 @@ class Job {
     this.leafMesh = inst(leafGeo, leafMat, this.leaves);
     this.stickMesh = inst(stickGeo, stickMat, this.sticks);
     this.sludgeMesh = inst(sludgeGeo, sludgeMat, 120, true);
-    this.puddleMesh = inst(puddleGeo, waterSimpleMat, 10);
+    this.puddleMesh = inst(puddleGeo, puddleMat, 10);
     this.trashMesh = inst(trashGeo, trashMat, 8, true);
     if (this.mud) {
       const [c, r] = this.mud; this.mudMesh = inst(mudGeo, mudMat, c * r, true); this.mudPos = []; this.mudH = new Float32Array(c * r);
@@ -1238,10 +1298,10 @@ class Job {
     this.level = this.flood ? 1 : 0; this.ws = 1; this.drained = !this.flood;
     this.clogHp = this.clog ? 1 : 0; this.timer = 0; this.stars = 0; this.earned = 0;
     this.tough = 1 + .15 * (this.lvl - 1); this.prizeKind = pickPrize(); this.prizeSpawned = false;
-    if (this.petObj) { this.group.remove(this.petObj); this.petObj = null; }
+    if (this.petObj) { scrap(this.petObj); this.group.remove(this.petObj); this.petObj = null; }
     if (this.clog) { this.pipeLayout = makeNetwork(this.lvl, this.clogBase || 2); this.buildManholes(); }
     this.items = []; this.sludge = []; this.puddles = []; this.messTotal = 0;
-    if (this.prizeObj) { this.group.remove(this.prizeObj); this.prizeObj = null; }
+    if (this.prizeObj) { scrap(this.prizeObj); this.group.remove(this.prizeObj); this.prizeObj = null; }
     const fv = this.faceVec, tx = -fv[1], tz = fv[0];
     const nLeaves = Math.min(this.leaves, Math.round(this.leaves * (.55 + .09 * this.lvl)));       // more leaves on higher levels
     for (let i = 0; i < nLeaves + this.sticks; i++) {
@@ -1350,14 +1410,15 @@ class Job {
     if (this.flood || this.puddleCount) { const left = this.sludge.length + this.puddles.length; s.push({ id: 'vac', tool: 'vac', label: 'Vacuum the sludge and puddles', pct: this.drained ? 1 - left / Math.max(1, this.messTotal) : 0, done: this.drained && left === 0, hint: 'Pick the SHOP VAC and suck up the mud blobs and puddles.' }); }
     if (this.dirt) {
       const parts = [this.dirtDone ? 1 : this.clean, ...this.walls.map(p => p.done ? 1 : p.clean)], avg = parts.reduce((a, b) => a + b, 0) / parts.length;
-      const rest = this.dirtDone && this.walls.every(p => p.done), st = this.stains.length;
+      const rest = this.dirtDone && this.walls.every(p => p.done), st = this.stains.length, wallLeft = this.walls.some(p => !p.done);
       s.push({ id: 'wash', tool: 'washer', label: this.washLabel || 'Pressure wash the grime', pct: rest && st ? .95 : avg, done: rest && !st,
-        hint: rest && st ? `Oil stains! Switch to the NARROW nozzle${coarse ? '' : ' (T)'} and blast them.` : 'Pick the WASHER and blast every dirty spot until it is clean.' });
+        hint: rest && st ? `Oil stains! Switch to the NARROW nozzle${coarse ? '' : ' (T)'} and blast them.` : wallLeft ? (this.dirtDone ? 'Now wash the wall. Look up to reach the very top!' : 'Pick the WASHER. Wash the ground and the wall. Look up to reach the top of the wall!')
+          : 'Pick the WASHER and blast every dirty spot until it is clean.' });
     }
     if (this.car) s.push({ id: 'car', tool: 'washer', label: 'Pressure wash the muddy car', pct: this.carClean(), done: this.walls.every(p => p.follow || p.done),
       hint: 'Pick the WASHER. Wash both sides of the car and the end that faces the street.' });
     if (this.tunnel) s.push({ id: 'tunnel', tool: 'washer', label: 'Wash the big storm tunnel clean', pct: this.tunnelDone ? 1 : sewer.pct || 0, done: !!this.tunnelDone,
-      hint: sewer.active ? 'Wash the floor and both walls. Grab the coins too!' : `Stand by the tunnel door and tap ENTER THE TUNNEL${coarse ? '' : ' (C)'}.` });
+      hint: sewer.active ? 'Wash the floor and both walls, right up to the top. Grab the coins too!' : `Stand by the tunnel door and tap ENTER THE TUNNEL${coarse ? '' : ' (C)'}.` });
     if (this.tunnel) s.push({ id: 'boss', tool: 'washer', label: 'Beat the giant fatberg', pct: boss.alive ? 1 - Math.max(0, boss.hp) / boss.max : 1, done: !boss.alive, hint: 'It lives at the far end of the tunnel. Blast it with the washer and step sideways to dodge the gunk!' });
     return s;
   }
@@ -1485,7 +1546,10 @@ class Job {
     if (this.level <= 0) {
       for (const q of this.puddles) if (Math.hypot(q.x - a.x, q.z - a.z) < q.r + .5) { q.r -= .55 * dt; tank.fill += 6 * dt; }
       this.puddles = this.puddles.filter(q => q.r > .16);
-    } else if (this.contains(a.x, a.z)) { this.level = Math.max(0, this.level - .02 * dt); tank.fill += 5 * dt; }
+    } else if (this.contains(a.x, a.z)) {
+      this.level = Math.max(0, this.level - .02 * dt); tank.fill += 5 * dt;
+      if (this.level <= 0 && !this.drained) this.onDrained();       // sucking up the very last of the water still counts as drained
+    }
     tank.fill = Math.min(tank.cap, tank.fill);
     return 'ok';
   }
@@ -1575,7 +1639,7 @@ class Job {
     if (this.prizeObj) {
       this.prizeObj.rotation.y += dt * 1.6; this.prizeObj.position.y = .55 + Math.sin(T * 3) * .12;
       if (Math.hypot(P.x - this.prizeObj.position.x, P.z - this.prizeObj.position.z) < 1.2) {
-        const kind = this.prizeObj.userData.kind; this.group.remove(this.prizeObj); this.prizeObj = null;
+        const kind = this.prizeObj.userData.kind; scrap(this.prizeObj); this.group.remove(this.prizeObj); this.prizeObj = null;
         const isNew = !found.includes(kind); if (isNew) { found.push(kind); store.set('found', found); }
         addCash(50); toast(`${isNew ? 'NEW TREASURE! ' : ''}You found ${PRIZES[kind][1]}! +$50`, 3200); jingle(); buzz(60);
       }
@@ -1593,6 +1657,11 @@ class Job {
     this.beam.visible = this !== activeJob;
     this.beamMat.opacity = .16 + .06 * Math.sin(T * 3);
 
+    // A job you cannot see (a long way off, or while you are down a pipe or in the tunnel) only checks and redraws
+    // itself a few times a second. The game rules above still run every frame.
+    const far = pipe.active || sewer.active || (this !== activeJob && (this.x - P.x) ** 2 + (this.z - P.z) ** 2 > 2500);
+    if (this.skip === undefined) this.skip = Job.turn = ((Job.turn | 0) + 1) % 6;       // the far jobs take turns, so they do not all redraw at once
+    if (far && (this.skip = (this.skip + 1) % 6) !== 0) return;
     if (!this.done && this.steps().every(s => s.done)) this.complete();
     this.sync(false);
   }
@@ -1631,23 +1700,23 @@ class Job {
       if (p.kind) this.stickMesh.setMatrixAt(si++, dummy.matrix);
       else { this.leafMesh.setMatrixAt(li, dummy.matrix); this.leafMesh.setColorAt(li++, p.color); }
     }
-    this.leafMesh.count = li; this.leafMesh.instanceMatrix.needsUpdate = true; if (this.leafMesh.instanceColor) this.leafMesh.instanceColor.needsUpdate = true;
-    this.stickMesh.count = si; this.stickMesh.instanceMatrix.needsUpdate = true;
+    this.leafMesh.count = li; this.leafMesh.visible = li > 0; this.leafMesh.instanceMatrix.needsUpdate = true; if (this.leafMesh.instanceColor) this.leafMesh.instanceColor.needsUpdate = true;
+    this.stickMesh.count = si; this.stickMesh.visible = si > 0; this.stickMesh.instanceMatrix.needsUpdate = true;
     let ti = 0;
     for (const t of this.trash) {
       dummy.position.set(t.x, (this.contains(t.x, t.z) ? wy : groundHeight(t.x, t.z)) + .1 + (t.goTo ? .9 : 0), t.z); dummy.rotation.set(0, t.rot, 0); dummy.scale.setScalar(t.scale); dummy.updateMatrix();
       this.trashMesh.setMatrixAt(ti, dummy.matrix); this.trashMesh.setColorAt(ti++, t.color);
     }
-    this.trashMesh.count = ti; this.trashMesh.instanceMatrix.needsUpdate = true; if (this.trashMesh.instanceColor) this.trashMesh.instanceColor.needsUpdate = true;
+    this.trashMesh.count = ti; this.trashMesh.visible = ti > 0; this.trashMesh.instanceMatrix.needsUpdate = true; if (this.trashMesh.instanceColor) this.trashMesh.instanceColor.needsUpdate = true;
     let n = 0;
     for (const s of this.sludge) { dummy.position.set(s.x, s.y, s.z); dummy.rotation.set(0, 0, 0); dummy.scale.setScalar(s.size * s.scale); dummy.updateMatrix(); this.sludgeMesh.setMatrixAt(n++, dummy.matrix); }
-    this.sludgeMesh.count = n; this.sludgeMesh.instanceMatrix.needsUpdate = true;
+    this.sludgeMesh.count = n; this.sludgeMesh.visible = n > 0; this.sludgeMesh.instanceMatrix.needsUpdate = true;
     n = 0;
     for (const q of this.puddles) { dummy.position.set(q.x, .034, q.z); dummy.rotation.set(0, 0, 0); dummy.scale.set(q.r, 1, q.r * .8); dummy.updateMatrix(); this.puddleMesh.setMatrixAt(n++, dummy.matrix); }
-    this.puddleMesh.count = n; this.puddleMesh.instanceMatrix.needsUpdate = true;
+    this.puddleMesh.count = n; this.puddleMesh.visible = n > 0; this.puddleMesh.instanceMatrix.needsUpdate = true;
     n = 0;
     for (const st of this.stains) { const k = st.r * (.4 + .6 * st.hp); dummy.position.set(st.x, .033, st.z); dummy.rotation.set(0, 0, 0); dummy.scale.set(k, 1, k * .8); dummy.updateMatrix(); this.stainMesh.setMatrixAt(n++, dummy.matrix); }
-    this.stainMesh.count = n; this.stainMesh.instanceMatrix.needsUpdate = true;
+    this.stainMesh.count = n; this.stainMesh.visible = n > 0; this.stainMesh.instanceMatrix.needsUpdate = true;
     if (this.mud && (this.mudDirty || force)) {
       const [c, r] = this.mud, cw = this.gw / c, ch = this.gd / r;
       for (let i = 0; i < this.mudH.length; i++) {
@@ -1739,18 +1808,24 @@ function setHose(from, to, radius, color, sag) {
     m1.add(side); m2.sub(side); pts.push(m1, m2);
   } else pts.push(a.clone().lerp(b, .55).setY(Math.max(a.y, b.y) * .6));
   pts.push(b);
-  hose.geometry.dispose();
-  hose.geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, radius, 5, false);
   hose.visible = true;
+  const L = hose.last || (hose.last = { a: new THREE.Vector3(1e9, 0, 0), b: new THREE.Vector3(), r: 0, sag: null });
+  if (L.r === radius && L.sag === !!sag && L.a.distanceToSquared(a) < .0002 && L.b.distanceToSquared(b) < .0002) return;       // nothing moved: keep the hose as it is
+  L.a.copy(a); L.b.copy(b); L.r = radius; L.sag = !!sag;
+  const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 16, radius, 5, false);
+  if (!hose.ready) {       // the first time, keep this shape. After that just copy the new bends into it
+    hose.geometry.dispose(); hose.geometry = g; hose.ready = true;
+    g.attributes.position.setUsage(THREE.DynamicDrawUsage); g.attributes.normal.setUsage(THREE.DynamicDrawUsage);
+  } else for (const k of ['position', 'normal']) { hose.geometry.attributes[k].array.set(g.attributes[k].array); hose.geometry.attributes[k].needsUpdate = true; }
 }
 
 // =====================================================================
 //  Buttons, keys, mouse and touch
 // =====================================================================
-$('title').textContent = GAME_NAME.toUpperCase(); document.title = GAME_NAME;
+$('title').textContent = GAME_NAME.toUpperCase(); document.title = GAME_NAME; $('ver').textContent = 'Version ' + VERSION;
 $('how').innerHTML = coarse
   ? 'Left stick: walk &nbsp;•&nbsp; Drag the screen: look around<br>Hold USE: use your tool &nbsp;•&nbsp; Tap a tool to pick it<br>Walk up to your van and tap DRIVE VAN'
-  : 'W A S D: walk &nbsp;•&nbsp; Drag the mouse: look around<br>Hold SPACE or the mouse button: use your tool &nbsp;•&nbsp; 1 to 5: pick a tool<br>F: drive your van &nbsp;\u2022&nbsp; B: upgrade shop';
+  : 'W A S D: walk &nbsp;•&nbsp; Drag the mouse: look around<br>Hold SPACE or the mouse button: use your tool &nbsp;•&nbsp; 1 to 6: pick a tool<br>F: drive your van &nbsp;\u2022&nbsp; B: upgrade shop';
 TOOL_IDS.forEach((id, i) => {
   const b = document.createElement('button'); b.className = 'tool'; b.dataset.tool = id;
   b.innerHTML = `<span class="k">${i + 1}</span><span class="ic">${TOOLS[id].icon}</span><span class="nm">${TOOLS[id].name}</span>`;
@@ -1771,7 +1846,7 @@ $('empty').addEventListener('pointerdown', e => { e.preventDefault(); emptyVac()
 $('btnSound').addEventListener('click', () => { sfx.muted = !sfx.muted; store.set('muted', sfx.muted); if (sfx.master) sfx.master.gain.value = sfx.muted ? 0 : 1; $('btnSound').textContent = sfx.muted ? '\u{1F507}' : '\u{1F50A}'; $('btnSound').blur(); });
 $('btnSound').textContent = sfx.muted ? '\u{1F507}' : '\u{1F50A}';
 $('play').addEventListener('click', () => {
-  started = true; $('start').remove(); initAudio();
+  started = true; $('start').remove(); initAudio(); if (coarse) goFullscreen();
   const today = new Date().toDateString();
   if (stats.day !== today) { stats.day = today; store.set('stats', stats); addCash(50); toast(`Daily bonus +$50! Level ${level}: follow the arrow to your job.`, 4000); }
   else toast(`Level ${level}: follow the arrow to your job!`, 3500);
@@ -1799,20 +1874,30 @@ addEventListener('keydown', e => {
 });
 addEventListener('keyup', e => keys.delete(e.code));
 addEventListener('blur', () => keys.clear());
+addEventListener('contextmenu', e => e.preventDefault());       // no long-press menus on a tablet
+function goFullscreen() {       // on a tablet, fill the whole screen and stay sideways
+  try {
+    const el = document.documentElement, fn = el.requestFullscreen || el.webkitRequestFullscreen; if (!fn) return;
+    const pr = fn.call(el); if (pr && pr.then) pr.then(() => { try { screen.orientation.lock('landscape').catch(() => {}); } catch (e) {} }).catch(() => {});
+  } catch (e) {}
+}
 
 function turn(dx, dy) {
   if (pipe.active) { pipe.cx += dx * .0045; pipe.cy -= dy * .0045; return; }      // in the pipe, dragging steers the cutter
-  cam.yaw -= dx * .0055; cam.pitch = clamp(cam.pitch + dy * .004, .1, 1.25);
+  cam.yaw -= dx * .0055; cam.pitch = clamp(cam.pitch + dy * .004, -.5, 1.25);       // below zero is looking up
 }
-const look = { id: null, x: 0, y: 0 }; let mouseUse = false;
+const looks = new Map(); let mouseUse = false;       // every finger on the picture can look around. A resting palm just does nothing
+const grabPointer = (el, e) => { try { el.setPointerCapture(e.pointerId); } catch (err) {} };
 canvas.addEventListener('pointerdown', e => {
-  canvas.setPointerCapture(e.pointerId); look.id = e.pointerId; look.x = e.clientX; look.y = e.clientY;
+  grabPointer(canvas, e); looks.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (e.pointerType === 'mouse' && e.button === 0) mouseUse = true;
 });
-canvas.addEventListener('pointermove', e => { if (e.pointerId !== look.id) return; turn(e.clientX - look.x, e.clientY - look.y); look.x = e.clientX; look.y = e.clientY; });
-const lookEnd = e => { if (e.pointerId === look.id) { look.id = null; mouseUse = false; } };
+canvas.addEventListener('pointermove', e => { const l = looks.get(e.pointerId); if (!l) return; turn(e.clientX - l.x, e.clientY - l.y); l.x = e.clientX; l.y = e.clientY; });
+const lookEnd = e => { looks.delete(e.pointerId); if (e.pointerType === 'mouse' || !looks.size) mouseUse = false; };
 canvas.addEventListener('pointerup', lookEnd); canvas.addEventListener('pointercancel', lookEnd);
 canvas.addEventListener('contextmenu', e => e.preventDefault());
+canvas.addEventListener('webglcontextlost', e => e.preventDefault());       // the tablet took the graphics away (it was busy with something else)...
+canvas.addEventListener('webglcontextrestored', () => location.reload());       // ...so start fresh when it gives them back. Your level and money are saved.
 canvas.addEventListener('wheel', e => { cam.dist = clamp(cam.dist + e.deltaY * .004, 3, 9); }, { passive: true });
 
 const joy = { x: 0, y: 0, id: null }, stick = $('stick'), knob = $('knob');
@@ -1821,13 +1906,13 @@ function joyMove(e) {
   const l = Math.hypot(dx, dy); if (l > 1) { dx /= l; dy /= l; }
   joy.x = dx; joy.y = dy; knob.style.transform = `translate(${dx * 42}px, ${dy * 42}px)`;
 }
-stick.addEventListener('pointerdown', e => { e.preventDefault(); stick.setPointerCapture(e.pointerId); joy.id = e.pointerId; joyMove(e); });
+stick.addEventListener('pointerdown', e => { e.preventDefault(); grabPointer(stick, e); joy.id = e.pointerId; joyMove(e); });
 stick.addEventListener('pointermove', e => { if (e.pointerId === joy.id) joyMove(e); });
 const joyEnd = e => { if (e.pointerId === joy.id) { joy.id = null; joy.x = joy.y = 0; knob.style.transform = ''; } };
 stick.addEventListener('pointerup', joyEnd); stick.addEventListener('pointercancel', joyEnd);
 
 const useBtn = $('use'); let touchUse = false; const useLast = { x: 0, y: 0 };
-useBtn.addEventListener('pointerdown', e => { e.preventDefault(); useBtn.setPointerCapture(e.pointerId); touchUse = true; useLast.x = e.clientX; useLast.y = e.clientY; useBtn.classList.add('down'); });
+useBtn.addEventListener('pointerdown', e => { e.preventDefault(); grabPointer(useBtn, e); touchUse = true; useLast.x = e.clientX; useLast.y = e.clientY; useBtn.classList.add('down'); });
 useBtn.addEventListener('pointermove', e => { if (!touchUse) return; turn(e.clientX - useLast.x, e.clientY - useLast.y); useLast.x = e.clientX; useLast.y = e.clientY; });
 const useEnd = () => { touchUse = false; useBtn.classList.remove('down'); };
 useBtn.addEventListener('pointerup', useEnd); useBtn.addEventListener('pointercancel', useEnd);
@@ -1838,7 +1923,7 @@ const Q_HELP = ['Fastest graphics: no shadows, for slower tablets', 'Fast graphi
 let quality = store.get('quality', coarse ? 1 : 2), autoQuality = store.get('quality', null) === null, fancy = quality === 2;
 function applyQuality() {
   fancy = quality === 2;
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, [1, 1.25, 2][quality]));
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, [1, 1.25, coarse ? 1.5 : 2][quality]));
   renderer.shadowMap.enabled = quality > 0;
   renderer.shadowMap.type = fancy ? THREE.PCFSoftShadowMap : THREE.PCFShadowMap;
   sun.castShadow = quality > 0;
@@ -1897,6 +1982,9 @@ function startLevel(n, quiet) {
   }
   WINTER = n % 5 === 0;       // every fifth level is frozen
   for (const j of jobs) { j.inPlay = ids.includes(j.id); j.group.visible = j.inPlay; if (j.inPlay) { j.lvl = n; j.reset(); } if (j.carBox) j.carBox.off = !j.inPlay; }
+  for (const j of jobs) if (j.inPlay && j.carBox) for (const v of vehicles) if (Math.abs(v.x - j.x) < 3.6 && Math.abs(v.z - j.z) < 5.2) {       // the neighbour needs their driveway: your van waits by the kerb
+    v.x = j.x + (v === truck ? 7 : 0); v.z = j.z < 0 ? -3.25 : 3.25; v.yaw = Math.PI / 2; v.speed = 0; v.g.position.set(v.x, 0, v.z); v.g.rotation.y = v.yaw;
+  }
   $('nextLvl').classList.add('hide'); $('banner').classList.add('hide'); lastSteps = null;
   if (n > 1) muddyVan();
   setNight(n % 4 === 0);       // every fourth level is a night shift
@@ -1920,7 +2008,7 @@ function onLevelDone() {
   lastSteps = null;
 }
 function nextLevel() { if (levelDone && !pipe.active) startLevel(level + 1); }
-$('nextLvl').addEventListener('pointerdown', e => { e.preventDefault(); nextLevel(); });
+$('nextLvl').addEventListener('click', () => nextLevel());       // a full tap, so a look-around drag that starts here does not skip ahead
 
 // =====================================================================
 //  The pipe camera game: you steer the snake's cutter down the pipe
@@ -2056,7 +2144,7 @@ function openFix(crack) {
 function closeFix(won) {
   if (!fix.open) return;
   fix.open = false; shopOpen = false; $('fix').classList.add('hide');
-  if (!won) return;
+  if (!won && !fix.solved) return;       // tapping LATER just after you solved it still counts
   fix.crack.fixed = true; if (pipe.crackMesh) { pipeScene.remove(pipe.crackMesh); pipe.crackMesh = null; }
   addCash(80); count('fix'); jingle(); buzz(80); toast('Pipe repaired! The water flows again. +$80', 3500);
 }
@@ -2078,7 +2166,7 @@ const END_MATS = {
   rust: std({ color: 0x8a4a2a, roughness: .8 }), gold: std({ color: 0xffd23a, roughness: .25, metalness: 1 }),
 };
 function buildEnd(node) {
-  pipeEnd.clear(); pipe.openings = []; pipe.pile = null; pipe.petMesh = null; pipe.calm = 0;
+  scrap(pipeEnd); pipeEnd.clear(); pipe.openings = []; pipe.pile = null; pipe.petMesh = null; pipe.calm = 0;
   if (node.end === 'out') return;                // this pipe just carries on to the sewer
   pipeEnd.position.z = -node.len;
   const add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); pipeEnd.add(m); return m; };
@@ -2088,7 +2176,7 @@ function buildEnd(node) {
     node.kids.forEach((k, i) => {
       const x = (i - (n - 1) / 2) * (n === 2 ? .84 : .6), y = .05;
       add(new THREE.CircleGeometry(.25, 20), END_MATS.hole, x, y, .01);
-      const rim = add(new THREE.TorusGeometry(.25, .04, 8, 24), std({ color: 0x9a9388, roughness: .6 }), x, y, .02);
+      const rim = add(new THREE.TorusGeometry(.25, .04, 8, 24), std({ color: 0x9a9388, roughness: .6 }), x, y, .02); rim.material.userData.temp = true;
       if (pipe.job.pipeLayout.hard) { /* no easy clues on hard levels: use the dye test */ }
       else if (clogLeft(k)) add(new THREE.CircleGeometry(.24, 14, Math.PI, Math.PI), END_MATS.still, x, y, .015);      // backed-up brown water: blocked!
       else add(new THREE.CircleGeometry(.07, 12), END_MATS.light, x, y + .04, .015);                                // light at the end: this pipe is clear
@@ -2214,7 +2302,7 @@ function updatePipe(dt, ix, iy, using) {
       else if (close) { pipe.calm += dt; pipe.petMesh.position.y = -.42 + Math.abs(Math.sin(pipe.time * 8)) * .05; }
       else pipe.calm = Math.max(0, pipe.calm - dt);
       if (pipe.calm > 1.6) {
-        node.rescued = true; pipeEnd.remove(pipe.petMesh); pipe.petMesh = null;
+        node.rescued = true; scrap(pipe.petMesh); pipeEnd.remove(pipe.petMesh); pipe.petMesh = null;
         addCash(100); jingle(); buzz(80); count('rescue'); job.petSaved(node.pet); toast(`You rescued a ${node.pet}! It is waiting for you up top. +$100`, 4000);
       }
     }
@@ -2251,12 +2339,13 @@ function updatePipe(dt, ix, iy, using) {
   updatePoints(pipeBits, dt, 4, -.66);
   let sensor = !allLeft ? 'all clear' : sense === null ? 'point at a pipe' : Number.isNaN(sense) ? 'no signal round corners' : sense === Infinity ? (net.hard ? 'nothing in this pipe' : 'NOTHING THIS WAY') : `${Math.max(0, Math.round(sense))} m ahead`;
   if (allLeft && node.end === 'junction' && pipe.openings.some(o => Math.hypot(o.x - pipe.cx, o.y - pipe.cy) < .27 && petLeft(o.kid))) sensor += '  (squeak!)';
-  $('pipeTip').textContent = tip;
-  $('pipeInfo').textContent = `LEVEL ${job.lvl}\nDEPTH ${(deep + 1.25).toFixed(1)} m\nGUNK LEFT ${allLeft}\nHEAT ${Math.round(pipe.heat * 100)}%\nCLOG SENSOR: ${sensor}`;
+  if (tip !== pipe.tipTxt) $('pipeTip').textContent = pipe.tipTxt = tip;
+  const info = `LEVEL ${job.lvl}\nDEPTH ${(deep + 1.25).toFixed(1)} m\nGUNK LEFT ${allLeft}\nHEAT ${Math.round(pipe.heat * 100)}%\nCLOG SENSOR: ${sensor}`;
+  if (info !== pipe.infoTxt) $('pipeInfo').textContent = pipe.infoTxt = info;
   $('pipeFill').style.width = ((1 - allLeft / net.total) * 100) + '%';
   $('heatFill').style.width = (pipe.heat * 100) + '%';
   pipe.fade = Math.max(0, pipe.fade - dt * 2.4); $('pipeFade').style.opacity = pipe.fade;
-  drawPipeMap(net);
+  if ((pipe.mapTick = ((pipe.mapTick | 0) + 1) % 3) === 0) drawPipeMap(net);
 }
 // ---- the little map of the pipes you have explored ----
 const pmCtx = $('pipeMap').getContext('2d');
@@ -2292,7 +2381,7 @@ $('dyeBtn').addEventListener('pointerdown', e => { e.preventDefault(); doDye(); 
 //  Coins to collect around town
 // =====================================================================
 const coins = [], COIN_N = 14;
-const coinGeo = new THREE.CylinderGeometry(.24, .24, .05, 16); coinGeo.rotateX(Math.PI / 2);
+const coinGeo = new THREE.CylinderGeometry(.24, .24, .05, 16); coinGeo.rotateX(Math.PI / 2); coinGeo.userData.shared = true;
 const coinMesh = new THREE.InstancedMesh(coinGeo, std({ color: 0xffd23a, roughness: .25, metalness: 1 }), COIN_N);
 coinMesh.frustumCulled = false; coinMesh.castShadow = true; scene.add(coinMesh);
 function placeCoin(c) {
@@ -2599,7 +2688,7 @@ function collide() {
 }
 function camBlocked(x, y, z) { for (const b of boxes) if (!b.off && y < b.h + .3 && x > b.x0 - .3 && x < b.x1 + .3 && z > b.z0 - .3 && z < b.z1 + .3) return true; return false; }
 
-let fpsTime = 0, fpsFrames = 0, lastWall = null;
+let fpsTime = 0, fpsFrames = 0, lastWall = null, lastFps = 0, lastFrameAt = 0, slowRuns = 0, mapTick = 0;
 const ringOf = t => t === 'rake' ? U.rakeR() : t === 'jet' ? U.jetR() : t === 'vac' ? (blowMode ? 1.6 : U.vacR() * .95) : t === 'washer' ? (nozzle === 'narrow' ? .3 : U.washR()) : .4;
 function update(dt) {
   T += dt;
@@ -2628,7 +2717,7 @@ function update(dt) {
   let sucking = false;
   if (ride) {
     driveRide(dt, ix, iz);
-    if (look.id === null && Math.abs(ride.speed) > 1) cam.yaw = angleLerp(cam.yaw, ride.yaw, damp(2.2, dt));
+    if (!looks.size && Math.abs(ride.speed) > 1) cam.yaw = angleLerp(cam.yaw, ride.yaw, damp(2.2, dt));
     if (ride === truck) { if (using && Math.abs(truck.speed) < 1.5) sucking = truckSuck(dt); }
     else if (using && !hornWas) { blip(330, 330, .4, .13, 'square'); blip(415, 415, .4, .11, 'square'); count('honk'); }
     if (ride === truck && truck.tank > 0 && Math.hypot(truck.x - DUMP.x, truck.z - DUMP.z) < 6) {       // empty the tank at the dump
@@ -2652,11 +2741,18 @@ function update(dt) {
   }
 
   // ---- which job are we at? ----
+  // Where two jobs are side by side (the park!), the one whose mess you are pointing at wins,
+  // and a finished job never hides one that still needs work.
   let near = null, nd = 1e9;
-  for (const job of jobs) { const d = Math.hypot(job.x - P.x, job.z - P.z); if (job.inPlay && d < job.zone && d < nd) { nd = d; near = job; } }
+  for (const job of jobs) {
+    if (!job.inPlay) continue;
+    const d = Math.hypot(job.x - P.x, job.z - P.z); if (d >= job.zone) continue;
+    const score = d + (job.done ? 100 : !ride && job.owns(aim.x, aim.z) ? -50 : 0);
+    if (score < nd) { nd = score; near = job; }
+  }
   if (near !== activeJob) {
     activeJob = near; lastSteps = null;
-    if (near && !near.done && started && !ride) { toast(near.title, 2600); blip(440, 660, .18, .1, 'triangle'); }
+    if (near && !near.done && started && !ride && T - (near.saidAt || -99) > 25) { near.saidAt = T; toast(near.title, 2600); blip(440, 660, .18, .1, 'triangle'); }       // say its name, but not over and over
   }
   const j = activeJob, working = using && !ride, holding = !!j && !ride;
 
@@ -2665,6 +2761,7 @@ function update(dt) {
   const tx = P.x + rx * side, ty = P.y + (ride ? 2.3 : 1.75), tz = P.z + rz * side;
   let want = cam.dist;
   for (let i = 1; i <= 8; i++) { const k = cam.dist * i / 8; if (camBlocked(tx - fx * cp * k, ty + sp * k, tz - fz * cp * k)) { want = Math.max(.9, cam.dist * (i - 1) / 8); break; } }
+  if (sp < 0) want = Math.min(want, Math.max(.9, (ty - P.y - .4) / -sp));       // looking up: slide the camera in so it stays above the ground
   cam.d = lerp(cam.d, want, damp(want < cam.d ? 30 : 6, dt));
   camera.position.set(tx - fx * cp * cam.d, ty + sp * cam.d, tz - fz * cp * cam.d);
   camera.lookAt(tx, ty, tz);
@@ -2791,19 +2888,28 @@ function update(dt) {
 
   // ---- screen words and the little map ----
   const planOn = !!(j && j.clog && j.pipeLayout.hard && j.clogHp > 0 && !ride);       // the plan of the pipes, for the dye test
-  $('planBox').classList.toggle('hide', !planOn); if (planOn) drawPipeMap(j.pipeLayout, planCtx);
+  const mapNow = (mapTick = (mapTick + 1) % 2) === 0;       // the little maps are drawn every other frame
+  $('planBox').classList.toggle('hide', !planOn); if (planOn && mapNow) drawPipeMap(j.pipeLayout, planCtx);
   $('dyeBtn').classList.toggle('hide', !(planOn && Math.hypot(P.x - j.x, P.z - j.z) < 5));
   if (navJob) $('arrow').style.transform = `rotate(${-(Math.atan2(navJob.x - P.x, navJob.z - P.z) - cam.yaw)}rad)`;
-  drawMap();
+  if (mapNow) drawMap();
   hudTimer -= dt; if (hudTimer <= 0) { hudTimer = .14; refreshHud(); }
   saveCounts(dt);
+}
 
-  // ---- if the game is running slowly, switch to faster graphics by itself ----
-  fpsFrames++;
+// ---- if the game is running slowly, switch to faster graphics by itself ----
+function watchSpeed() {       // called once for every picture drawn, in the town, the pipe and the tunnel
   const now = performance.now();
-  if (now - fpsTime > 4000) {
-    const fps = fpsFrames * 1000 / (now - fpsTime); fpsTime = now; fpsFrames = 0;
-    if (started && autoQuality && quality > 0 && fps > 5 && fps < 24) { setQuality(quality - 1, false); toast('Switched to faster graphics so it runs smoothly.'); }
+  if (now - lastFrameAt > 1000) { fpsTime = now; fpsFrames = 0; }       // we were away (another tab, a long pause): start counting again
+  lastFrameAt = now; fpsFrames++;
+  if (now - fpsTime < 4000) return;
+  const fps = fpsFrames * 1000 / (now - fpsTime); fpsTime = now; fpsFrames = 0; lastFps = Math.round(fps);
+  if (!started || quality === 0 || fps <= 5) { slowRuns = 0; return; }
+  const slow = autoQuality ? fps < 24 : fps < 14;       // if YOU picked the graphics, it only steps in when it is really slow
+  slowRuns = slow ? slowRuns + 1 : 0;
+  if (slow && (autoQuality || slowRuns >= 2)) {
+    slowRuns = 0; setQuality(quality - 1, false); if (!autoQuality) store.set('quality', quality);
+    toast('Switched to faster graphics so it runs smoothly.');
   }
 }
 
@@ -2843,14 +2949,14 @@ function updateDog(dt) {
 // ---- EVENTS (emergency calls, fires, rain and night shifts) ----
 const TIME = { night: false, sun: 2.9, exp: .95 };
 const FOG_DRY = new THREE.Color(0xcfe0ea), FOG_WET = new THREE.Color(0x7f8c96);
-const torch = new THREE.PointLight(0xfff0d0, 0, 17, 1.5); scene.add(torch);              // your flashlight on night shifts
-const fireGlow = new THREE.PointLight(0xff7a1a, 0, 18, 1.6); scene.add(fireGlow);        // the glow from a fire
+const torch = new THREE.PointLight(0xfff0d0, 11, 17, 1.5); torch.visible = false; scene.add(torch);              // your flashlight on night shifts
+const fireGlow = new THREE.PointLight(0xff7a1a, 0, 18, 1.6); fireGlow.visible = false; scene.add(fireGlow);        // the glow from a fire
 function setNight(on) {
   TIME.night = on; TIME.sun = on ? .35 : 2.9; TIME.exp = on ? .82 : .95;
   sun.color.set(on ? 0x9db4ff : 0xfff0d6); hemi.intensity = on ? .22 : .5; scene.environment = on ? ENV.night : ENV.day;
   sky.material.color.set(on ? 0x1b2744 : 0xffffff); FOG_DRY.set(on ? 0x141c2c : 0xcfe0ea); FOG_WET.set(on ? 0x0e131c : 0x7f8c96);
   MAT.lamp.emissiveIntensity = on ? 3.5 : .6; MAT.glass.emissive.set(on ? 0xffc46b : 0x000000); MAT.glass.emissiveIntensity = on ? .7 : 0;
-  lampPools.visible = on; torch.intensity = on ? 11 : 0;
+  lampPools.visible = on; torch.visible = on;
 }
 const snowTex = makeTexture(128, (g, s) => { g.fillStyle = '#eef3f8'; g.fillRect(0, 0, s, s); speckle(g, s, 500, ['#dde6ef', '#ffffff', '#cfd9e4'], .6, 2); });
 const WHITE = new THREE.Color(0xffffff), SUMMER = { roofs: MAT.roofs.map(m => m.color.clone()), foliage: MAT.foliage.map(m => m.color.clone()), hedge: MAT.hedge.color.clone(), hill: MAT.hill.color.clone() };
@@ -2895,7 +3001,7 @@ function startEmergency(force) {
   [0, 250, 500, 750].forEach((t, i) => setTimeout(() => blip(i % 2 ? 660 : 880, i % 2 ? 660 : 880, .22, .14, 'square'), t));
 }
 function endEmergency(won) {
-  emer.on = false; emer.beam.visible = false; emer.next = T + rand(70, 120); emer.cool = 6; fireGlow.intensity = 0; $('alarm').classList.add('hide');
+  emer.on = false; emer.beam.visible = false; emer.next = T + rand(70, 120); emer.cool = 6; fireGlow.visible = false; $('alarm').classList.add('hide');
   for (const f of flames) f.visible = false;
   if (!won) { emer.puddle.visible = false; toast(emer.kind === 'fire' ? 'Too late! The fire burned itself out.' : 'Too late! Another crew fixed the emergency.', 3000); return; }
   const pay = 60 + Math.round(emer.t / 5) * 5 + (emer.siren ? 30 : 0);
@@ -2919,6 +3025,7 @@ function updateEvents(dt, using) {
     if (isFire) {       // flames, smoke and a flickering glow
       const big = 1 - emer.prog * .85;
       flames.forEach((f, i) => { f.scale.set(big, big * (1 + .35 * Math.sin(T * (9 + i) + i)), big); f.position.y = 1.2 + .65 * f.scale.y; f.rotation.z = Math.sin(T * 5 + i) * .15; });
+      fireGlow.visible = quality === 2;       // a real glowing light only on Fancy graphics
       fireGlow.position.set(emer.x, 2, emer.z); fireGlow.intensity = 26 * big * (.8 + .2 * Math.sin(T * 23));
       if (Math.random() < dt * 25) { const k = smoke.i = (smoke.i + 1) % smoke.n; smoke.pos.setXYZ(k, emer.x + rand(-.5, .5), 2.2, emer.z + rand(-.3, .3)); smoke.vel[k * 3] = rand(-.4, .4); smoke.vel[k * 3 + 1] = rand(1.5, 3); smoke.vel[k * 3 + 2] = rand(-.4, .4); smoke.life[k] = rand(1.5, 2.6); }
     } else {
@@ -2973,19 +3080,24 @@ const HELP = (coarse ? [
   ['Walk', 'Left stick'], ['Look and aim', 'Drag the screen'], ['Use your tool', 'Hold USE'], ['Pick a tool', 'Tap it'],
   ['Drive', 'Stand by the van, tap DRIVE'], ['Horn / siren', 'USE / SIREN while driving'], ['Empty the vac', 'Tap EMPTY'], ['Blow leaves', 'Tap BLOW'],
   ['Washer nozzle', 'Tap NOZZLE'], ['Find missed dirt', 'Tap FIND DIRT'], ['Lift a manhole', 'Stand by it, hold USE'], ['Dye test', 'Tap DYE TEST at a drain'],
-  ['Pipe cam', 'Stick steers, USE pushes and spins'], ['Shop and stickers', 'Tap SHOP'],
+  ['Pipe cam', 'Stick steers, USE pushes and spins'], ['Storm tunnel', 'Tap ENTER THE TUNNEL at its door'], ['Tall walls', 'Drag up to look up'], ['Shop and stickers', 'Tap SHOP'],
 ] : [
   ['Walk', 'W A S D'], ['Look and aim', 'Drag the mouse'], ['Use your tool', 'Hold SPACE or the mouse button'], ['Pick a tool', 'Keys 1 to 6'],
   ['Drive', 'F next to the van'], ['Horn / siren', 'SPACE / G while driving'], ['Empty the vac', 'E'], ['Blow leaves', 'V'],
   ['Washer nozzle', 'T'], ['Find missed dirt', 'Q'], ['Lift a manhole', 'Stand by it, hold SPACE'], ['Dye test', 'Y at a drain'],
-  ['Pipe cam', 'W A S D steers, SPACE pushes, R goes back, X marks a crack'], ['Storm tunnel', 'C'], ['Shop and stickers', 'B'],
+  ['Pipe cam', 'W A S D steers, SPACE pushes, R goes back, X marks a crack'], ['Storm tunnel', 'C'], ['Tall walls', 'Move the mouse up to look up'], ['Shop and stickers', 'B'],
 ]);
 $('helpRows').innerHTML = HELP.map(([a, b]) => `<div class="up"><span class="tx"><b>${a}</b></span><span>${b}</span></div>`).join('');
-function openHelp(on) { shopOpen = on; $('help').classList.toggle('hide', !on); $('wipe').textContent = 'Start again from level 1'; }
+function openHelp(on) {
+  shopOpen = on; $('help').classList.toggle('hide', !on); $('wipe').textContent = 'Start again from level 1';
+  $('helpStat').textContent = `Speed: ${lastFps || '?'} pictures a second  \u00B7  Graphics: ${Q_NAMES[quality]}  \u00B7  Version ${VERSION}`;
+}
 $('btnHelp').addEventListener('click', () => { openHelp(true); $('btnHelp').blur(); });
 $('helpClose').addEventListener('click', () => openHelp(false));
+$('fullBtn').addEventListener('click', () => { goFullscreen(); openHelp(false); });
 $('wipe').addEventListener('click', () => {       // two taps, so nobody wipes their game by accident
-  if ($('wipe').textContent.startsWith('Start')) { $('wipe').textContent = 'Tap again to erase EVERYTHING'; return; }
+  if ($('wipe').textContent.startsWith('Start')) { $('wipe').textContent = 'Tap again to erase EVERYTHING'; $('wipe').dataset.at = performance.now(); return; }
+  if (performance.now() - Number($('wipe').dataset.at || 0) < 900) return;       // a quick double tap does not count
   try { for (const k of Object.keys(localStorage)) if (k.startsWith('sds.')) localStorage.removeItem(k); } catch (e) {}
   location.reload();
 });
@@ -3148,13 +3260,16 @@ function saveCounts(dt) {
 
 const clock = new THREE.Clock();
 function frame() {
-  update(Math.min(clock.getDelta(), .05));
-  if (pipe.active) renderer.render(pipeScene, pipeCam); else renderer.render(sewer.active ? sewer.scene : scene, camera);
+  try { update(Math.min(clock.getDelta(), .05)); }
+  catch (e) { window.reportOops((e && e.message) || String(e)); }       // one bad moment should not freeze the whole game
+  try { if (pipe.active) renderer.render(pipeScene, pipeCam); else renderer.render(sewer.active ? sewer.scene : scene, camera); }
+  catch (e) { window.reportOops((e && e.message) || String(e)); }
+  watchSpeed();
   requestAnimationFrame(frame);
 }
 startLevel(level, true); setTool('rake'); applyQuality(); applyStyle(false); refreshHud();
-window.__booted = true;
-window.game = { P, cam, jobs, tank, aim, keys, van, truck, vehicles, washPatches, vanMud, muddyVan, counts, sewer, pipe, up, stats, coins, get ride() { return ride; }, get nozzle() { return nozzle; }, toggleNozzle, toggleBlow, toggleSiren, emer, rain, startEmergency, fix, openFix, closeFix, flowFix, boss, setWinter, get winter() { return WINTER; }, dog, TIME, setNight, openHelp, enterSewer, exitSewer, toggleSewer, style, applyStyle, stickers, checkStickers, setTool, setFancy, setQuality, step: update, startPipe, endPipe, toggleDrive, openShop, addCash, startLevel, nextLevel, pipeBack, clogLeft, senseAhead, petLeft, blockedTo, markCrack, doDye, get cash() { return cash; }, get level() { return level; }, get levelDone() { return levelDone; }, get activeJob() { return activeJob; }, get tool() { return tool; } };
+window.__booted = true; $('err').classList.add('hide');
+window.game = { renderer, scene, camera, P, cam, jobs, tank, aim, keys, van, truck, vehicles, washPatches, vanMud, muddyVan, counts, sewer, pipe, up, stats, coins, get ride() { return ride; }, get nozzle() { return nozzle; }, toggleNozzle, toggleBlow, toggleSiren, emer, rain, startEmergency, fix, openFix, closeFix, flowFix, boss, setWinter, get winter() { return WINTER; }, dog, TIME, setNight, openHelp, enterSewer, exitSewer, toggleSewer, style, applyStyle, stickers, checkStickers, setTool, setFancy, setQuality, step: update, startPipe, endPipe, toggleDrive, openShop, addCash, startLevel, nextLevel, pipeBack, clogLeft, senseAhead, petLeft, blockedTo, markCrack, doDye, get cash() { return cash; }, get level() { return level; }, get levelDone() { return levelDone; }, get activeJob() { return activeJob; }, get tool() { return tool; } };
 frame();
 </script>
 </body>
