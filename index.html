@@ -57,7 +57,11 @@
   body.touch #stick, body.touch #use { display: block; }
   body.touch .tool .k { display: none; }
 
-  #toast { position: fixed; left: 50%; bottom: 190px; transform: translateX(-50%); z-index: 7; background: #fff; color: #222; font-weight: 800;
+  #alarm { position: fixed; left: 50%; top: 12px; transform: translateX(-50%); z-index: 7; background: #d62828; color: #fff; font-weight: 900; font-size: 15px;
+    padding: 8px 16px; border-radius: 999px; border: 2px solid #fff; display: flex; gap: 10px; align-items: center; white-space: nowrap; animation: pulse .9s infinite; }
+  #alarmArrow { display: inline-block; font-size: 18px; }
+  body.piping #alarm { display: none !important; }
+  #toast { position: fixed; left: 50%; bottom: 232px; transform: translateX(-50%); z-index: 7; background: #fff; color: #222; font-weight: 800;
     padding: 10px 18px; border-radius: 999px; opacity: 0; transition: opacity .25s; pointer-events: none; max-width: 90vw; text-align: center; }
   #toast.show { opacity: 1; }
 
@@ -75,10 +79,79 @@
   #play { font: inherit; font-size: 26px; font-weight: 900; padding: 12px 54px; border-radius: 16px; border: 0; background: var(--acc); color: #222; }
   #err { position: fixed; inset: 0; z-index: 30; background: #14202b; display: flex; align-items: center; justify-content: center; text-align: center; padding: 30px; font-size: 18px; }
 
+  #jsub { font-size: 12px; opacity: .9; margin-bottom: 4px; }
+  #found { font-size: 14px; font-weight: 800; }
+  #map { right: 12px; top: 62px; padding: 5px; }
+  #mapc { display: block; width: 150px; height: 150px; border-radius: 10px; }
+  .big-btn { position: fixed; z-index: 6; left: 50%; transform: translateX(-50%); font: inherit; font-weight: 900; font-size: 17px;
+    padding: 11px 20px; border-radius: 14px; border: 3px solid #fff; background: var(--acc); color: #222; white-space: nowrap; }
+  #drive { bottom: 166px; }
+  #dirt { bottom: 104px; left: calc(50% - 96px); }
+  #nozzle { bottom: 104px; left: calc(50% + 96px); }
+  #siren { bottom: 166px; left: calc(50% + 150px); }
+  #bonus { font-size: 12px; color: #9fd0ff; margin-top: 4px; }
+  body.piping #nozzle, body.piping #siren, body.driving #nozzle { display: none !important; }
+
+  #pipeHud { position: fixed; inset: 0; z-index: 5; pointer-events: none; }
+  #pipeHud .vig { position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(0,0,0,0) 48%, rgba(0,0,0,.8) 100%); }
+  #pipeHud .rec { position: absolute; left: 16px; top: 14px; font: 800 16px ui-monospace, Consolas, monospace; letter-spacing: 1px; text-shadow: 0 1px 3px #000; }
+  #pipeHud .rec i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #ff3b3b; margin-right: 8px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: .15; } }
+  #pipeInfo { position: absolute; left: 16px; top: 40px; font: 700 14px ui-monospace, Consolas, monospace; text-shadow: 0 1px 3px #000; white-space: pre; }
+  #pipeBar { position: absolute; left: 50%; top: 16px; transform: translateX(-50%); width: min(420px, 44vw); height: 16px; border-radius: 8px;
+    background: rgba(255,255,255,.18); overflow: hidden; border: 1px solid var(--line); }
+  #pipeFill { height: 100%; width: 0; background: linear-gradient(90deg, #3ddc6a, #b6f56a); }
+  #pipeTip { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); background: rgba(0,0,0,.65); padding: 8px 16px;
+    border-radius: 999px; font-weight: 800; font-size: 15px; white-space: nowrap; }
+  #pipeOut { position: absolute; right: 14px; top: 12px; pointer-events: auto; }
+  #pipeBackBtn { position: absolute; right: 122px; top: 12px; pointer-events: auto; background: rgba(255,176,32,.9); color: #222; }
+  #pipeMap { position: absolute; right: 14px; top: 54px; border-radius: 10px; border: 1px solid var(--line); }
+  #pipeFade { position: absolute; inset: 0; background: #000; opacity: 0; }
+  #pipeMark { position: absolute; left: 50%; bottom: 74px; transform: translateX(-50%); pointer-events: auto; background: #ff7a1a; font-size: 17px; padding: 10px 18px; }
+  #planBox { right: 12px; top: 232px; padding: 5px; font-size: 11px; font-weight: 800; text-align: center; } #plan { display: block; border-radius: 8px; margin-top: 3px; }
+  #dyeBtn { bottom: 166px; left: calc(50% - 150px); background: #35ff6a; }
+  #tunnelBtn { bottom: 166px; background: #8fd0ff; }
+  body.sewer #tools, body.sewer #map, body.sewer #vac, body.sewer #drive, body.sewer #dyeBtn, body.sewer #planBox, body.sewer #alarm, body.piping #tunnelBtn { display: none !important; }
+  body.piping #planBox, body.piping #dyeBtn, body.driving #dyeBtn { display: none !important; }
+  body.piping #job, body.piping #top, body.piping #map, body.piping #tools, body.piping #vac, body.piping #drive, body.piping #dirt { display: none !important; }
+  body.driving #tools, body.driving #vac, body.driving #dirt { display: none !important; }
+
+  #lvl { font-weight: 900; color: var(--acc); font-size: 15px; padding: 0 4px; white-space: nowrap; }
+  #nextLvl { bottom: 224px; background: #3ddc6a; font-size: 20px; padding: 13px 26px; }
+  #heatBar { position: absolute; left: 50%; top: 40px; transform: translateX(-50%); width: min(260px, 30vw); height: 10px; border-radius: 5px;
+    background: rgba(255,255,255,.18); overflow: hidden; border: 1px solid var(--line); }
+  #heatFill { height: 100%; width: 0; background: linear-gradient(90deg, #ffd23a, #ff3b3b); }
+  body.piping #nextLvl { display: none !important; }
+
+  #help { position: fixed; inset: 0; z-index: 15; display: flex; align-items: center; justify-content: center; background: rgba(8,14,22,.6); }
+  #help .card { background: rgba(14,22,32,.97); border: 2px solid var(--line); border-radius: 20px; padding: 14px 18px; width: min(560px, 94vw); max-height: 94vh; overflow: auto; touch-action: pan-y; }
+  #help h2 { margin: 0 0 4px; color: var(--acc); font-size: 24px; display: flex; justify-content: space-between; align-items: center; }
+  #shopInfo2 { font-size: 14px; margin: 2px 0 8px; font-weight: 700; } #help .up span:last-child { font-size: 13px; text-align: right; }
+  #shop { position: fixed; inset: 0; z-index: 15; display: flex; align-items: center; justify-content: center; background: rgba(8,14,22,.6); }
+  #shop .card { background: rgba(14,22,32,.97); border: 2px solid var(--line); border-radius: 20px; padding: 14px 18px; width: min(560px, 94vw);
+    max-height: 94vh; overflow: auto; touch-action: pan-y; }
+  #shop h2 { margin: 0 0 4px; color: var(--acc); font-size: 24px; display: flex; justify-content: space-between; align-items: center; }
+  #shopInfo { font-size: 14px; margin: 2px 0 8px; font-weight: 700; }
+  .up { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); }
+  .up .ic { font-size: 26px; width: 34px; text-align: center; }
+  .up .tx { flex: 1; font-size: 13px; } .up .tx b { font-size: 15px; display: block; }
+  .pips { letter-spacing: 2px; color: var(--acc); }
+  .up button { min-width: 84px; font-size: 15px; padding: 8px 10px; } .up button[disabled] { opacity: .4; }
+  #shop h3 { margin: 12px 0 2px; font-size: 17px; color: var(--acc); }
+  #coName { font: inherit; font-size: 15px; font-weight: 700; width: 170px; padding: 7px 9px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255,255,255,.1); color: #fff; -webkit-user-select: text; user-select: text; }
+  .sw { display: inline-block; width: 34px; height: 34px; border-radius: 50%; border: 3px solid rgba(255,255,255,.35); margin: 3px 4px 3px 0; padding: 0; vertical-align: middle; }
+  .sw.on { border-color: #fff; box-shadow: 0 0 0 3px var(--acc); }
+  .swrow { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; padding: 3px 0; } .swrow span { width: 44px; }
+  #book { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+  .stk { font-size: 12px; font-weight: 700; padding: 6px 8px; border-radius: 10px; background: rgba(255,255,255,.08); border: 1px solid var(--line); opacity: .45; }
+  .stk.got { opacity: 1; background: rgba(255,176,32,.2); border-color: var(--acc); } .stk i { font-style: normal; font-size: 18px; margin-right: 6px; }
+  #trophies { font-size: 20px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+
   @media (max-width: 720px) {
     .tool { width: 56px; height: 60px; } .tool .ic { font-size: 21px; } .tool .nm { font-size: 9px; }
     #stick { width: 120px; height: 120px; bottom: 96px; left: 14px; } #use { width: 96px; height: 96px; bottom: 100px; right: 14px; font-size: 19px; }
-    #top .btn { padding: 5px 7px; font-size: 12px; } #toast { bottom: 230px; }
+    #top .btn { padding: 5px 7px; font-size: 12px; } #toast { bottom: 292px; }
+    #mapc { width: 104px; height: 104px; } #map { top: 56px; } #drive { bottom: 230px; }
   }
 </style>
 </head>
@@ -87,29 +160,65 @@
 
 <div id="job" class="pan">
   <div id="jt" class="jt"></div>
+  <div id="jsub" class="hide"></div>
   <div id="nav"><span id="arrow">&#9650;</span><span id="navText"></span></div>
   <div id="steps"></div>
   <div id="hint"></div>
+  <div id="bonus" class="hide"></div>
 </div>
 
 <div id="top" class="pan">
-  <span id="cash">$0</span><span id="found"></span>
+  <span id="lvl"></span><span id="cash">$0</span><span id="found"></span>
   <button id="btnSound" class="btn">&#128266;</button>
   <button id="btnGfx" class="btn">Fancy</button>
+  <button id="btnShop" class="btn">&#128722; Shop</button>
+  <button id="btnHelp" class="btn">&#10067;</button>
 </div>
 
-<div id="pipe" class="pan hide"><canvas id="pipecam" width="300" height="180"></canvas></div>
-<div id="vac" class="pan hide"><span>Vac tank</span><div id="gauge"><div id="fill"></div></div><button id="empty" class="btn">EMPTY</button></div>
+<div id="map" class="pan"><canvas id="mapc" width="150" height="150"></canvas></div>
+<div id="planBox" class="pan hide"><div>Plan of the pipes</div><canvas id="plan" width="150" height="110"></canvas></div>
+<button id="dyeBtn" class="big-btn hide">&#129514; Dye test</button>
+<button id="tunnelBtn" class="big-btn hide"></button>
+<button id="drive" class="big-btn hide"></button>
+<button id="dirt" class="big-btn hide">&#128161; Find dirt</button>
+<button id="nozzle" class="big-btn hide"></button>
+<button id="siren" class="big-btn hide">&#128680; Siren</button>
+<button id="nextLvl" class="big-btn hide"></button>
+<div id="pipeHud" class="hide">
+  <div class="vig"></div><div class="rec"><i></i>REC &nbsp; PIPE CAM</div><div id="pipeInfo"></div>
+  <div id="pipeBar"><div id="pipeFill"></div></div><div id="heatBar"><div id="heatFill"></div></div><div id="pipeTip"></div>
+  <canvas id="pipeMap" width="150" height="110"></canvas>
+  <button id="pipeMark" class="btn hide">&#128205; Mark the crack</button>
+  <button id="pipeBackBtn" class="btn">&#8617; Back</button><button id="pipeOut" class="btn">&#11013; Pull out</button>
+  <div id="pipeFade"></div>
+</div>
+<div id="help" class="hide"><div class="card">
+  <h2><span>&#10067; How to play</span><button id="helpClose" class="btn">Close</button></h2>
+  <div id="shopInfo2">Follow the arrow to an orange light beam. Do the jobs on the list, top to bottom. Finish every job to beat the level.</div>
+  <div id="helpRows"></div>
+  <button id="wipe" class="btn" style="margin-top:12px">Start again from level 1</button>
+</div></div>
+<div id="shop" class="hide"><div class="card">
+  <h2><span>&#128722; Upgrade shop</span><button id="shopClose" class="btn">Close</button></h2>
+  <div id="shopInfo"></div><div id="ups"></div>
+  <h3>Your style</h3>
+  <div class="up"><span class="ic">&#9999;&#65039;</span><span class="tx"><b>Company name</b>It goes on the side of your van</span><input id="coName" maxlength="18"></div>
+  <div id="swatches"></div>
+  <h3>Sticker book</h3><div id="book"></div>
+  <div id="trophies"></div>
+</div></div>
+<div id="vac" class="pan hide"><span>Vac tank</span><div id="gauge"><div id="fill"></div></div><button id="empty" class="btn">EMPTY</button><button id="blow" class="btn">BLOW</button></div>
 <div id="tools" class="pan"></div>
 <div id="stick"><div id="knob"></div></div>
 <button id="use">USE</button>
+<div id="alarm" class="hide"><span id="alarmArrow">&#9650;</span><span id="alarmText"></span></div>
 <div id="toast"></div>
-<div id="banner" class="hide"><div class="big" id="bannerBig"></div><div id="bannerSub"></div><button id="again" class="btn hide">Start a new storm</button></div>
+<div id="banner" class="hide"><div class="big" id="bannerBig"></div><div id="bannerSub"></div><button id="again" class="btn hide">Bring on the next storm now</button></div>
 
 <div id="start">
   <div class="card">
     <h1 id="title"></h1>
-    <p>A big storm blocked every drain in town. Grab your tools!</p>
+    <p>Storm after storm is blocking the drains in town. Grab your tools!</p>
     <div class="how" id="how"></div>
     <button id="play">PLAY</button>
   </div>
@@ -181,16 +290,19 @@ function makeSkyDome() {
     new THREE.MeshBasicMaterial({ map: t, side: THREE.BackSide, fog: false, depthWrite: false }));
 }
 const sky = makeSkyDome(); scene.add(sky);
+const ENV = {};       // the day sky and the night sky, for shiny things to reflect
 {
   // The sky is also used as a "mirror picture" so wet and shiny things can reflect it.
   const envScene = new THREE.Scene(); envScene.add(makeSkyDome());
   const sunBall = new THREE.Mesh(new THREE.SphereGeometry(22, 16, 12), new THREE.MeshBasicMaterial({ color: new THREE.Color(40, 34, 24), fog: false }));
   sunBall.position.copy(SUN_DIR).multiplyScalar(380); envScene.add(sunBall);
   const pm = new THREE.PMREMGenerator(renderer);
-  scene.environment = pm.fromScene(envScene, 0.01, 1, 1000).texture;
-  pm.dispose();
+  ENV.day = pm.fromScene(envScene, 0.01, 1, 1000).texture;
+  envScene.children[0].material.color.set(0x1b2744); sunBall.material.color.setRGB(1.2, 1.3, 1.8); sunBall.scale.setScalar(.5);      // a dark sky with a small moon
+  ENV.night = pm.fromScene(envScene, 0.01, 1, 1000).texture;
+  scene.environment = ENV.day; pm.dispose();
 }
-scene.add(new THREE.HemisphereLight(0xcfe4ff, 0x556b3a, 0.5));
+const hemi = new THREE.HemisphereLight(0xcfe4ff, 0x556b3a, 0.5); scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xfff0d6, 2.9);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
@@ -367,16 +479,38 @@ function insideBox(x, z, pad = 0) {
 const JOBS = [
   { id: 'maple', title: 'Storm drain on Maple Street', x: 14, z: -3.95, rot: 0, gw: 1.5, gd: 0.7,
     flood: { kind: 'half', r: 6.5, face: Math.PI / 2 }, leaves: 90, sticks: 8, mud: [8, 3], clog: false, puddleCount: 4,
-    dirt: { cx: 14, cz: -0.6, w: 14, d: 7.6, tint: '#5d4a33' }, cart: [11, -8.2], pay: 150, prize: 'duck' },
+    dirt: { cx: 14, cz: -0.6, w: 14, d: 7.6, tint: '#5d4a33' }, cart: [11, -8.2], pay: 150, par: 150 },
   { id: 'drive', title: 'Driveway drain at house 40', x: 44.5, z: -12.45, rot: 0, gw: 4.2, gd: 0.32,
     flood: { kind: 'rect', w: 4.6, d: 4.7 }, leaves: 55, sticks: 5, mud: [14, 1], clog: true, puddleCount: 3,
-    dirt: { cx: 44.5, cz: -9.75, w: 4.6, d: 6.5, tint: '#4c5633', spots: ['#2f3a22', '#5f6a3c', '#3b3a26', '#6d6a48'] }, cart: [40.5, -9.4], pay: 250, prize: 'boot' },
+    dirt: { cx: 44.5, cz: -9.75, w: 4.6, d: 6.5, tint: '#4c5633', spots: ['#2f3a22', '#5f6a3c', '#3b3a26', '#6d6a48'] }, cart: [40.5, -9.4], pay: 250, par: 170, clogBase: 2, chalk: true, washLabel: 'Pressure wash the driveway and garage door',
+    walls: [{ x: 44.5, y: 1.25, z: -12.9, w: 4, h: 2.5, ry: 0, tint: '#5a5240' }] },
   { id: 'oak', title: 'Big flood on Oak Avenue', x: -3.95, z: 24, rot: Math.PI / 2, gw: 2.2, gd: 0.8,
     flood: { kind: 'half', r: 7.6, face: 0 }, leaves: 130, sticks: 12, mud: [10, 3], clog: true, puddleCount: 5, zone: 13,
-    dirt: { cx: -0.4, cz: 24, w: 8, d: 15, tint: '#5d4a33' }, cart: [-8.2, 21], pay: 400, prize: 'coin' },
+    dirt: { cx: -0.4, cz: 24, w: 8, d: 15, tint: '#5d4a33' }, cart: [-8.2, 21], pay: 400, par: 270, clogBase: 3 },
   { id: 'court', title: 'Muddy play court at the park', x: -22, z: 16, rot: 0, gw: 0, gd: 0,
     flood: null, leaves: 36, sticks: 0, mud: null, clog: false, puddleCount: 5, clumps: 16, zone: 12,
-    dirt: { cx: -22, cz: 16, w: 12, d: 9, tint: '#5a4630' }, cart: [-29.4, 14], pay: 200, prize: null },
+    dirt: { cx: -22, cz: 16, w: 12, d: 9, tint: '#5a4630' }, cart: [-29.4, 14], pay: 200, par: 120 },
+  { id: 'elm', title: 'Storm drain on Maple Street West', x: -34, z: 3.95, rot: 0, gw: 1.5, gd: 0.7,
+    flood: { kind: 'half', r: 6.5, face: -Math.PI / 2 }, leaves: 100, sticks: 9, mud: [8, 3], clog: false, puddleCount: 4,
+    dirt: { cx: -34, cz: 0.6, w: 14, d: 7.6, tint: '#5d4a33' }, cart: [-31, 8.3], pay: 170, par: 150 },
+  { id: 'drive2', title: 'Driveway drain at house 18', x: -35.5, z: -12.45, rot: 0, gw: 4.2, gd: 0.32,
+    flood: { kind: 'rect', w: 4.6, d: 4.7 }, leaves: 60, sticks: 6, mud: [14, 1], clog: true, puddleCount: 3,
+    dirt: { cx: -35.5, cz: -9.75, w: 4.6, d: 6.5, tint: '#4c5633', spots: ['#2f3a22', '#5f6a3c', '#3b3a26', '#6d6a48'] }, cart: [-39.5, -9.4], pay: 270, par: 170, clogBase: 2, chalk: true, washLabel: 'Pressure wash the driveway and garage door',
+    walls: [{ x: -35.5, y: 1.25, z: -12.9, w: 4, h: 2.5, ry: 0, tint: '#5a5240' }] },
+  { id: 'pine', title: 'Flooded corner on Oak Avenue North', x: 3.95, z: -30, rot: Math.PI / 2, gw: 2.2, gd: 0.8,
+    flood: { kind: 'half', r: 7.6, face: Math.PI }, leaves: 130, sticks: 12, mud: [10, 3], clog: true, puddleCount: 5, zone: 13,
+    dirt: { cx: 0.4, cz: -30, w: 8, d: 15, tint: '#5d4a33' }, cart: [8.2, -27], pay: 420, par: 270, clogBase: 3 },
+  { id: 'fence', title: 'Muddy fence at the park', x: -22, z: 22.6, rot: 0, gw: 0, gd: 0, flood: null, leaves: 0, sticks: 0, mud: null, clog: false, puddleCount: 0, zone: 8,
+    dirt: { cx: -22, cz: 22.5, w: 12, d: 2.6, tint: '#5a4630' }, walls: [{ x: -22, y: .8, z: 23.94, w: 12, h: 1.5, ry: Math.PI, tint: '#55472f' }],
+    washLabel: 'Pressure wash the fence and the path', cart: [-30.6, 22.6], pay: 180, par: 110 },
+  { id: 'mural', title: 'Dirty painted wall at the park', x: -22, z: 11.3, rot: 0, gw: 0, gd: 0, flood: null, leaves: 0, sticks: 0, mud: null, clog: false, puddleCount: 0, zone: 7,
+    dirt: { cx: -22, cz: 10.85, w: 8, d: 1.3, tint: '#5a4630' }, walls: [{ x: -22, y: 1.5, z: 10.18, w: 8, h: 3, ry: 0, tint: '#4f4a3c' }],
+    washLabel: 'Pressure wash the wall to find the picture', cart: [-28, 9.2], pay: 220, par: 110 },
+  { id: 'lot', title: 'Flooded car park', x: 24, z: -42, rot: 0, gw: 1.0, gd: 1.0,
+    flood: { kind: 'full', r: 6.5 }, leaves: 110, sticks: 8, mud: [5, 5], clog: true, puddleCount: 5, zone: 13,
+    dirt: { cx: 24, cz: -42, w: 18, d: 12, tint: '#5d4a33' }, cart: [36.4, -40], pay: 450, par: 280, clogBase: 3 },
+  { id: 'tunnel', title: 'The big storm tunnel', x: 0, z: -58.5, rot: 0, gw: 0, gd: 0, flood: null, leaves: 0, sticks: 0, mud: null, clog: false, puddleCount: 0, zone: 8,
+    tunnel: true, dirt: null, cart: [3.7, -59.6], pay: 500, par: 300 },
 ];
 
 // ---- Ground, roads, sidewalks ----
@@ -399,7 +533,7 @@ for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
 }
 
 // ---- Houses ----
-const noTree = [];   // places where trees must not grow (driveways, paths, the park)
+const noTree = [], doors = [];   // places where trees must not grow (driveways, paths, the park)
 function house(cx, cz, f, i) {
   const X = lx => cx + f * lx, Z = lz => cz + f * lz;
   const wall = MAT.walls[i % MAT.walls.length], roof = MAT.roofs[i % MAT.roofs.length];
@@ -409,7 +543,7 @@ function house(cx, cz, f, i) {
   place(pyramid(1.3), roof, X(4.5), 3.65, Z(.5), 0, 2.9 / .7071, 1, 3.9 / .7071);
   sBox(4, 2.5, .12, MAT.garage, X(4.5), 1.25, Z(4.02));
   sBox(1.1, 2.2, .12, MAT.doors[i % MAT.doors.length], X(-3.6), 1.1, Z(4.02));
-  sBox(1.7, .2, 1, MAT.walk, X(-3.6), .1, Z(4.5));
+  sBox(1.7, .2, 1, MAT.walk, X(-3.6), .1, Z(4.5)); doors.push([X(-3.6), Z(5.9)]);
   sBox(2.1, 1.6, .08, MAT.trim, X(-.8), 2.2, Z(4.0)); sBox(1.8, 1.3, .12, MAT.glass, X(-.8), 2.2, Z(4.02));
   sBox(.12, 1.3, 1.7, MAT.glass, X(-6.02), 2.2, Z(1.5)); sBox(.12, 1.3, 1.7, MAT.glass, X(-6.02), 2.2, Z(-1.8));
   sBox(1.8, 1.3, .12, MAT.glass, X(-2), 2.2, Z(-4.02));
@@ -445,33 +579,68 @@ const courtTex = (() => {
   place(new THREE.TorusGeometry(.26, .025, 6, 16), MAT.orange, -22, 2.75, 20.36, 0, 1, 1, 1, Math.PI / 2);
   sBox(1.9, .08, .5, MAT.wood, -14.9, .5, 16); sBox(.1, .5, .5, MAT.dark, -15.7, .25, 16); sBox(.1, .5, .5, MAT.dark, -14.1, .25, 16);
   posts.push({ x: -22, z: 21, r: .25 }, { x: -14.9, z: 16, r: .8 });
-  noTree.push(aabb(-30, -13, 9, 23, 0));
+  noTree.push(aabb(-31, -13, 8, 26.5, 0));
+  // a wooden fence and a painted wall. Both get muddy and need a wash.
+  sBox(12, 1.5, .08, MAT.wood, -22, .8, 24);
+  for (let x = -28; x <= -16; x += 2) sBox(.14, 1.7, .14, MAT.wood, x, .85, 24.07);
+  sBox(8, 3, .3, MAT.walk, -22, 1.5, 10);
+  boxes.push(aabb(-28, -16, 23.9, 24.15, 1.7), aabb(-26, -18, 9.85, 10.15, 3));
+  const mc = document.createElement('canvas'); mc.width = 512; mc.height = 192; const mg = mc.getContext('2d');
+  const sg = mg.createLinearGradient(0, 0, 0, 192); sg.addColorStop(0, '#6ec3ff'); sg.addColorStop(1, '#d8f1ff'); mg.fillStyle = sg; mg.fillRect(0, 0, 512, 192);
+  mg.lineWidth = 12; ['#ff4d4d', '#ffa23a', '#ffe14a', '#5fd45f', '#4aa3ff', '#9a6bff'].forEach((c, i) => { mg.strokeStyle = c; mg.beginPath(); mg.arc(256, 200, 190 - i * 12, Math.PI, TAU); mg.stroke(); });
+  mg.fillStyle = '#ffe14a'; mg.beginPath(); mg.arc(70, 50, 28, 0, TAU); mg.fill();
+  mg.fillStyle = '#58b34a'; mg.beginPath(); mg.ellipse(120, 200, 170, 60, 0, 0, TAU); mg.ellipse(400, 205, 190, 66, 0, 0, TAU); mg.fill();
+  mg.fillStyle = '#ffffff'; mg.strokeStyle = '#1d3b5c'; mg.lineWidth = 6; mg.font = '900 52px system-ui, sans-serif'; mg.textAlign = 'center';
+  mg.strokeText('OUR CLEAN TOWN', 256, 150); mg.fillText('OUR CLEAN TOWN', 256, 150);
+  const muralTex = new THREE.CanvasTexture(mc); muralTex.colorSpace = THREE.SRGBColorSpace; muralTex.anisotropy = 8;
+  const mural = new THREE.Mesh(new THREE.PlaneGeometry(8, 3), std({ map: muralTex, roughness: .8 })); mural.position.set(-22, 1.5, 10.16); scene.add(mural);
 }
 
-// ---- Your work van ----
-const VAN = { x: -9, z: 3.25 };
+// ---- the car park ----
+sPlane(22, 14, MAT.road, 24, -42, .014, 4); sPlane(8.5, 4, MAT.road, 8.75, -42, .014, 4);
+for (let x = 14.5; x <= 33.5; x += 2.7) { sPlane(.12, 4.4, MAT.paint, x, -46.6, .02); sPlane(.12, 4.4, MAT.paint, x, -37.4, .02); }
+for (const [x, z, col] of [[17.2, -46.7, MAT.red], [30.7, -37.3, MAT.blue], [33.4, -46.7, MAT.yellow]]) {
+  sBox(1.9, .7, 4, col, x, .65, z); sBox(1.7, .6, 2, MAT.glass, x, 1.25, z - .2);
+  for (const wx of [-.9, .9]) for (const wz of [-1.3, 1.3]) sCyl(.34, .34, .25, MAT.tire, x + wx, .34, z + wz, 12, 0, Math.PI / 2);
+  boxes.push(aabb(x - 1, x + 1, z - 2.05, z + 2.05, 1.6));
+}
+noTree.push(aabb(11, 37.5, -50.5, -33.5, 0));
+for (const [x, z] of [[-10, 10], [12, 11], [-12, -10], [47, 9.5]]) noTree.push(aabb(x - 3, x + 3, z - 3, z + 3, 0));       // keep trees off the fire spots
+// ---- Your work van. You can drive it! ----
+const vanMat = std({ color: 0xf5f5f2, roughness: .35 });
+const vanSign = { can: document.createElement('canvas') }; vanSign.can.width = 512; vanSign.can.height = 176;
+vanSign.tex = new THREE.CanvasTexture(vanSign.can); vanSign.tex.colorSpace = THREE.SRGBColorSpace; vanSign.tex.anisotropy = 8;
+function drawVanSign(name) {
+  const x2 = vanSign.can.getContext('2d');
+  x2.fillStyle = '#ffffff'; x2.fillRect(0, 0, 512, 176); x2.fillStyle = '#ff7a1a'; x2.fillRect(0, 128, 512, 48);
+  x2.fillStyle = '#1d3b5c'; x2.font = '900 54px system-ui, sans-serif'; x2.textAlign = 'center'; x2.textBaseline = 'middle'; x2.fillText(name.toUpperCase(), 256, 62, 480);
+  x2.fillStyle = '#fff'; x2.font = '800 24px system-ui, sans-serif'; x2.fillText('DRAINS  •  JETTING  •  PRESSURE WASHING', 256, 153, 490);
+  vanSign.tex.needsUpdate = true;
+}
+const van = { x: -9, z: 3.25, yaw: Math.PI / 2, speed: 0, driving: false, g: new THREE.Group() };
 const beacon = new THREE.Mesh(new THREE.BoxGeometry(.5, .16, .22), new THREE.MeshStandardMaterial({ color: 0xffa41c, emissive: 0xff8a00, emissiveIntensity: 1 }));
 {
-  const { x, z } = VAN;
-  sBox(3.6, 2.0, 2.0, MAT.white, x - .6, 1.45, z);
-  sBox(1.5, 1.5, 1.9, MAT.white, x + 1.9, 1.2, z);
-  sBox(.9, .8, 1.9, MAT.white, x + 3.0, .85, z);
-  sBox(.08, .7, 1.7, MAT.glass, x + 2.66, 1.6, z);
-  sBox(1.0, .6, 1.94, MAT.glass, x + 2.0, 1.6, z);
-  sBox(3.62, .3, 2.02, MAT.orange, x - .6, .95, z);
-  sBox(.2, .25, 2.0, MAT.dark, x + 3.5, .55, z); sBox(.2, .25, 2.0, MAT.dark, x - 2.45, .55, z);
-  for (const wx of [x + 2.6, x - 1.5]) for (const wz of [z - .95, z + .95]) sCyl(.42, .42, .3, MAT.tire, wx, .42, wz, 14, Math.PI / 2);
-  sBox(3.3, .06, .08, MAT.metal, x - .6, 2.56, z - .7); sBox(3.3, .06, .08, MAT.metal, x - .6, 2.56, z + .7);
-  sBox(.06, .06, 1.5, MAT.metal, x - 1.8, 2.56, z); sBox(.06, .06, 1.5, MAT.metal, x + .6, 2.56, z);
-  beacon.position.set(x + 1.9, 2.03, z); scene.add(beacon);
-  const c = document.createElement('canvas'); c.width = 512; c.height = 176; const g = c.getContext('2d');
-  g.fillStyle = '#ffffff'; g.fillRect(0, 0, 512, 176); g.fillStyle = '#ff7a1a'; g.fillRect(0, 128, 512, 48);
-  g.fillStyle = '#1d3b5c'; g.font = '900 54px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(GAME_NAME.toUpperCase(), 256, 62, 480);
-  g.fillStyle = '#fff'; g.font = '800 24px system-ui, sans-serif'; g.fillText('DRAINS  •  JETTING  •  PRESSURE WASHING', 256, 153, 490);
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  const g = van.g; scene.add(g);
+  const add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; g.add(m); return m; };
+  const B = (w, h, d) => new THREE.BoxGeometry(w, h, d);
+  add(B(2.0, 2.0, 3.6), vanMat, 0, 1.45, -.6);              // the back, full of tools
+  add(B(1.9, 1.5, 1.5), vanMat, 0, 1.2, 1.9);               // the cab
+  add(B(1.9, .8, .9), vanMat, 0, .85, 3.0);                 // the hood
+  add(B(1.7, .7, .08), MAT.glass, 0, 1.6, 2.66);
+  add(B(1.94, .6, 1.0), MAT.glass, 0, 1.6, 2.0);
+  add(B(2.02, .3, 3.62), MAT.orange, 0, .95, -.6);
+  add(B(2.0, .25, .2), MAT.dark, 0, .55, 3.5); add(B(2.0, .25, .2), MAT.dark, 0, .55, -2.45);
+  add(B(.3, .16, .06), MAT.lamp, -.65, .95, 3.46); add(B(.3, .16, .06), MAT.lamp, .65, .95, 3.46);
+  add(B(.3, .16, .06), MAT.red, -.7, 1.0, -2.42); add(B(.3, .16, .06), MAT.red, .7, 1.0, -2.42);
+  const wheelGeo = new THREE.CylinderGeometry(.42, .42, .3, 14); wheelGeo.rotateZ(Math.PI / 2);
+  for (const wz of [2.6, -1.5]) for (const wx of [-.95, .95]) add(wheelGeo, MAT.tire, wx, .42, wz);
+  add(B(.08, .06, 3.3), MAT.metal, -.7, 2.56, -.6); add(B(.08, .06, 3.3), MAT.metal, .7, 2.56, -.6);
+  add(B(1.5, .06, .06), MAT.metal, 0, 2.56, -1.8); add(B(1.5, .06, .06), MAT.metal, 0, 2.56, .6);
+  beacon.position.set(0, 2.03, 1.9); g.add(beacon);
+  drawVanSign(GAME_NAME); const t = vanSign.tex;
   const signMat = new THREE.MeshStandardMaterial({ map: t, roughness: .4 });
-  for (const s of [1, -1]) { const m = new THREE.Mesh(new THREE.PlaneGeometry(3.3, 1.14), signMat); m.position.set(x - .6, 1.75, z + s * 1.012); m.rotation.y = s > 0 ? 0 : Math.PI; scene.add(m); }
-  boxes.push(aabb(x - 2.6, x + 3.65, z - 1.05, z + 1.05, 2.7));
+  for (const s of [1, -1]) { const m = new THREE.Mesh(new THREE.PlaneGeometry(3.3, 1.14), signMat); m.position.set(s * 1.012, 1.75, -.6); m.rotation.y = s * Math.PI / 2; g.add(m); }
+  g.position.set(van.x, 0, van.z); g.rotation.y = van.yaw;
 }
 
 // ---- A tool cart waits at every job. Hoses plug into it. ----
@@ -487,12 +656,25 @@ function buildCart(x, z) {
 }
 
 // ---- Lamps, a fire hydrant, trees, clouds and far-away hills ----
-for (const [x, s] of [[-60, -1], [-36, -1], [12, -1], [36, -1], [60, -1], [-48, 1], [24, 1], [48, 1]]) {
+const LAMPS = [[-60, -1], [-36, -1], [12, -1], [36, -1], [60, -1], [-48, 1], [24, 1], [48, 1]];
+for (const [x, s] of LAMPS) {
   const z = s * 5.9;
   sCyl(.07, .09, 5, MAT.metal, x, 2.5, z, 8); sBox(.08, .08, 1.5, MAT.metal, x, 4.95, z - s * .7); sBox(.3, .12, .5, MAT.lamp, x, 4.88, z - s * 1.3);
   posts.push({ x, z, r: .22 });
 }
-for (const [x, z] of [[19, -5.4], [-5.4, 33]]) {
+// pools of light under the street lamps, for night shifts
+const poolGeo = new THREE.CircleGeometry(6, 24); poolGeo.rotateX(-Math.PI / 2);
+const lampPools = new THREE.InstancedMesh(poolGeo, new THREE.MeshBasicMaterial({ map: dotTex, color: 0xffd9a0, transparent: true, opacity: .5, blending: THREE.AdditiveBlending, depthWrite: false }), LAMPS.length);
+LAMPS.forEach(([x, s], i) => { _m4.makeTranslation(x, .15, s * 4.6); lampPools.setMatrixAt(i, _m4); });
+lampPools.visible = false; scene.add(lampPools);
+// ---- the door to the big storm tunnel, at the north end of Oak Avenue ----
+sBox(9, 4, 1.2, MAT.walk, 0, 2, -63.4); boxes.push(aabb(-4.5, 4.5, -64, -62.8, 4));
+{
+  const hole = new THREE.Mesh(new THREE.CircleGeometry(1.6, 28), MAT.hole); hole.position.set(0, 1.75, -62.78); scene.add(hole);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(1.6, .14, 10, 28), MAT.iron); rim.position.set(0, 1.75, -62.76); scene.add(rim);
+}
+const HYDRANTS = [[19, -5.4], [-5.4, 33], [-30, 5.4], [50, 5.4], [5.4, -46], [-52, -5.4]];
+for (const [x, z] of HYDRANTS) {
   sCyl(.16, .19, .6, MAT.red, x, .42, z, 10); sCyl(.12, .16, .16, MAT.red, x, .8, z, 10); sCyl(.07, .07, .5, MAT.red, x, .52, z, 8, Math.PI / 2);
   posts.push({ x, z, r: .32 });
 }
@@ -526,14 +708,14 @@ for (const [x, z] of [[19, -5.4], [-5.4, 33]]) {
 // =====================================================================
 //  Sparkles: water mist and confetti
 // =====================================================================
-function makePoints(n, size, color, vertexColors) {
+function makePoints(n, size, color, vertexColors, parent) {
   const geo = new THREE.BufferGeometry();
   const pos = new THREE.BufferAttribute(new Float32Array(n * 3), 3); pos.setUsage(THREE.DynamicDrawUsage);
   for (let i = 0; i < n; i++) pos.setY(i, -100);
   geo.setAttribute('position', pos);
   if (vertexColors) geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
   const pts = new THREE.Points(geo, new THREE.PointsMaterial({ size, color, map: dotTex, transparent: true, depthWrite: false, opacity: .85, vertexColors: !!vertexColors }));
-  pts.frustumCulled = false; scene.add(pts);
+  pts.frustumCulled = false; (parent || scene).add(pts);
   return { pts, pos, vel: new Float32Array(n * 3), life: new Float32Array(n), n, i: 0 };
 }
 const mist = makePoints(260, .17, 0xe8f6ff, false);
@@ -557,14 +739,14 @@ function spawnConfetti(x, z) {
   }
   col.needsUpdate = true;
 }
-function updatePoints(sys, dt, gravity) {
+function updatePoints(sys, dt, gravity, floor = .05) {
   const p = sys.pos;
   for (let i = 0; i < sys.n; i++) {
     if (sys.life[i] <= 0) continue;
     sys.life[i] -= dt;
     if (sys.life[i] <= 0) { p.setY(i, -100); continue; }
     sys.vel[i * 3 + 1] -= gravity * dt;
-    p.setXYZ(i, p.getX(i) + sys.vel[i * 3] * dt, Math.max(.05, p.getY(i) + sys.vel[i * 3 + 1] * dt), p.getZ(i) + sys.vel[i * 3 + 2] * dt);
+    p.setXYZ(i, p.getX(i) + sys.vel[i * 3] * dt, Math.max(floor, p.getY(i) + sys.vel[i * 3 + 1] * dt), p.getZ(i) + sys.vel[i * 3 + 2] * dt);
   }
   p.needsUpdate = true;
 }
@@ -596,6 +778,13 @@ function initAudio() {
   const va = filt('bandpass', 950, .8), vag = ac.createGain(); vag.gain.value = .5; noise.connect(va); va.connect(vag); vag.connect(vg);
   // drain snake grinding
   const rf = filt('lowpass', 700); osc('sawtooth', 46).connect(rf); osc('sawtooth', 69.5).connect(rf); rf.connect(loop('grind'));
+  // van engine
+  const nf = filt('lowpass', 260); sfx.vanOsc = osc('sawtooth', 55); sfx.vanOsc.connect(nf); nf.connect(loop('van'));
+  // siren
+  const sf = filt('lowpass', 1800), so = osc('sawtooth', 800), sl = osc('sine', .9), slg = ac.createGain(); slg.gain.value = 260;
+  sl.connect(slg); slg.connect(so.frequency); so.connect(sf); sf.connect(loop('siren'));
+  // rain
+  const rnf = filt('highpass', 1200), rnl = filt('lowpass', 7000); noise.connect(rnf); rnf.connect(rnl); rnl.connect(loop('rain'));
 }
 function setLoop(name, vol) { const g = sfx.loops[name]; if (g) g.gain.setTargetAtTime(vol, sfx.ctx.currentTime, .06); }
 function blip(f0, f1, dur, vol = .12, type = 'sine') {
@@ -614,9 +803,29 @@ function jingle() { [523, 659, 784, 1047, 1319].forEach((f, i) => setTimeout(() 
 const P = { x: -3, y: 0, z: 0.6, yaw: Math.PI / 2, phase: 0, moveAmt: 0 };   // the player
 const cam = { yaw: Math.PI / 2, pitch: 0.42, dist: 5.6, d: 5.6 };
 const aim = new THREE.Vector3(), prevAim = new THREE.Vector3();
-const tank = { fill: 0, cap: 100 };       // the shop vac tank
+const tank = { fill: 0, get cap() { return U.tankCap(); } };       // the shop vac tank
 let activeJob = null, started = false, T = 0;
 let cash = store.get('cash', 0), found = store.get('found', []);
+let shopOpen = false, dirtFlash = 0;
+const sewer = { active: false };                              // the walk-in storm tunnel
+const counts = Object.assign({}, store.get('counts', {}));    // things you have done, for the sticker book
+let countsDirty = 0;
+function count(name, n = 1) { counts[name] = (counts[name] || 0) + n; countsDirty = 1; }
+const up = Object.assign({ rake: 0, jet: 0, snake: 0, vac: 0, washer: 0, boots: 0 }, store.get('up', {}));      // your upgrade levels
+const stats = Object.assign({ jobs: 0, stars: 0, day: '' }, store.get('stats', {}));
+const UP_COST = [150, 400, 900, 1800, 3200];
+const U = {      // what the upgrades change
+  rakeR: () => .85 + .16 * up.rake,
+  jetR: () => .62 + .07 * up.jet, jetPower: () => 1.8 * (1 + .35 * up.jet),
+  cutter: () => 1 + .4 * up.snake,
+  vacR: () => 1.15 + .2 * up.vac, tankCap: () => 100 + 50 * up.vac,
+  washR: () => .68 + .13 * up.washer,
+  walk: () => 5.4 + .6 * up.boots,
+};
+const RANKS = [[0, 'Rookie'], [3, 'Helper'], [6, 'Drain Tech'], [10, 'Pipe Pro'], [15, 'Flood Fighter'], [25, 'Drain Hero'], [40, 'Storm Legend']];
+const rankName = () => { let r = RANKS[0][1]; for (const [n, name] of RANKS) if (stats.jobs >= n) r = name; return r; };
+function addCash(n) { cash += n; store.set('cash', cash); }
+function buzz(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} }
 const CLOG_DEPTH = 6;                      // metres of pipe before the clog
 
 function toast(msg, ms = 2400) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.timer); toast.timer = setTimeout(() => t.classList.remove('show'), ms); }
@@ -639,6 +848,9 @@ const mudGeo = new THREE.BoxGeometry(1, 1, 1);
 const mudMat = new THREE.MeshStandardMaterial({ color: 0x5a3d21, roughness: .3 });
 const puddleGeo = new THREE.CircleGeometry(1, 22); puddleGeo.rotateX(-Math.PI / 2);
 const waterSimpleMat = new THREE.MeshStandardMaterial({ color: 0x5f4f37, roughness: .06, metalness: .35 });
+const trashGeo = new THREE.CylinderGeometry(.09, .09, .32, 8); trashGeo.rotateZ(Math.PI / 2);
+const trashMat = new THREE.MeshStandardMaterial({ roughness: .3, metalness: .2 });
+const TRASH_COLORS = [0x3f8f4f, 0x8a5a2b, 0xd33a2c, 0x2f6fb0, 0xc9ced6].map(c => new THREE.Color(c));       // bottles and cans
 const measureCtx = (() => { const c = document.createElement('canvas'); c.width = c.height = 32; return c.getContext('2d', { willReadFrequently: true }); })();
 
 // The fancy flood water is a real mirror with ripples.
@@ -669,23 +881,207 @@ const WATER_SHADER = {
     }`,
 };
 
+// The gunk gets nastier the deeper you go, and on higher levels.
+const GUNK = {
+  mud:    { hp: 1.0, heat: .10, tip: 'Mud. Easy! Grind it up.' },
+  grease: { hp: 1.2, heat: .10, tip: 'Grease is slippery. Chase it!' },
+  roots:  { hp: 1.8, heat: .14, tip: 'Roots grow back. Do not stop cutting!' },
+  slime:  { hp: 1.4, heat: .12, tip: 'Slime keeps moving. Follow it!' },
+  rock:   { hp: 3.0, heat: .42, tip: 'Rock is hard. Let go to cool down when HEAT is high.' },
+  boss:   { hp: 5.5, heat: .28, tip: 'MEGA CLOG! Keep grinding, and watch the heat.' },
+};
+function makeCluster(tier, depth, boss) {       // one lump of gunk. tier = how nasty it is
+  const kinds = ['mud', 'mud'], out = [];
+  if (tier >= 1) kinds.push('grease');
+  if (tier >= 3) kinds.push('roots', 'roots');
+  if (tier >= 4) kinds.push('slime', 'slime');
+  if (tier >= 5) kinds.push('rock', 'rock');
+  const n = 3 + Math.min(3, Math.floor(tier / 2)), tough = 1 + .1 * tier;
+  for (let i = 0; i < n; i++) {
+    const kind = boss && i === 0 ? 'boss' : pick(kinds), a = rand(TAU), rr = i === 0 ? rand(0, .12) : rand(.22, .6), hp = GUNK[kind].hp * tough;
+    out.push({ kind, a, rr, x: Math.cos(a) * rr, y: Math.sin(a) * rr * .8 + .05, z: depth + rand(-.25, .25), r: kind === 'boss' ? .46 : rand(.2, .32),
+      hp, max: hp, gone: false, mesh: null, spin: rand(.5, 1.1) * (Math.random() < .5 ? -1 : 1) });
+  }
+  return out;
+}
+// The pipes under the ground. On higher levels they split at junctions,
+// and you have to work out which way the clogs are.
+function makeNetwork(lvl, base) {
+  const junctions = lvl < 4 ? 0 : lvl < 6 ? 1 : lvl < 9 ? 2 : 3;       // how many times the pipe splits on the way down
+  const nodes = [];
+  const add = parent => { const n = { id: nodes.length, parent, d: parent ? parent.d + 1 : 0, len: rand(7, 9), pieces: [], kids: [], end: 'dead', seen: !parent, entered: !parent, looted: false, mx: 0 }; nodes.push(n); return n; };
+  const grow = n => {
+    if (n.d >= junctions) return;
+    n.end = 'junction';
+    const k = lvl >= 7 && Math.random() < .5 ? 3 : 2, deep = Math.floor(rand(k));
+    for (let i = 0; i < k; i++) { const c = add(n); n.kids.push(c); if (i === deep || Math.random() < .25) grow(c); }
+  };
+  const root = add(null); grow(root);
+  // the clogs hide at the ends of the deepest pipes
+  const leaves = nodes.filter(n => !n.kids.length).map(n => [n, n.d + Math.random() * .5]).sort((a, b) => b[1] - a[1]).map(e => e[0]);
+  const clogs = Math.max(1, junctions), clusters = Math.max(clogs, Math.min(5, base + Math.floor((lvl - 1) / 2)));
+  const tier0 = Math.floor(Math.max(0, lvl - 3) * .7);
+  let count = 0;
+  leaves.forEach((n, i) => {
+    if (i >= clogs) { n.end = Math.random() < .4 ? 'coins' : 'dead'; return; }
+    const per = Math.floor(clusters / clogs) + (i < clusters % clogs ? 1 : 0);       // the deepest clog is the biggest
+    n.end = 'out'; n.len = 6 + per * 5.5 + 2;
+    for (let c = 0; c < per; c++, count++) { const tier = tier0 + n.d + c; n.pieces.push(...makeCluster(tier, 6 + c * 5.5, i === 0 && c === per - 1 && tier >= 6)); }
+  });
+  // sometimes a little animal is stuck down a dead end, and some pipes are cracked
+  const spare = nodes.filter(n => !n.kids.length && !n.pieces.length);
+  if (lvl >= 5 && spare.length && Math.random() < .7) { const n = pick(spare); n.end = 'pet'; n.pet = pick(['duck', 'frog', 'kitten']); n.rescued = false; }
+  if (lvl >= 5) for (let i = 0; i < 2; i++) { const n = pick(nodes); if (!n.crack && n.len > 6) n.crack = { z: rand(2.5, n.len - 3), a: rand(.15, .85) * Math.PI, marked: false }; }
+  // where each pipe goes on the little pipe map
+  let slot = 0;
+  const lay = n => { if (!n.kids.length) n.mx = slot++; else { n.kids.forEach(lay); n.mx = n.kids.reduce((s, k) => s + k.mx, 0) / n.kids.length; } };
+  lay(root);
+  const pieces = nodes.flatMap(n => n.pieces);
+  return { root, nodes, pieces, total: pieces.length, clusters: count, junctions, slots: slot, cur: root, pos: 0, hard: lvl >= 6 };       // hard = no easy clues, use the dye test
+}
+const clogLeft = n => n.pieces.some(p => !p.gone) || n.kids.some(clogLeft);       // is there still gunk down this way?
+function senseAhead(n, z, through = true) {       // how many metres to the nearest gunk if you keep going this way
+  let best = Infinity;
+  for (const p of n.pieces) if (!p.gone && p.z >= z - .5) best = Math.min(best, p.z - z);
+  if (best === Infinity && through) for (const k of n.kids) best = Math.min(best, n.len - z + senseAhead(k, 0));
+  return best;
+}
+const petLeft = n => (n.end === 'pet' && !n.rescued) || n.kids.some(petLeft);                                       // is an animal stuck down this way?
+const blockedTo = leaf => { for (let n = leaf; n; n = n.parent) if (n.pieces.some(p => !p.gone)) return true; return false; };   // is there gunk between the drain and here?
+function makePet(kind) {
+  if (kind !== 'kitten') { const g = makePrize(kind); g.rotation.y = -Math.PI / 2; return g; }
+  const g = new THREE.Group(), fur = std({ color: 0x9a9a9a, roughness: .9 });
+  const add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; g.add(m); return m; };
+  add(new THREE.SphereGeometry(.24, 12, 10), fur, 0, 0, 0).scale.set(1, .85, 1.2);
+  add(new THREE.SphereGeometry(.17, 12, 10), fur, 0, .2, .22);
+  for (const x of [-.09, .09]) { add(new THREE.ConeGeometry(.06, .12, 6), fur, x, .38, .2); add(new THREE.SphereGeometry(.03, 8, 6), MAT.dark, x * .8, .23, .37); }
+  add(new THREE.SphereGeometry(.025, 8, 6), std({ color: 0xff8fb0 }), 0, .17, .39);
+  add(new THREE.CylinderGeometry(.03, .03, .3, 6), fur, 0, .12, -.3).rotation.x = .9;
+  return g;
+}
+const letterMats = {};
+function letterSprite(ch) {       // the yellow letter that floats over each manhole
+  if (!letterMats[ch]) {
+    const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+    g.fillStyle = '#ffd23a'; g.beginPath(); g.arc(32, 32, 28, 0, TAU); g.fill();
+    g.fillStyle = '#222'; g.font = '900 40px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch, 32, 35);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; letterMats[ch] = new THREE.SpriteMaterial({ map: t, depthWrite: false });
+  }
+  const sp = new THREE.Sprite(letterMats[ch]); sp.scale.setScalar(.7); return sp;
+}
+const manGeo = new THREE.CylinderGeometry(.5, .5, .06, 20), manHoleGeo = new THREE.CircleGeometry(.46, 20); manHoleGeo.rotateX(-Math.PI / 2);
+const MAN_MATS = { dark: new THREE.MeshBasicMaterial({ color: 0x0b0c0e }), dye: new THREE.MeshBasicMaterial({ color: 0x35ff6a }) };
+
+// =====================================================================
+//  Dirty walls, fences, doors and vans that you can pressure wash
+// =====================================================================
+const washPatches = [], washRay = new THREE.Raycaster(), SCREEN_MID = new THREE.Vector2(0, 0), Z_AXIS = new THREE.Vector3(0, 0, 1);
+let nozzle = 'wide', blowMode = false;       // washer tip, and which way the shop vac blows
+const stainMat = new THREE.MeshStandardMaterial({ color: 0x14110d, roughness: .15, metalness: .3 });      // oil stains
+class WashPatch {
+  constructor(w, h, o = {}) {
+    this.w = w; this.h = h; this.tint = o.tint || '#5d4a33'; this.spots = o.spots || ['#3d2f1e', '#6b5638', '#4a3a26', '#7a6a4a'];
+    this.live = o.live || (() => true); this.onDone = o.onDone || null;
+    this.can = document.createElement('canvas'); this.can.width = this.can.height = 128; this.ctx = this.can.getContext('2d');
+    this.brush = this.ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+    this.brush.addColorStop(0, 'rgba(0,0,0,1)'); this.brush.addColorStop(.55, 'rgba(0,0,0,.9)'); this.brush.addColorStop(1, 'rgba(0,0,0,0)');
+    this.tex = new THREE.CanvasTexture(this.can); this.tex.colorSpace = THREE.SRGBColorSpace;
+    this.mat = new THREE.MeshStandardMaterial({ map: this.tex, emissiveMap: this.tex, emissive: 0x000000, transparent: true, roughness: .95, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+    this.mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), this.mat); this.mesh.visible = false; this.mesh.userData.patch = this;
+    this.done = true; this.clean = 1; this.timer = 0; this.start = 1;
+    washPatches.push(this);
+  }
+  paint() {       // make it dirty again
+    const g = this.ctx, S = 128;
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; g.clearRect(0, 0, S, S);
+    g.fillStyle = this.tint; g.globalAlpha = .9; g.fillRect(0, 0, S, S);
+    for (let i = 0; i < 120; i++) { g.globalAlpha = rand(.12, .4); g.fillStyle = pick(this.spots); g.beginPath(); g.ellipse(rand(S), rand(S), rand(2, 12), rand(2, 9), rand(TAU), 0, TAU); g.fill(); }
+    g.globalAlpha = 1; g.globalCompositeOperation = 'destination-out';
+    for (let i = 0; i < 70; i++) { const e = Math.floor(rand(4)), t = rand(S); g.beginPath(); g.arc(e === 0 ? 0 : e === 1 ? S : t, e === 2 ? 0 : e === 3 ? S : t, rand(2, 7), 0, TAU); g.fill(); }
+    g.globalCompositeOperation = 'source-over';
+    this.tex.needsUpdate = true; this.start = this.measure(); this.clean = 0; this.done = false; this.timer = 0; this.mat.opacity = 1; this.mesh.visible = true;
+  }
+  measure() {
+    measureCtx.clearRect(0, 0, 32, 32); measureCtx.drawImage(this.can, 0, 0, 32, 32);
+    const d = measureCtx.getImageData(0, 0, 32, 32).data; let s = 0;
+    for (let i = 3; i < d.length; i += 4) s += d[i];
+    return s || 1;
+  }
+  wash(u, v, r, dt) {
+    if (this.done) return;
+    const g = this.ctx;
+    g.save(); g.globalCompositeOperation = 'destination-out'; g.translate(u * 128, (1 - v) * 128); g.scale(r / this.w * 128, r / this.h * 128);
+    g.fillStyle = this.brush; g.beginPath(); g.arc(0, 0, 1, 0, TAU); g.fill(); g.restore();
+    this.tex.needsUpdate = true; this.timer -= dt;
+    if (this.timer <= 0) {
+      this.timer = .25; this.clean = clamp(1 - this.measure() / this.start, 0, 1);
+      if (this.clean >= .88) { this.done = true; blip(880, 1320, .3, .12, 'triangle'); if (this.onDone) this.onDone(this); }
+    }
+  }
+  update(dt) {
+    if (this.done && this.mesh.visible) { this.mat.opacity -= dt * 1.2; if (this.mat.opacity <= 0) this.mesh.visible = false; }
+    const k = dirtFlash > 0 && !this.done ? (.55 + .45 * Math.sin(T * 10)) * Math.min(1, dirtFlash) : 0;
+    this.mat.emissive.setRGB(1.8 * k, .8 * k, 0);
+  }
+}
+function drawChalk(g, S) {       // a kid's chalk drawing, hidden under the dirt
+  g.clearRect(0, 0, S, S); g.lineCap = g.lineJoin = 'round'; g.lineWidth = 8;
+  const cols = ['#ff6fae', '#6fd0ff', '#ffe36f', '#9cf07a', '#ffffff', '#ffa65c'], c = () => pick(cols), m = S / 2;
+  const what = Math.floor(rand(4));
+  if (what === 0) {            // a sun
+    g.strokeStyle = '#ffe36f'; g.beginPath(); g.arc(m, m, S * .2, 0, TAU); g.stroke();
+    for (let i = 0; i < 10; i++) { const a = i / 10 * TAU; g.beginPath(); g.moveTo(m + Math.cos(a) * S * .26, m + Math.sin(a) * S * .26); g.lineTo(m + Math.cos(a) * S * .4, m + Math.sin(a) * S * .4); g.stroke(); }
+  } else if (what === 1) {     // a flower
+    for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; g.strokeStyle = '#ff6fae'; g.beginPath(); g.arc(m + Math.cos(a) * S * .17, m * .8 + Math.sin(a) * S * .17, S * .1, 0, TAU); g.stroke(); }
+    g.strokeStyle = '#ffe36f'; g.beginPath(); g.arc(m, m * .8, S * .07, 0, TAU); g.stroke();
+    g.strokeStyle = '#9cf07a'; g.beginPath(); g.moveTo(m, m * 1.15); g.lineTo(m, S * .92); g.stroke();
+  } else if (what === 2) {     // a star and a heart
+    g.strokeStyle = '#ffe36f'; g.beginPath(); for (let i = 0; i <= 5; i++) { const a = -Math.PI / 2 + i * TAU * 2 / 5; g.lineTo(S * .3 + Math.cos(a) * S * .2, S * .35 + Math.sin(a) * S * .2); } g.stroke();
+    g.strokeStyle = '#ff6fae'; g.beginPath(); g.moveTo(S * .7, S * .85); g.bezierCurveTo(S * .45, S * .6, S * .6, S * .45, S * .7, S * .6); g.bezierCurveTo(S * .8, S * .45, S * .95, S * .6, S * .7, S * .85); g.stroke();
+  } else {                     // a smiley
+    g.strokeStyle = c(); g.beginPath(); g.arc(m, m, S * .32, 0, TAU); g.stroke();
+    g.beginPath(); g.arc(m, m * 1.05, S * .18, .15 * Math.PI, .85 * Math.PI); g.stroke();
+    g.fillStyle = '#fff'; g.beginPath(); g.arc(m - S * .11, m - S * .09, S * .03, 0, TAU); g.arc(m + S * .11, m - S * .09, S * .03, 0, TAU); g.fill();
+  }
+  g.fillStyle = c(); g.font = '900 ' + Math.round(S * .12) + 'px system-ui, sans-serif'; g.textAlign = 'center'; g.fillText(pick(['HI!', 'WOW', 'YAY', 'COOL']), m, S * .12);
+}
+
+// Treasures that pop out of the drains. [picture, name]
+const PRIZES = {
+  duck: ['\u{1F986}', 'a rubber duck'], boot: ['\u{1F97E}', 'a lost boot'], coin: ['\u{1FA99}', 'a giant gold coin'],
+  ball: ['⚽', 'a soccer ball'], car: ['\u{1F697}', 'a toy car'], frog: ['\u{1F438}', 'a grumpy frog'], crown: ['\u{1F451}', 'a golden crown'],
+};
+const PRIZE_KINDS = Object.keys(PRIZES);
+function pickPrize() { const fresh = PRIZE_KINDS.filter(k => !found.includes(k)); return pick(fresh.length ? fresh : PRIZE_KINDS); }
 function makePrize(kind) {
   const g = new THREE.Group();
   const add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; g.add(m); return m; };
+  const gold = std({ color: 0xffd23a, roughness: .2, metalness: 1 }), green = std({ color: 0x4f9a3a, roughness: .5 });
   if (kind === 'duck') {
     add(new THREE.SphereGeometry(.26, 14, 10), MAT.yellow, 0, 0, 0).scale.set(1.2, .9, 1);
     add(new THREE.SphereGeometry(.17, 12, 8), MAT.yellow, .2, .26, 0);
-    const beak = add(new THREE.ConeGeometry(.07, .16, 8), MAT.orange, .39, .24, 0); beak.rotation.z = -Math.PI / 2;
+    add(new THREE.ConeGeometry(.07, .16, 8), MAT.orange, .39, .24, 0).rotation.z = -Math.PI / 2;
   } else if (kind === 'boot') {
     add(new THREE.BoxGeometry(.2, .4, .22), MAT.red, 0, .1, 0); add(new THREE.BoxGeometry(.42, .16, .22), MAT.red, .11, -.14, 0);
+  } else if (kind === 'ball') {
+    add(new THREE.SphereGeometry(.28, 16, 12), MAT.white, 0, 0, 0);
+    for (const [x, y, z] of [[.2, .1, .15], [-.2, .12, .12], [0, -.2, .2], [.1, .2, -.18], [-.12, -.1, -.22]]) add(new THREE.SphereGeometry(.09, 8, 6), MAT.dark, x, y, z);
+  } else if (kind === 'car') {
+    add(new THREE.BoxGeometry(.6, .16, .3), MAT.red, 0, 0, 0); add(new THREE.BoxGeometry(.3, .14, .26), MAT.glass, -.03, .15, 0);
+    for (const x of [-.2, .2]) for (const z of [-.16, .16]) add(new THREE.CylinderGeometry(.08, .08, .06, 10), MAT.tire, x, -.08, z).rotation.x = Math.PI / 2;
+  } else if (kind === 'frog') {
+    add(new THREE.SphereGeometry(.26, 14, 10), green, 0, 0, 0).scale.set(1.2, .8, 1);
+    for (const z of [-.12, .12]) { add(new THREE.SphereGeometry(.09, 10, 8), MAT.white, .16, .2, z); add(new THREE.SphereGeometry(.045, 8, 6), MAT.dark, .23, .22, z); }
+    for (const z of [-.24, .24]) add(new THREE.SphereGeometry(.12, 8, 6), green, -.12, -.12, z);
+  } else if (kind === 'crown') {
+    add(new THREE.CylinderGeometry(.24, .22, .16, 16, 1, true), gold, 0, 0, 0).material.side = THREE.DoubleSide;
+    for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; add(new THREE.ConeGeometry(.06, .16, 6), gold, Math.cos(a) * .22, .15, Math.sin(a) * .22); }
   } else {
-    const coin = add(new THREE.CylinderGeometry(.26, .26, .06, 20), std({ color: 0xffd23a, roughness: .2, metalness: 1 }), 0, 0, 0); coin.rotation.x = Math.PI / 2;
+    add(new THREE.CylinderGeometry(.26, .26, .06, 20), gold, 0, 0, 0).rotation.x = Math.PI / 2;
   }
   g.userData.kind = kind;
   return g;
 }
-const PRIZE_ICON = { duck: '\u{1F986}', boot: '\u{1F97E}', coin: '\u{1FA99}' };
-const PRIZE_NAME = { duck: 'a rubber duck', boot: 'a lost boot', coin: 'a gold coin' };
 
 class Job {
   constructor(cfg) {
@@ -700,7 +1096,19 @@ class Job {
     if (this.flood) this.buildFlood();
     this.buildInstances();
     if (this.dirt) this.buildDirt();
+    this.walls = (cfg.walls || []).map(w => {       // dirty walls, fences and doors that belong to this job
+      const p = new WashPatch(w.w, w.h, { tint: w.tint, live: () => this.inPlay });
+      p.mesh.position.set(w.x, w.y, w.z); p.mesh.rotation.y = w.ry || 0; this.group.add(p.mesh); return p;
+    });
+    this.stains = []; this.stainMesh = new THREE.InstancedMesh(puddleGeo, stainMat, 10); this.stainMesh.frustumCulled = false; this.stainMesh.count = 0; this.group.add(this.stainMesh);
+    if (cfg.chalk) {       // a chalk drawing hides under the dirt
+      this.chalkCan = document.createElement('canvas'); this.chalkCan.width = this.chalkCan.height = 256;
+      this.chalkTex = new THREE.CanvasTexture(this.chalkCan); this.chalkTex.colorSpace = THREE.SRGBColorSpace;
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), new THREE.MeshBasicMaterial({ map: this.chalkTex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+      m.rotation.x = -Math.PI / 2; m.position.set(this.dirt.cx, .022, this.dirt.cz + .8); this.group.add(m);
+    }
     this.buildMarker();
+    this.lvl = 1; this.inPlay = false; this.manholes = [];
     this.reset();
   }
   toWorld(lx, lz) { return [this.x + lx * this.cos + lz * this.sin, this.z - lx * this.sin + lz * this.cos]; }
@@ -713,6 +1121,7 @@ class Job {
   contains(x, z) {       // is this spot under the flood water?
     if (!this.flood || this.level <= 0) return false;
     const f = this.flood, s = this.ws, dx = x - this.fx, dz = z - this.fz;
+    if (f.kind === 'full') return dx * dx + dz * dz < (f.r * s) * (f.r * s);
     if (f.kind === 'half') return dx * dx + dz * dz < (f.r * s) * (f.r * s) && dx * this.faceVec[0] + dz * this.faceVec[1] > 0;
     return Math.abs(dx) < f.w / 2 * s && dz > 0 && dz < f.d * s;
   }
@@ -728,7 +1137,8 @@ class Job {
   }
   buildFlood() {
     const f = this.flood; let geo, back;
-    if (f.kind === 'half') { geo = new THREE.CircleGeometry(f.r, 40, -f.face - Math.PI / 2, Math.PI); this.faceVec = [Math.cos(f.face), Math.sin(f.face)]; back = .62; }
+    if (f.kind === 'full') { geo = new THREE.CircleGeometry(f.r, 48); back = 0; }
+    else if (f.kind === 'half') { geo = new THREE.CircleGeometry(f.r, 40, -f.face - Math.PI / 2, Math.PI); this.faceVec = [Math.cos(f.face), Math.sin(f.face)]; back = .62; }
     else { geo = new THREE.PlaneGeometry(f.w, f.d); geo.translate(0, -f.d / 2, 0); back = .5; }
     this.fx = this.x - this.faceVec[0] * back; this.fz = this.z - this.faceVec[1] * back;
     const setup = m => { m.rotation.x = -Math.PI / 2; m.position.set(this.fx, .1, this.fz); this.group.add(m); return m; };
@@ -748,6 +1158,7 @@ class Job {
     this.stickMesh = inst(stickGeo, stickMat, this.sticks);
     this.sludgeMesh = inst(sludgeGeo, sludgeMat, 120, true);
     this.puddleMesh = inst(puddleGeo, waterSimpleMat, 10);
+    this.trashMesh = inst(trashGeo, trashMat, 8, true);
     if (this.mud) {
       const [c, r] = this.mud; this.mudMesh = inst(mudGeo, mudMat, c * r, true); this.mudPos = []; this.mudH = new Float32Array(c * r);
       for (let j = 0; j < r; j++) for (let i = 0; i < c; i++) this.mudPos.push(this.toWorld(-this.gw / 2 + (i + .5) * this.gw / c, -this.gd / 2 + (j + .5) * this.gd / r));
@@ -760,7 +1171,7 @@ class Job {
     this.brush = this.dctx.createRadialGradient(0, 0, 0, 0, 0, 1);
     this.brush.addColorStop(0, 'rgba(0,0,0,1)'); this.brush.addColorStop(.55, 'rgba(0,0,0,.9)'); this.brush.addColorStop(1, 'rgba(0,0,0,0)');
     this.dtex = new THREE.CanvasTexture(this.dcan); this.dtex.colorSpace = THREE.SRGBColorSpace;
-    this.dmat = new THREE.MeshStandardMaterial({ map: this.dtex, transparent: true, roughness: .95, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+    this.dmat = new THREE.MeshStandardMaterial({ map: this.dtex, emissiveMap: this.dtex, emissive: 0x000000, transparent: true, roughness: .95, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
     this.dmesh = new THREE.Mesh(new THREE.PlaneGeometry(D.w, D.d), this.dmat);
     this.dmesh.rotation.x = -Math.PI / 2; this.dmesh.position.set(D.cx, .026, D.cz); this.dmesh.receiveShadow = true; this.group.add(this.dmesh);
   }
@@ -777,14 +1188,18 @@ class Job {
   reset() {
     this.done = false; this.rakeDone = false; this.flow = 0;
     this.level = this.flood ? 1 : 0; this.ws = 1; this.drained = !this.flood;
-    this.clogHp = this.clog ? 1 : 0; this.cable = 0;
+    this.clogHp = this.clog ? 1 : 0; this.timer = 0; this.stars = 0; this.earned = 0;
+    this.tough = 1 + .15 * (this.lvl - 1); this.prizeKind = pickPrize(); this.prizeSpawned = false;
+    if (this.petObj) { this.group.remove(this.petObj); this.petObj = null; }
+    if (this.clog) { this.pipeLayout = makeNetwork(this.lvl, this.clogBase || 2); this.buildManholes(); }
     this.items = []; this.sludge = []; this.puddles = []; this.messTotal = 0;
     if (this.prizeObj) { this.group.remove(this.prizeObj); this.prizeObj = null; }
     const fv = this.faceVec, tx = -fv[1], tz = fv[0];
-    for (let i = 0; i < this.leaves + this.sticks; i++) {
-      const stick = i >= this.leaves; let x, z;
+    const nLeaves = Math.min(this.leaves, Math.round(this.leaves * (.55 + .09 * this.lvl)));       // more leaves on higher levels
+    for (let i = 0; i < nLeaves + this.sticks; i++) {
+      const stick = i >= nLeaves; let x, z;
       if (this.gw) {
-        const a = gauss() * (Math.max(this.gw, this.gd) / 2 + .7), o = Math.abs(gauss()) * 1.3 - .3;
+        const a = gauss() * (Math.max(this.gw, this.gd) / 2 + .7), o = this.flood && this.flood.kind === 'full' ? gauss() * 1.3 : Math.abs(gauss()) * 1.3 - .3;
         x = this.x + tx * a + fv[0] * o; z = this.z + tz * a + fv[1] * o;
       } else { x = this.dirt.cx + gauss() * this.dirt.w * .5; z = this.dirt.cz + gauss() * this.dirt.d * .5; }
       const p = { kind: stick ? 1 : 0, x, z, vx: 0, vz: 0, rot: rand(TAU), spin: 0, tiltX: rand(-.3, .3), tiltZ: rand(-.3, .3),
@@ -800,6 +1215,14 @@ class Job {
       for (let i = 0; i < (this.clumps || 0); i++) { this.sludge.push({ x: this.dirt.cx + rand(-.44, .44) * this.dirt.w, y: .03, z: this.dirt.cz + rand(-.44, .44) * this.dirt.d, vx: 0, vy: 0, vz: 0, size: rand(.12, .22), scale: 1, air: false, goTo: null, shrink: 6 }); this.messTotal++; }
     }
     if (this.dirt) this.paintDirt();
+    for (const p of this.walls) p.paint();
+    this.trash = [];       // bottles and cans floating about. Too big for the vac: use the grabber.
+    if (this.flood && this.lvl >= 2) for (let i = 0; i < Math.min(6, this.lvl + 1); i++) { const [x, z] = this.floodPoint(); this.trash.push({ x, z, rot: rand(TAU), scale: 1, goTo: null, color: pick(TRASH_COLORS) }); }
+    this.trashTotal = this.trash.length;
+    if (this.tunnel) { this.tunnelDone = false; if (sewer.reset) sewer.reset(); }
+    this.stains = [];       // oil stains that only the narrow nozzle can shift
+    if (this.dirt && this.lvl >= 3) for (let i = 0; i < Math.min(8, this.lvl); i++) this.stains.push({ x: this.dirt.cx + rand(-.42, .42) * this.dirt.w, z: this.dirt.cz + rand(-.42, .42) * this.dirt.d, r: rand(.3, .5), hp: 1 });
+    if (this.chalkCan) { drawChalk(this.chalkCan.getContext('2d'), 256); this.chalkTex.needsUpdate = true; }
     this.beamMat.color.setHex(0xffa41c); this.iconMat.color.setHex(0xffa41c); this.iconMat.emissive.setHex(0xff7a00);
     this.sync(true);
   }
@@ -824,14 +1247,26 @@ class Job {
     for (let i = 0; i < this.puddleCount; i++) {
       const f = this.flood; let x, z;
       if (!f) { x = this.dirt.cx + rand(-.42, .42) * this.dirt.w; z = this.dirt.cz + rand(-.42, .42) * this.dirt.d; }
-      else if (f.kind === 'half') { const a = f.face + rand(-1.35, 1.35), r = rand(1.4, f.r * .85); x = this.fx + Math.cos(a) * r; z = this.fz + Math.sin(a) * r; }
+      else if (f.kind !== 'rect') [x, z] = this.floodPoint();
       else { x = this.fx + rand(-.38, .38) * f.w; z = this.fz + rand(.9, f.d - .4); }
       this.puddles.push({ x, z, r: rand(.5, .95) }); this.messTotal++;
     }
   }
+  floodPoint() {       // a random spot somewhere in the flood
+    const f = this.flood;
+    if (f.kind === 'rect') return [this.fx + rand(-.38, .38) * f.w, this.fz + rand(.9, f.d - .4)];
+    const a = f.kind === 'full' ? rand(TAU) : f.face + rand(-1.35, 1.35), r = rand(1.4, f.r * .85);
+    return [this.fx + Math.cos(a) * r, this.fz + Math.sin(a) * r];
+  }
+  grab(a) {       // the grabber picks up one bottle or can and drops it in the cart
+    let best = null, bd = .85;
+    for (const t of this.trash) { if (t.goTo) continue; const d = Math.hypot(t.x - a.x, t.z - a.z); if (d < bd) { bd = d; best = t; } }
+    if (!best) return false;
+    best.goTo = { x: this.cart[0], z: this.cart[1] }; addCash(2); count('trash'); plop(); return true;
+  }
   spawnSludge(x, z) {
     if (this.sludge.length >= 110) return;
-    const a = Math.atan2(this.faceVec[1], this.faceVec[0]) + rand(-1.5, 1.5), sp = rand(1.4, 4.2);
+    const a = Math.atan2(this.faceVec[1], this.faceVec[0]) + (this.flood && this.flood.kind === 'full' ? rand(TAU) : rand(-1.5, 1.5)), sp = rand(1.4, 4.2);
     this.sludge.push({ x, y: .12, z, vx: Math.cos(a) * sp, vy: rand(3, 5.5), vz: Math.sin(a) * sp, size: rand(.11, .2), scale: 1, air: true, goTo: null, shrink: 6 });
     this.messTotal++;
   }
@@ -842,21 +1277,29 @@ class Job {
   steps() {
     const s = [];
     if (this.startStuck) { const p = this.leavesClear(); if (p >= .93) this.rakeDone = true; s.push({ id: 'rake', tool: 'rake', label: 'Rake the leaves off the drain', pct: this.rakeDone ? 1 : p, done: this.rakeDone, hint: `Pick the RAKE, aim at the leaves and hold ${USE}.` }); }
+    if (this.trashTotal) s.push({ id: 'trash', tool: 'grab', label: 'Grab the bottles and cans', pct: 1 - this.trash.length / this.trashTotal, done: !this.trash.length, hint: `Pick the GRABBER, aim at a bottle or can and press ${USE}.` });
     if (this.mud) { const p = this.mudClear(); s.push({ id: 'jet', tool: 'jet', label: 'Jet the mud out of the drain', pct: p, done: p >= .97, hint: `Pick the JET, aim at the brown mud and hold ${USE}.` }); }
-    if (this.clog) s.push({ id: 'snake', tool: 'snake', label: 'Snake the clog in the pipe', pct: 1 - this.clogHp, done: this.clogHp <= 0, hint: `Pick the SNAKE, stand next to the drain and hold ${USE}.` });
+    if (this.clog) s.push({ id: 'snake', tool: 'snake', label: 'Snake the clog in the pipe', pct: 1 - this.clogHp, done: this.clogHp <= 0, hint: `Pick the SNAKE, stand next to the drain and hold ${USE} to start the pipe camera.` });
     if (this.flood) s.push({ id: 'drain', tool: null, label: 'Let the flood drain away', pct: 1 - this.level, done: this.level <= 0, hint: 'WHOOSH! Watch the water go down the drain.' });
     if (this.flood || this.puddleCount) { const left = this.sludge.length + this.puddles.length; s.push({ id: 'vac', tool: 'vac', label: 'Vacuum the sludge and puddles', pct: this.drained ? 1 - left / Math.max(1, this.messTotal) : 0, done: this.drained && left === 0, hint: 'Pick the SHOP VAC and suck up the mud blobs and puddles.' }); }
-    if (this.dirt) s.push({ id: 'wash', tool: 'washer', label: 'Pressure wash the grime', pct: this.dirtDone ? 1 : this.clean, done: this.dirtDone, hint: 'Pick the WASHER and blast every dirty spot until it is clean.' });
+    if (this.dirt) {
+      const parts = [this.dirtDone ? 1 : this.clean, ...this.walls.map(p => p.done ? 1 : p.clean)], avg = parts.reduce((a, b) => a + b, 0) / parts.length;
+      const rest = this.dirtDone && this.walls.every(p => p.done), st = this.stains.length;
+      s.push({ id: 'wash', tool: 'washer', label: this.washLabel || 'Pressure wash the grime', pct: rest && st ? .95 : avg, done: rest && !st,
+        hint: rest && st ? `Oil stains! Switch to the NARROW nozzle${coarse ? '' : ' (T)'} and blast them.` : 'Pick the WASHER and blast every dirty spot until it is clean.' });
+    }
+    if (this.tunnel) s.push({ id: 'tunnel', tool: 'washer', label: 'Wash the big storm tunnel clean', pct: this.tunnelDone ? 1 : sewer.pct || 0, done: !!this.tunnelDone,
+      hint: sewer.active ? 'Wash the floor and both walls. Grab the coins too!' : `Stand by the tunnel door and tap ENTER THE TUNNEL${coarse ? '' : ' (C)'}.` });
     return s;
   }
 
   // ---------- what the tools do ----------
   rake(a, prev, dt) {
-    const mx = clamp(a.x - prev.x, -.6, .6), mz = clamp(a.z - prev.z, -.6, .6);
+    const mx = clamp(a.x - prev.x, -.6, .6), mz = clamp(a.z - prev.z, -.6, .6), R2 = U.rakeR() * U.rakeR();
     const pull = (list, f) => {
       for (const p of list) {
         if (p.goTo || p.air) continue;
-        const dx = p.x - a.x, dz = p.z - a.z; if (dx * dx + dz * dz > .72) continue;
+        const dx = p.x - a.x, dz = p.z - a.z; if (dx * dx + dz * dz > R2) continue;
         const tx = P.x - p.x, tz = P.z - p.z, d = Math.hypot(tx, tz) || 1;
         p.x += mx * f; p.z += mz * f;
         if (d > .9) { p.vx += tx / d * 11 * f * dt; p.vz += tz / d * 11 * f * dt; }
@@ -873,37 +1316,94 @@ class Job {
     if (this.mud) {
       for (let i = 0; i < this.mudH.length; i++) {
         const h = this.mudH[i]; if (h <= 0) continue;
-        const [x, z] = this.mudPos[i]; if (Math.hypot(x - a.x, z - a.z) > .62) continue;
-        const nh = Math.max(0, h - 1.8 * dt); this.mudH[i] = nh; this.mudDirty = true;
+        const [x, z] = this.mudPos[i]; if (Math.hypot(x - a.x, z - a.z) > U.jetR()) continue;
+        const nh = Math.max(0, h - U.jetPower() / this.tough * dt); this.mudH[i] = nh; this.mudDirty = true;
         if ((h > .5 && nh <= .5) || nh === 0) { this.spawnSludge(x, z); plop(); }
       }
       if (this.mudClear() > .97) { this.mudH.fill(0); this.mudDirty = true; }
     }
     this.blow(a, 1.1, 9 * dt);
   }
-  snake(dt) {
+  snakeCheck() {      // can the snake go in yet?
     if (!this.clog) return 'none';
     if (this.clogHp <= 0) return 'done';
     if (Math.hypot(P.x - this.x, P.z - this.z) > 3.3) return 'far';
     if (this.startStuck && this.leavesClear() < .5) return 'leaves';
     if (this.mud && this.mudClear() < .97) return 'mud';
-    if (this.cable < CLOG_DEPTH) { this.cable = Math.min(CLOG_DEPTH, this.cable + 1.7 * dt); return 'feed'; }
-    this.clogHp = Math.max(0, this.clogHp - dt / 4);
-    if (Math.random() < dt * 3) this.spawnSludge(this.x, this.z);
-    if (this.clogHp <= 0) { for (let i = 0; i < 9; i++) this.spawnSludge(this.x, this.z); return 'bust'; }
-    return 'grind';
+    return 'go';
+  }
+  // ---------- the dye test: work out where the pipes go from up here ----------
+  buildManholes() {
+    if (this.manGroup) this.group.remove(this.manGroup);
+    this.manholes = []; this.dyed = false; this.manGroup = new THREE.Group(); this.group.add(this.manGroup);
+    const net = this.pipeLayout; if (!net.hard) return;
+    const leaves = net.nodes.filter(n => !n.kids.length).sort((a, b) => a.mx - b.mx), f = this.faceVec, off = this.flood.kind === 'rect' ? 7.3 : 9.2;
+    leaves.forEach((leaf, i) => {
+      const side = (i - (leaves.length - 1) / 2) * 2.4; let x = this.x + f[0] * off - f[1] * side, z = this.z + f[1] * off + f[0] * side;
+      for (let k = 0; k < 5 && insideBox(x, z, .7); k++) { x += f[0] * 1.5; z += f[1] * 1.5; }
+      const g = new THREE.Group(); g.position.set(x, groundHeight(x, z) + .02, z);
+      const hole = new THREE.Mesh(manHoleGeo, MAN_MATS.dark); hole.position.y = .012;
+      const lid = new THREE.Mesh(manGeo, MAT.iron); lid.position.y = .04; lid.receiveShadow = true;
+      const tag = letterSprite(String.fromCharCode(65 + i)); tag.position.y = 1.15;
+      g.add(hole, lid, tag); this.manGroup.add(g);
+      leaf.letter = String.fromCharCode(65 + i); leaf.man = '';
+      this.manholes.push({ leaf, x, z, lid, hole, open: false, lift: 0 });
+    });
+  }
+  showDye(m) {       // what is under this manhole cover?
+    const dye = this.dyed && !blockedTo(m.leaf);
+    m.hole.material = dye ? MAN_MATS.dye : MAN_MATS.dark; m.leaf.man = !this.dyed ? '' : dye ? 'dye' : 'dry';
+  }
+  liftManhole(dt) {       // hold USE next to a manhole to lift the cover
+    for (const m of this.manholes) {
+      if (m.open || Math.hypot(P.x - m.x, P.z - m.z) > 1.6) continue;
+      m.lift += dt;
+      if (m.lift > .6) {
+        m.open = true; m.lid.position.set(.75, .05, .2); m.lid.rotation.z = .2; this.showDye(m); blip(180, 120, .2, .14, 'square'); buzz(40); count('manhole');
+        toast(!this.dyed ? `Manhole ${m.leaf.letter} is open, but there is nothing to see yet. Do the dye test at the drain!` : m.leaf.man === 'dye' ? `Manhole ${m.leaf.letter}: green dye! The pipes to here are clear.` : `Manhole ${m.leaf.letter}: no dye. A clog is blocking the way to here!`, 4500);
+      }
+      return true;
+    }
+    return false;
+  }
+  dyeTest() {
+    this.dyed = true; for (const m of this.manholes) if (m.open) this.showDye(m);
+    spawnMist(this.x, .3, this.z, 30, 2.5); blip(500, 900, .4, .1, 'triangle'); count('dye');
+    toast('Green dye is going down the drain! Lift the manhole covers to see where it comes out.', 5000);
+  }
+  petSaved(kind) { this.petObj = makePet(kind); this.petObj.position.set(this.cart[0] + 1.7, .3, this.cart[1]); this.group.add(this.petObj); }
+  parTime() { return (this.par || 150) * (1 + .06 * (this.lvl - 1)) + (this.clog ? this.pipeLayout.clusters * 14 + this.pipeLayout.nodes.length * 8 : 0); }
+  spawnPrize() {
+    if (this.prizeSpawned) return;
+    this.prizeSpawned = true; this.prizeObj = makePrize(this.prizeKind);
+    const f = this.flood ? this.faceVec : [1, 0];
+    this.prizeObj.position.set(this.x + f[0] * 1.9, .5, this.z + f[1] * 1.9); this.group.add(this.prizeObj);
+  }
+  blowAway(a, dt) {       // the shop vac in BLOW mode pushes leaves along in front of you
+    const dx0 = a.x - P.x, dz0 = a.z - P.z, l = Math.hypot(dx0, dz0) || 1, ux = dx0 / l, uz = dz0 / l;
+    const push = (list, f) => { for (const p of list) { if (p.goTo || p.air) continue; const d = Math.hypot(p.x - a.x, p.z - a.z); if (d < 1.9) { const k = 22 * f * (1 - d / 1.9) * dt; p.vx += ux * k; p.vz += uz * k; p.spin = rand(-4, 4); } } };
+    push(this.items, 1); push(this.sludge, .3);
+  }
+  truckSuck(v, dt) {       // the vac truck's giant hose
+    let got = 0;
+    if (this.level > 0) { this.level = Math.max(0, this.level - .09 * dt); got += 5 * dt; if (this.level <= 0 && !this.drained) this.onDrained(); }
+    else { for (const q of this.puddles) { q.r -= .5 * dt; got += 4 * dt; } this.puddles = this.puddles.filter(q => q.r > .16); }
+    if (Math.random() < dt * 8) { const p = this.sludge.concat(this.items).find(p => !p.goTo && !p.air); if (p) { p.goTo = v; p.shrink = 4; got += 1; } }
+    return got;
   }
   vac(a, dt) {
     if (tank.fill >= tank.cap) return 'full';
+    const R = U.vacR();
     const suck = (list, amount) => {
       for (const p of list) {
         if (p.goTo || p.air) continue;
         const dx = a.x - p.x, dz = a.z - p.z, d = Math.hypot(dx, dz) || .01;
-        if (d < 1.15) { const k = (2 + 14 * (1 - d / 1.15)) * dt / d; p.vx += dx * k; p.vz += dz * k; }
+        if (d < R) { const k = (2 + 14 * (1 - d / R)) * dt / d; p.vx += dx * k; p.vz += dz * k; }
         if (d < .34) { p.goTo = a; p.shrink = 6; tank.fill += amount; plop(); }
       }
     };
     suck(this.items, 1); suck(this.sludge, 2.2);
+    if (this.trash.some(t => !t.goTo && Math.hypot(t.x - a.x, t.z - a.z) < .8)) nag('That is too big for the vac! Pick the GRABBER.');
     if (this.level <= 0) {
       for (const q of this.puddles) if (Math.hypot(q.x - a.x, q.z - a.z) < q.r + .5) { q.r -= .55 * dt; tank.fill += 6 * dt; }
       this.puddles = this.puddles.filter(q => q.r > .16);
@@ -913,11 +1413,15 @@ class Job {
   }
   wash(prev, a, dt) {
     this.blow(a, .9, 6 * dt);
-    if (!this.dirt || this.dirtDone) return 'ok';
+    const R = nozzle === 'narrow' ? .3 : U.washR();
+    let stuck = false;
+    for (const st of this.stains) if (Math.hypot(st.x - a.x, st.z - a.z) < st.r + .25 && !this.contains(st.x, st.z)) { if (nozzle === 'narrow') st.hp -= 1.3 * dt; else stuck = true; }
+    this.stains = this.stains.filter(st => st.hp > 0);
+    if (!this.dirt || this.dirtDone) return stuck ? 'stain' : 'ok';
     if (this.contains(a.x, a.z)) return 'wet';
     const dist = Math.hypot(a.x - prev.x, a.z - prev.z), n = clamp(Math.ceil(dist / .25), 1, 14);
     let hit = false;
-    for (let i = 1; i <= n; i++) hit = this.stamp(lerp(prev.x, a.x, i / n), lerp(prev.z, a.z, i / n), .68) || hit;
+    for (let i = 1; i <= n; i++) hit = this.stamp(lerp(prev.x, a.x, i / n), lerp(prev.z, a.z, i / n), R) || hit;
     if (hit) {
       this.dtex.needsUpdate = true; this.dirtTimer -= dt;
       if (this.dirtTimer <= 0) { this.dirtTimer = .25; this.clean = clamp(1 - this.measureDirt() / this.dirtStart, 0, 1); if (this.clean >= .88) { this.dirtDone = true; blip(880, 1320, .3, .12, 'triangle'); } }
@@ -934,6 +1438,8 @@ class Job {
 
   // ---------- every frame ----------
   update(dt) {
+    if (!this.done && this === activeJob && !shopOpen) this.timer += dt;
+
     // The flood. Leaves, mud and the pipe clog all slow the water down.
     if (this.flood && this.level > 0) {
       let flow = Math.pow(this.leavesClear(), 1.5) * (.04 + .96 * Math.pow(this.mudClear(), 1.5));
@@ -965,6 +1471,10 @@ class Job {
     }
     this.items = this.items.filter(p => p.scale > .05);
 
+    // Bottles and cans fly to the cart when the grabber gets them
+    for (const t of this.trash) { if (!t.goTo) continue; const k = Math.min(1, dt * 4); t.x += (t.goTo.x - t.x) * k; t.z += (t.goTo.z - t.z) * k; if (Math.hypot(t.goTo.x - t.x, t.goTo.z - t.z) < .6) t.scale -= dt * 4; }
+    this.trash = this.trash.filter(t => t.scale > .05);
+
     // Mud blobs
     for (const s of this.sludge) {
       if (s.goTo) { s.scale -= s.shrink * dt; const k = Math.min(1, dt * 12); s.x += (s.goTo.x - s.x) * k; s.z += (s.goTo.z - s.z) * k; continue; }
@@ -987,10 +1497,15 @@ class Job {
       this.prizeObj.rotation.y += dt * 1.6; this.prizeObj.position.y = .55 + Math.sin(T * 3) * .12;
       if (Math.hypot(P.x - this.prizeObj.position.x, P.z - this.prizeObj.position.z) < 1.2) {
         const kind = this.prizeObj.userData.kind; this.group.remove(this.prizeObj); this.prizeObj = null;
-        found.push(kind); store.set('found', found); cash += 50; store.set('cash', cash);
-        toast(`You found ${PRIZE_NAME[kind]}! +$50`); jingle();
+        const isNew = !found.includes(kind); if (isNew) { found.push(kind); store.set('found', found); }
+        addCash(50); toast(`${isNew ? 'NEW TREASURE! ' : ''}You found ${PRIZES[kind][1]}! +$50`, 3200); jingle(); buzz(60);
       }
     }
+
+    if (!this.flood && !this.puddles.length && !this.sludge.length && (this.puddleCount || this.done)) this.spawnPrize();      // something was hiding in the mud
+    for (const p of this.walls) p.update(dt);
+    if (this.petObj) { this.petObj.position.y = .3 + Math.abs(Math.sin(T * 5)) * .25; this.petObj.rotation.y += dt; }
+    if (this.dirt) { const k = dirtFlash > 0 && this === activeJob ? (.55 + .45 * Math.sin(T * 10)) * Math.min(1, dirtFlash) : 0; this.dmat.emissive.setRGB(1.8 * k, .8 * k, 0); }
 
     // The light beam that shows where the job is
     this.icon.rotation.y += dt * 1.5; this.icon.position.y = 3.6 + Math.sin(T * 2 + this.x) * .25;
@@ -1002,11 +1517,15 @@ class Job {
   }
   onDrained() {
     this.spawnPuddles(); this.drained = true;
-    if (this.prize) { this.prizeObj = makePrize(this.prize); this.prizeObj.position.set(this.x + this.faceVec[0] * 1.9, .5, this.z + this.faceVec[1] * 1.9); this.group.add(this.prizeObj); }
+    this.spawnPrize();
     if (this === activeJob) { toast('The water is gone! Something popped out of the drain...'); blip(300, 90, .5, .15); }
   }
   complete() {
-    this.done = true; cash += this.pay; store.set('cash', cash);
+    this.done = true;
+    const par = this.parTime();          // faster = more stars = more money
+    this.stars = this.timer < par ? 3 : this.timer < par * 1.7 ? 2 : 1;
+    this.earned = Math.round(this.pay * (1 + .2 * (this.lvl - 1)) * [1, 1.2, 1.5][this.stars - 1] / 5) * 5;
+    addCash(this.earned); stats.jobs++; stats.stars += this.stars; store.set('stats', stats);
     this.beamMat.color.setHex(0x3ddc6a); this.iconMat.color.setHex(0x3ddc6a); this.iconMat.emissive.setHex(0x1f9f45);
     onJobDone(this);
   }
@@ -1032,12 +1551,21 @@ class Job {
     }
     this.leafMesh.count = li; this.leafMesh.instanceMatrix.needsUpdate = true; if (this.leafMesh.instanceColor) this.leafMesh.instanceColor.needsUpdate = true;
     this.stickMesh.count = si; this.stickMesh.instanceMatrix.needsUpdate = true;
+    let ti = 0;
+    for (const t of this.trash) {
+      dummy.position.set(t.x, (this.contains(t.x, t.z) ? wy : groundHeight(t.x, t.z)) + .1 + (t.goTo ? .9 : 0), t.z); dummy.rotation.set(0, t.rot, 0); dummy.scale.setScalar(t.scale); dummy.updateMatrix();
+      this.trashMesh.setMatrixAt(ti, dummy.matrix); this.trashMesh.setColorAt(ti++, t.color);
+    }
+    this.trashMesh.count = ti; this.trashMesh.instanceMatrix.needsUpdate = true; if (this.trashMesh.instanceColor) this.trashMesh.instanceColor.needsUpdate = true;
     let n = 0;
     for (const s of this.sludge) { dummy.position.set(s.x, s.y, s.z); dummy.rotation.set(0, 0, 0); dummy.scale.setScalar(s.size * s.scale); dummy.updateMatrix(); this.sludgeMesh.setMatrixAt(n++, dummy.matrix); }
     this.sludgeMesh.count = n; this.sludgeMesh.instanceMatrix.needsUpdate = true;
     n = 0;
     for (const q of this.puddles) { dummy.position.set(q.x, .034, q.z); dummy.rotation.set(0, 0, 0); dummy.scale.set(q.r, 1, q.r * .8); dummy.updateMatrix(); this.puddleMesh.setMatrixAt(n++, dummy.matrix); }
     this.puddleMesh.count = n; this.puddleMesh.instanceMatrix.needsUpdate = true;
+    n = 0;
+    for (const st of this.stains) { const k = st.r * (.4 + .6 * st.hp); dummy.position.set(st.x, .033, st.z); dummy.rotation.set(0, 0, 0); dummy.scale.set(k, 1, k * .8); dummy.updateMatrix(); this.stainMesh.setMatrixAt(n++, dummy.matrix); }
+    this.stainMesh.count = n; this.stainMesh.instanceMatrix.needsUpdate = true;
     if (this.mud && (this.mudDirty || force)) {
       const [c, r] = this.mud, cw = this.gw / c, ch = this.gd / r;
       for (let i = 0; i < this.mudH.length; i++) {
@@ -1071,7 +1599,7 @@ const player = (() => {
   const legL = limb(.15, .95), legR = limb(-.15, .95), armL = limb(.37, 1.56), armR = limb(-.37, 1.56);
   for (const leg of [legL, legR]) { part(.22, .68, .24, pants, 0, -.34, 0, leg); part(.24, .22, .34, boot, 0, -.79, .04, leg); }
   for (const arm of [armL, armR]) { part(.16, .6, .18, shirt, 0, -.3, 0, arm); part(.15, .13, .17, glove, 0, -.65, 0, arm); }
-  return { g, legL, legR, armL, armR };
+  return { g, legL, legR, armL, armR, vest, hat };
 })();
 
 // ---- The tools you hold ----
@@ -1081,6 +1609,7 @@ const TOOLS = {
   snake:  { name: 'Snake',  icon: '\u{1F40D}', min: 1.0, max: 2.0, ring: .4 },
   vac:    { name: 'Shop Vac', icon: '\u{1F32A}️', min: .9, max: 2.7, ring: 1.1 },
   washer: { name: 'Washer', icon: '\u{1F6BF}', min: 1.0, max: 5.2, ring: .68 },
+  grab:   { name: 'Grabber', icon: '\u{1F9BE}', min: .9, max: 2.6, ring: .5 },
 };
 const TOOL_IDS = Object.keys(TOOLS);
 let tool = 'rake';
@@ -1103,6 +1632,9 @@ const toolModels = (() => {
     out.washer = { g, tip: 1.12 }; }
   { const g = new THREE.Group(), drum = new THREE.CylinderGeometry(.2, .2, .14, 16); drum.rotateZ(Math.PI / 2);
     out.snake = { g, drum: add(drum, MAT.red, 0, -.04, .08, g), tip: .3 }; add(new THREE.BoxGeometry(.3, .05, .05), MAT.dark, 0, .16, .08, g); }
+  { const g = new THREE.Group(), pole = add(zCyl(.025, 1), MAT.metal, 0, 0, 0, g), head = new THREE.Group(); g.add(head);       // the grabber: a pole with a claw
+    for (const sd of [-1, 1]) add(new THREE.BoxGeometry(.04, .04, .24), MAT.red, sd * .08, 0, .08, head).rotation.y = sd * .45;
+    out.grab = { g, pole, head }; }
   for (const id of TOOL_IDS) { out[id].g.visible = false; toolRoot.add(out[id].g); }
   return out;
 })();
@@ -1135,8 +1667,8 @@ function setHose(from, to, radius, color, sag) {
 // =====================================================================
 $('title').textContent = GAME_NAME.toUpperCase(); document.title = GAME_NAME;
 $('how').innerHTML = coarse
-  ? 'Left stick: walk &nbsp;•&nbsp; Drag the screen: look around<br>Hold USE: use your tool &nbsp;•&nbsp; Tap a tool to pick it'
-  : 'W A S D: walk &nbsp;•&nbsp; Drag the mouse: look around<br>Hold SPACE or the mouse button: use your tool &nbsp;•&nbsp; 1 to 5: pick a tool';
+  ? 'Left stick: walk &nbsp;•&nbsp; Drag the screen: look around<br>Hold USE: use your tool &nbsp;•&nbsp; Tap a tool to pick it<br>Walk up to your van and tap DRIVE VAN'
+  : 'W A S D: walk &nbsp;•&nbsp; Drag the mouse: look around<br>Hold SPACE or the mouse button: use your tool &nbsp;•&nbsp; 1 to 5: pick a tool<br>F: drive your van &nbsp;\u2022&nbsp; B: upgrade shop';
 TOOL_IDS.forEach((id, i) => {
   const b = document.createElement('button'); b.className = 'tool'; b.dataset.tool = id;
   b.innerHTML = `<span class="k">${i + 1}</span><span class="ic">${TOOLS[id].icon}</span><span class="nm">${TOOLS[id].name}</span>`;
@@ -1156,20 +1688,40 @@ function emptyVac() {
 $('empty').addEventListener('pointerdown', e => { e.preventDefault(); emptyVac(); });
 $('btnSound').addEventListener('click', () => { sfx.muted = !sfx.muted; store.set('muted', sfx.muted); if (sfx.master) sfx.master.gain.value = sfx.muted ? 0 : 1; $('btnSound').textContent = sfx.muted ? '\u{1F507}' : '\u{1F50A}'; $('btnSound').blur(); });
 $('btnSound').textContent = sfx.muted ? '\u{1F507}' : '\u{1F50A}';
-$('play').addEventListener('click', () => { started = true; $('start').remove(); initAudio(); toast('Follow the arrow to your first job!', 3500); });
-$('again').addEventListener('click', () => { jobs.forEach(j => j.reset()); $('banner').classList.add('hide'); toast('Uh oh, another storm! Every drain is blocked again.', 3500); });
+$('play').addEventListener('click', () => {
+  started = true; $('start').remove(); initAudio();
+  const today = new Date().toDateString();
+  if (stats.day !== today) { stats.day = today; store.set('stats', stats); addCash(50); toast(`Daily bonus +$50! Level ${level}: follow the arrow to your job.`, 4000); }
+  else toast(`Level ${level}: follow the arrow to your job!`, 3500);
+});
 
 const keys = new Set();
 addEventListener('keydown', e => {
+  if (e.target && e.target.tagName === 'INPUT') return;       // typing in a box is not playing
   keys.add(e.code);
   if (e.code === 'Space' || e.code.startsWith('Arrow')) e.preventDefault();
   const n = Number(e.key); if (n >= 1 && n <= TOOL_IDS.length) setTool(TOOL_IDS[n - 1]);
   if (e.code === 'KeyE') emptyVac();
+  if (e.code === 'KeyF') toggleDrive();
+  if (e.code === 'KeyQ') findDirt();
+  if (e.code === 'KeyT') toggleNozzle();
+  if (e.code === 'KeyV') toggleBlow();
+  if (e.code === 'KeyG') toggleSiren();
+  if (e.code === 'KeyX') markCrack();
+  if (e.code === 'KeyY') doDye();
+  if (e.code === 'KeyC') toggleSewer();
+  if (e.code === 'KeyB' && started && !pipe.active) openShop(!shopOpen);
+  if (e.code === 'Escape') { endPipe(); openShop(false); openHelp(false); exitSewer(); }
+  if (e.code === 'Enter') nextLevel();
+  if (e.code === 'KeyR' || e.code === 'Backspace') pipeBack();
 });
 addEventListener('keyup', e => keys.delete(e.code));
 addEventListener('blur', () => keys.clear());
 
-function turn(dx, dy) { cam.yaw -= dx * .0055; cam.pitch = clamp(cam.pitch + dy * .004, .1, 1.25); }
+function turn(dx, dy) {
+  if (pipe.active) { pipe.cx += dx * .0045; pipe.cy -= dy * .0045; return; }      // in the pipe, dragging steers the cutter
+  cam.yaw -= dx * .0055; cam.pitch = clamp(cam.pitch + dy * .004, .1, 1.25);
+}
 const look = { id: null, x: 0, y: 0 }; let mouseUse = false;
 canvas.addEventListener('pointerdown', e => {
   canvas.setPointerCapture(e.pointerId); look.id = e.pointerId; look.x = e.clientX; look.y = e.clientY;
@@ -1221,84 +1773,637 @@ function resize() {
   const w = innerWidth, h = innerHeight;
   renderer.setSize(w, h, false);
   camera.aspect = w / h; camera.fov = w < h ? 74 : 60; camera.updateProjectionMatrix();
+  pipeCam.aspect = w / h; pipeCam.updateProjectionMatrix();
 }
 addEventListener('resize', resize);
 
 // ---- Job finished! ----
 function onJobDone(job) {
-  jingle(); spawnConfetti(job.x, job.z);
-  const all = jobs.every(j => j.done);
-  $('bannerBig').textContent = all ? 'TOWN SAVED!' : 'JOB DONE!';
-  $('bannerSub').textContent = all ? `Every drain is clear. You earned $${cash} so far!` : `${job.title}  +$${job.pay}`;
-  $('again').classList.toggle('hide', !all);
+  jingle(); spawnConfetti(job.x, job.z); buzz(80);
+  $('bannerBig').textContent = 'JOB DONE!  ' + '⭐'.repeat(job.stars);
+  $('bannerSub').textContent = `${job.title}  +$${job.earned}`;
+  $('again').classList.add('hide');
   $('banner').classList.remove('hide');
   clearTimeout(onJobDone.timer);
-  if (!all) onJobDone.timer = setTimeout(() => $('banner').classList.add('hide'), 3800);
+  onJobDone.timer = setTimeout(() => $('banner').classList.add('hide'), 4200);
+  const r = rankName();
+  if (r !== onJobDone.rank) { onJobDone.rank = r; setTimeout(() => toast(`You got a new rank: ${r}!`, 3500), 4600); }
+  if (jobs.every(j => !j.inPlay || j.done)) levelDoneAt = T + 2.6;       // that was the last one!
+}
+onJobDone.rank = rankName();
+
+// =====================================================================
+//  Levels: every level is a bigger, nastier storm
+// =====================================================================
+let level = clamp(store.get('level', 1) | 0, 1, 999), levelDone = false, levelDoneAt = 0;
+const LEVEL_PLAN = [['maple'], ['court', 'fence'], ['drive', 'elm'], ['oak', 'mural', 'drive2'], ['lot', 'maple', 'drive', 'fence']];
+function jobsForLevel(n) {       // which drains are blocked on this level?
+  if (n <= LEVEL_PLAN.length) return LEVEL_PLAN[n - 1];
+  const r = seededRandom(n * 7919 + 13), ids = jobs.filter(j => !j.tunnel).map(j => j.id), count = Math.min(ids.length, 4 + Math.floor((n - 6) / 3));
+  for (let i = ids.length - 1; i > 0; i--) { const k = Math.floor(r() * (i + 1)); [ids[i], ids[k]] = [ids[k], ids[i]]; }
+  const picked = ids.slice(0, count);
+  if (!picked.some(id => jobs.find(j => j.id === id).clog)) picked[0] = 'drive';      // always at least one pipe to snake
+  if (n >= 7 && n % 3 === 1) picked.push('tunnel');                                    // every third level you also get the big storm tunnel
+  return picked;
+}
+function startLevel(n, quiet) {
+  level = n; levelDone = false; levelDoneAt = 0; store.set('level', level);
+  const ids = jobsForLevel(n);
+  for (const j of jobs) { j.inPlay = ids.includes(j.id); j.group.visible = j.inPlay; if (j.inPlay) { j.lvl = n; j.reset(); } }
+  $('nextLvl').classList.add('hide'); $('banner').classList.add('hide'); lastSteps = null;
+  if (n > 1) muddyVan();
+  setNight(n % 4 === 0);       // every fourth level is a night shift
+  if (!quiet) {
+    toast(`${n % 4 === 0 ? '\u{1F319} Night shift! ' : '\u26C8\uFE0F '}Level ${n}: ${ids.length} job${ids.length > 1 ? 's' : ''} to do!`, 4000);
+    [0, 180, 600, 780].forEach(t => setTimeout(() => blip(880, 880, .12, .1, 'square'), t));
+  }
+}
+function onLevelDone() {
+  if (levelDone) return;
+  levelDone = true;
+  const mine = jobs.filter(j => j.inPlay), stars = mine.reduce((s, j) => s + j.stars, 0), bonus = 40 * level + 15 * stars;
+  addCash(bonus); store.set('level', level + 1); if (TIME.night) count('night');        // your progress is saved even if you stop here
+  $('bannerBig').textContent = `LEVEL ${level} COMPLETE!`;
+  $('bannerSub').textContent = `⭐ ${stars} of ${mine.length * 3} stars   ·   Bonus +$${bonus}`;
+  $('banner').classList.remove('hide'); jingle(); buzz(150); spawnConfetti(P.x, P.z);
+  clearTimeout(onJobDone.timer); onJobDone.timer = setTimeout(() => $('banner').classList.add('hide'), 7000);
+  $('nextLvl').textContent = `▶ Start level ${level + 1}`; $('nextLvl').classList.remove('hide');
+  lastSteps = null;
+}
+function nextLevel() { if (levelDone && !pipe.active) startLevel(level + 1); }
+$('nextLvl').addEventListener('pointerdown', e => { e.preventDefault(); nextLevel(); });
+
+// =====================================================================
+//  The pipe camera game: you steer the snake's cutter down the pipe
+// =====================================================================
+const pipe = { active: false, job: null, node: null, z: 0, cx: 0, cy: 0, time: 0, endTimer: 0, cutting: false, heat: 0, jam: 0, fade: 0, hold: 0, taught: false, meshes: [], openings: [], pile: null, petMesh: null, calm: 0, crackMesh: null };
+const pipeScene = new THREE.Scene();
+pipeScene.background = new THREE.Color(0x050403);
+pipeScene.fog = new THREE.Fog(0x050403, 2.5, 15);
+const pipeCam = new THREE.PerspectiveCamera(72, 1, .05, 60);
+pipeScene.add(pipeCam);
+pipeCam.add(new THREE.PointLight(0xfff0d0, 5.5, 18, 1.5));          // the camera's flashlight
+pipeScene.add(new THREE.AmbientLight(0x665544, .3));
+const pipeTex = makeTexture(256, (g, s) => {
+  g.fillStyle = '#7d766a'; g.fillRect(0, 0, s, s);
+  speckle(g, s, 1400, ['#6c665b', '#8b8477', '#5d574d', '#989184'], .6, 2.2);
+  g.fillStyle = 'rgba(40,30,18,.35)'; for (let i = 0; i < 26; i++) g.fillRect(rand(s), 0, rand(2, 9), s);      // grime streaks
+  g.fillStyle = 'rgba(20,16,12,.75)'; g.fillRect(0, 0, s, 6);                                                   // the joint between pipe pieces
+});
+pipeTex.repeat.set(3, 14);
+{
+  const geo = new THREE.CylinderGeometry(1, 1, 70, 28, 1, true); geo.rotateX(Math.PI / 2);
+  const tunnel = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: pipeTex, side: THREE.BackSide, roughness: .75 }));
+  tunnel.position.z = -33; pipeScene.add(tunnel);
+  const wg = new THREE.PlaneGeometry(1.5, 70); wg.rotateX(-Math.PI / 2);
+  const water = new THREE.Mesh(wg, new THREE.MeshStandardMaterial({ color: 0x4a3c26, roughness: .12, transparent: true, opacity: .88 }));
+  water.position.set(0, -.66, -33); pipeScene.add(water);
+}
+const cutter = new THREE.Group(); pipeScene.add(cutter);
+const cutterMat = new THREE.MeshStandardMaterial({ color: 0xffd23a, emissive: 0x7a5a00, roughness: .3, metalness: .6 });
+{
+  const tip = new THREE.Mesh(new THREE.ConeGeometry(.1, .3, 10), cutterMat); tip.rotation.x = -Math.PI / 2; tip.position.z = -.12; cutter.add(tip);
+  for (let i = 0; i < 3; i++) { const b = new THREE.Mesh(new THREE.BoxGeometry(.38, .035, .06), cutterMat); b.rotation.z = i * Math.PI / 3; cutter.add(b); }
+}
+const pipeCable = new THREE.Mesh(zCyl(.028, 1), new THREE.MeshStandardMaterial({ color: 0xb9c0c9, roughness: .4, metalness: .8 }));
+pipeScene.add(pipeCable);
+const pipeBits = makePoints(140, .1, 0xa88a55, false, pipeScene);
+function spawnBits(x, y, z) {
+  const s = pipeBits, i = s.i = (s.i + 1) % s.n;
+  s.pos.setXYZ(i, x, y, z); s.vel[i * 3] = rand(-1.2, 1.2); s.vel[i * 3 + 1] = rand(-.3, 1.6); s.vel[i * 3 + 2] = rand(.5, 3); s.life[i] = rand(.3, .7);
+}
+const lumpGeo = new THREE.IcosahedronGeometry(1, 1), rockGeo = new THREE.IcosahedronGeometry(1, 0), rootGeo = new THREE.CylinderGeometry(.06, .1, 1.7, 5);
+const CLOG_MATS = {
+  mud: std({ color: 0x6a4826, roughness: .55, flatShading: true }),
+  grease: std({ color: 0xd2c080, roughness: .2, flatShading: true }),
+  roots: std({ color: 0x5c6a2c, roughness: .9, flatShading: true }),
+  slime: std({ color: 0x66d94a, emissive: 0x1f5a10, roughness: .15, flatShading: true }),
+  rock: std({ color: 0x8a8d92, roughness: .95, flatShading: true }),
+  boss: std({ color: 0x8a6f4a, roughness: .5, flatShading: true }),
+};
+function makeClogMesh(p) {
+  const g = new THREE.Group(), mat = CLOG_MATS[p.kind];
+  const lump = new THREE.Mesh(p.kind === 'rock' ? rockGeo : lumpGeo, mat); lump.scale.set(1, rand(.7, 1), rand(.6, .9)); lump.rotation.set(rand(3), rand(3), rand(3)); g.add(lump);
+  if (p.kind === 'roots' || p.kind === 'boss') for (let i = 0; i < 5; i++) { const r = new THREE.Mesh(rootGeo, CLOG_MATS.roots); r.rotation.set(rand(-1, 1), 0, rand(TAU)); g.add(r); }
+  if (p.kind !== 'roots' && p.kind !== 'rock') for (let i = 0; i < (p.kind === 'boss' ? 6 : 2); i++) {
+    const b = new THREE.Mesh(lumpGeo, p.kind === 'boss' ? pick([CLOG_MATS.grease, CLOG_MATS.mud, CLOG_MATS.slime]) : mat);
+    b.scale.setScalar(rand(.4, .6)); b.position.set(rand(-.7, .7), rand(-.7, .7), rand(-.2, .2)); g.add(b);
+  }
+  return g;
 }
 
-// ---- The pipe camera, for the drain snake ----
-const pipeCtx = $('pipecam').getContext('2d');
-function drawPipeCam(job) {
-  const g = pipeCtx, W = 300, H = 180, clogX = 222, busted = job.clogHp <= 0;
-  g.fillStyle = '#4b3a2a'; g.fillRect(0, 0, W, H);
-  g.fillStyle = 'rgba(0,0,0,.18)'; for (let i = 0; i < 26; i++) { g.beginPath(); g.arc((i * 73) % W, 30 + (i * 41) % 140, 2 + i % 4, 0, TAU); g.fill(); }
-  g.fillStyle = '#3d4046'; g.fillRect(0, 0, W, 24);
-  g.fillStyle = '#8d8f93'; g.fillRect(30, 18, 40, 134); g.fillRect(30, 104, 270, 48);
-  g.fillStyle = '#15171a'; g.fillRect(36, 12, 28, 134); g.fillRect(36, 110, 264, 36);
-  if (!busted) { g.fillStyle = 'rgba(122,100,60,.9)'; g.fillRect(36, 26, 28, 120); g.fillRect(36, 110, clogX - 36, 36); }
-  else { g.fillStyle = 'rgba(110,130,140,.75)'; g.fillRect(36, 132, 264, 14); g.strokeStyle = 'rgba(220,235,245,.7)'; g.lineWidth = 2; for (let i = 0; i < 9; i++) { const x = 36 + ((T * 160 + i * 31) % 264); g.beginPath(); g.moveTo(x, 135 + (i % 3) * 3); g.lineTo(Math.min(300, x + 14), 135 + (i % 3) * 3); g.stroke(); } }
-  g.fillStyle = '#5b5f66'; for (let i = 0; i < 4; i++) g.fillRect(38 + i * 7, 12, 3, 12);
-  if (!busted) {     // the clog: a lump of roots, leaves and gunk
-    const s = .45 + .55 * job.clogHp, shake = job.cable >= CLOG_DEPTH ? Math.sin(T * 40) * 1.5 : 0;
-    const lumps = [[0, 0, 15, '#5a4424'], [-9, -8, 10, '#6b5a2a'], [8, 7, 11, '#4a3a1e'], [10, -9, 9, '#5f6a32'], [-10, 9, 9, '#3f3018'], [16, 0, 8, '#6d4f28'], [2, -12, 7, '#7a8a2a']];
-    for (const [ox, oy, r, c] of lumps) { g.fillStyle = c; g.beginPath(); g.arc(clogX + 8 + ox * s + shake, 128 + oy * s, r * s, 0, TAU); g.fill(); }
-  }
-  // the cable
-  const path = 128 + (clogX - 12 - 50), len = job.cable / CLOG_DEPTH * path;
-  g.strokeStyle = '#c9ced6'; g.lineWidth = 3; g.lineJoin = 'round'; g.beginPath(); g.moveTo(50, 0);
-  let tx = 50, ty = Math.min(len, 128);
-  g.lineTo(50, ty);
-  if (len > 128) { tx = 50 + (len - 128); ty = 128; g.lineTo(tx, 128); }
-  g.stroke();
-  if (len > 2) {     // the spinning cutter on the end
-    const spin = T * 30, down = len <= 128;
-    g.strokeStyle = '#ffd23a'; g.lineWidth = 2.5; g.beginPath();
-    for (let i = 0; i <= 8; i++) { const o = Math.sin(spin + i * 1.5) * 5; if (down) g.lineTo(tx + o, ty + i * 1.6); else g.lineTo(tx + i * 1.6, ty + o); }
-    g.stroke();
-  }
-  g.fillStyle = '#fff'; g.font = '700 12px system-ui, sans-serif'; g.textAlign = 'left'; g.fillText('PIPE CAM', 82, 16);
-  g.fillStyle = Math.sin(T * 6) > 0 ? '#ff4040' : '#701010'; g.beginPath(); g.arc(150, 12, 4, 0, TAU); g.fill();
-  g.fillStyle = '#ffe9b8'; g.textAlign = 'right';
-  g.fillText(busted ? 'PIPE CLEAR!' : job.cable < CLOG_DEPTH ? `Cable ${job.cable.toFixed(1)} m` : `Clog ${Math.ceil(job.clogHp * 100)}%`, 292, 172);
+const crackTex = makeTexture(128, (g, s) => {       // a crack in the pipe wall
+  g.clearRect(0, 0, s, s); g.strokeStyle = '#050403'; g.lineCap = 'round';
+  for (const [w, n] of [[7, 1], [3, 4]]) for (let k = 0; k < n; k++) { g.lineWidth = w; g.beginPath(); let x = s / 2 + rand(-10, 10), y = k ? rand(20, 100) : 6; g.moveTo(x, y); for (let i = 0; i < 7; i++) { x += rand(-16, 16) * (k ? 1.6 : 1); y += k ? rand(-4, 10) : 17; g.lineTo(x, y); } g.stroke(); }
+});
+const crackGeo = new THREE.PlaneGeometry(.55, 1.1);
+const crackMat = new THREE.MeshBasicMaterial({ map: crackTex, transparent: true }), crackMatDone = new THREE.MeshBasicMaterial({ map: crackTex, transparent: true, color: 0xff7a1a });
+function markCrack() {       // spray paint the crack so the repair crew can find it
+  const c = pipe.active && pipe.node.crack;
+  if (!c || c.marked || Math.abs(pipe.z + .6 - c.z) > 1.9) return;
+  c.marked = true; if (pipe.crackMesh) pipe.crackMesh.material = crackMatDone;
+  addCash(30); count('crack'); blip(700, 1100, .2, .1, 'triangle'); toast('Crack marked for the repair crew! +$30', 3000);
 }
+// ---- what you find at the end of each pipe ----
+const pipeEnd = new THREE.Group(); pipeScene.add(pipeEnd);
+const END_MATS = {
+  wall: std({ color: 0x5d574d, roughness: .9 }), hole: new THREE.MeshBasicMaterial({ color: 0x020202 }),
+  still: std({ color: 0x6b5330, roughness: .1 }), light: new THREE.MeshBasicMaterial({ color: 0xbfe6ff }),
+  rust: std({ color: 0x8a4a2a, roughness: .8 }), gold: std({ color: 0xffd23a, roughness: .25, metalness: 1 }),
+};
+function buildEnd(node) {
+  pipeEnd.clear(); pipe.openings = []; pipe.pile = null; pipe.petMesh = null; pipe.calm = 0;
+  if (node.end === 'out') return;                // this pipe just carries on to the sewer
+  pipeEnd.position.z = -node.len;
+  const add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); pipeEnd.add(m); return m; };
+  add(new THREE.CircleGeometry(1.03, 28), END_MATS.wall, 0, 0, 0);
+  if (node.end === 'junction') {       // the pipe splits. Which way is the clog?
+    const n = node.kids.length;
+    node.kids.forEach((k, i) => {
+      const x = (i - (n - 1) / 2) * (n === 2 ? .84 : .6), y = .05;
+      add(new THREE.CircleGeometry(.25, 20), END_MATS.hole, x, y, .01);
+      const rim = add(new THREE.TorusGeometry(.25, .04, 8, 24), std({ color: 0x9a9388, roughness: .6 }), x, y, .02);
+      if (pipe.job.pipeLayout.hard) { /* no easy clues on hard levels: use the dye test */ }
+      else if (clogLeft(k)) add(new THREE.CircleGeometry(.24, 14, Math.PI, Math.PI), END_MATS.still, x, y, .015);      // backed-up brown water: blocked!
+      else add(new THREE.CircleGeometry(.07, 12), END_MATS.light, x, y + .04, .015);                                // light at the end: this pipe is clear
+      pipe.openings.push({ x, y, rim, kid: k });
+    });
+  } else if (node.end === 'dead') {
+    for (const r of [1, -1]) add(new THREE.BoxGeometry(1.3, .13, .05), END_MATS.rust, 0, 0, .03).rotation.z = r * Math.PI / 4;
+  } else if (node.end === 'pet' && !node.rescued) {       // a little animal is stuck down here
+    pipe.petMesh = makePet(node.pet); pipe.petMesh.scale.setScalar(.8); pipe.petMesh.position.set(0, -.42, .4); pipeEnd.add(pipe.petMesh);
+  } else if (node.end === 'coins') {
+    pipe.pile = new THREE.Group(); pipeEnd.add(pipe.pile);
+    for (let i = 0; i < 7; i++) { const c = new THREE.Mesh(coinGeo, END_MATS.gold); c.position.set(rand(-.25, .25), -.5 + rand(0, .3), .25 + rand(0, .2)); c.rotation.set(rand(3), rand(3), 0); c.scale.setScalar(.55); pipe.pile.add(c); }
+  }
+}
+function enterNode(node, z) {       // move the snake into a pipe
+  pipe.node = node; pipe.z = z; node.entered = node.seen = true; pipe.hold = 0; pipe.fade = 1; pipe.cx = pipe.cy = 0;
+  for (const m of pipe.meshes) pipeScene.remove(m);
+  pipe.meshes = [];
+  for (const p of node.pieces) {
+    if (p.gone) continue;
+    const m = makeClogMesh(p); m.position.set(p.x, p.y, -p.z); m.scale.setScalar(p.r * (.5 + .5 * p.hp / p.max));
+    pipeScene.add(m); pipe.meshes.push(m); p.mesh = m;
+  }
+  buildEnd(node);
+  if (pipe.crackMesh) { pipeScene.remove(pipe.crackMesh); pipe.crackMesh = null; }
+  if (node.crack) {
+    const c = node.crack, m = new THREE.Mesh(crackGeo, c.marked ? crackMatDone : crackMat);
+    m.position.set(Math.cos(c.a) * .96, Math.sin(c.a) * .96, -c.z); m.lookAt(0, 0, -c.z); pipeScene.add(m); pipe.crackMesh = m;
+  }
+}
+function depthOf(node) { let d = 0; for (let n = node.parent; n; n = n.parent) d += n.len; return d; }
+function startPipe(job) {
+  const net = job.pipeLayout;
+  pipe.active = true; pipe.job = job; pipe.endTimer = 0; pipe.time = 0; pipe.heat = 0; pipe.jam = 0;
+  enterNode(net.cur, net.pos);
+  document.body.classList.add('piping'); $('pipeHud').classList.remove('hide');
+  blip(200, 80, .4, .12, 'sawtooth');
+}
+function endPipe() {
+  if (!pipe.active) return;
+  pipe.job.pipeLayout.cur = pipe.node; pipe.job.pipeLayout.pos = pipe.z; pipe.active = false; pipe.cutting = false;
+  document.body.classList.remove('piping'); $('pipeHud').classList.add('hide'); lastSteps = null;
+}
+function pipeBack() {       // pull the snake back to the last junction, or right out of the drain
+  if (!pipe.active) return;
+  const par = pipe.node.parent;
+  if (!par) { endPipe(); return; }
+  blip(520, 260, .2, .1, 'triangle'); enterNode(par, par.len - 1.6);
+}
+function finishPipe() {
+  const job = pipe.job; endPipe();
+  for (let i = 0; i < 9; i++) job.spawnSludge(job.x, job.z);
+  toast('CLOG BUSTED! Here comes the water!', 3000); blip(140, 60, .6, .2, 'sawtooth'); spawnMist(job.x, .3, job.z, 40, 3); buzz(120);
+  lastNag = T + 2;
+}
+function updatePipe(dt, ix, iy, using) {
+  const job = pipe.job, net = job.pipeLayout, node = pipe.node; pipe.time += dt;
+  ix += (keys.has('ArrowRight') ? 1 : 0) - (keys.has('ArrowLeft') ? 1 : 0);
+  pipe.cx += ix * 1.6 * dt; pipe.cy += iy * 1.6 * dt;
+  const cl = Math.hypot(pipe.cx, pipe.cy); if (cl > .7) { pipe.cx *= .7 / cl; pipe.cy *= .7 / cl; }
+  const left = node.pieces.filter(p => !p.gone), allLeft = net.pieces.filter(p => !p.gone).length;
+  let front = Infinity; for (const p of left) front = Math.min(front, p.z);
+  const jammed = pipe.jam > 0, spinning = using && !jammed;
+  if (jammed) pipe.jam -= dt;
+  pipe.cutting = false;
+  let heatUp = 0, tip = '', sense = null;
+  if (allLeft) {
+    const maxZ = node.len - (node.end === 'out' ? 0 : 1.6);
+    const blocked = left.length > 0 && pipe.z + 1.25 >= front - .35;        // the cutter has reached the gunk
+    if (spinning && !blocked) pipe.z = Math.min(maxZ, pipe.z + 2.6 * dt);
+    const atEnd = pipe.z >= maxZ - .01;
+    let nearest = null, nd = 1e9;
+    for (const p of left) {
+      const here = p.z <= front + .9;                      // part of the lump right in front?
+      if (p.kind === 'slime') { p.a += p.spin * dt; p.x = Math.cos(p.a) * p.rr; p.y = Math.sin(p.a) * p.rr * .8 + .05; }      // slime slides round the pipe
+      const dx = p.x - pipe.cx, dy = p.y - pipe.cy, d = Math.hypot(dx, dy) || .01;
+      if (p.kind === 'grease' && here && blocked && d < .5) {                                                                  // grease slips away from the cutter
+        p.x += dx / d * .24 * dt; p.y += dy / d * .24 * dt;
+        const m = Math.hypot(p.x, p.y); if (m > .58) { p.x *= .58 / m; p.y *= .58 / m; }
+      }
+      let cut = false;
+      if (here && blocked) {
+        if (d < nd) { nd = d; nearest = p; }
+        if (spinning && d < p.r * (.5 + .5 * p.hp / p.max) + .2 + .025 * up.snake) {
+          cut = pipe.cutting = true;
+          p.hp -= U.cutter() / job.tough * dt; heatUp = Math.max(heatUp, GUNK[p.kind].heat);
+          if (Math.random() < dt * 30) spawnBits(p.x, p.y, -p.z + .2);
+          if (p.hp <= 0) {
+            p.gone = true; pipeScene.remove(p.mesh);
+            for (let i = 0; i < (p.kind === 'boss' ? 40 : 10); i++) spawnBits(p.x, p.y, -p.z + .2);
+            blip(rand(300, 420), 120, .16, .12); buzz(25); continue;
+          }
+        }
+      }
+      // roots and the mega clog grow back when you stop cutting them
+      if (!cut && p.hp < p.max) { if (p.kind === 'roots') p.hp = Math.min(p.max, p.hp + p.max * .09 * dt); else if (p.kind === 'boss') p.hp = Math.min(p.max, p.hp + p.max * .02 * dt); }
+      const jit = cut ? .02 : 0;
+      p.mesh.position.set(p.x + rand(-jit, jit), p.y + rand(-jit, jit), -p.z);
+      p.mesh.scale.setScalar(p.r * (.5 + .5 * Math.max(0, p.hp) / p.max));
+      if (p.kind === 'slime' || p.kind === 'boss') p.mesh.rotation.z += dt * (p.kind === 'boss' ? .4 : 1.5);
+    }
+    job.clogHp = net.pieces.filter(p => !p.gone).length / net.total;
+    sense = senseAhead(node, pipe.z, !net.hard);
+
+    // the end of this pipe: a junction, a dead end, or a stash of coins
+    let hover = null, squeak = false;
+    if (atEnd && node.end === 'junction') {
+      for (const k of node.kids) k.seen = true;
+      for (const o of pipe.openings) {
+        const on = Math.hypot(o.x - pipe.cx, o.y - pipe.cy) < .27; if (on) hover = o;
+        o.rim.material.emissive.setRGB(on ? .9 + .3 * Math.sin(pipe.time * 12) : 0, on ? .6 : 0, 0);
+      }
+      sense = hover ? (net.hard ? NaN : senseAhead(hover.kid, 0)) : null; squeak = !!hover && petLeft(hover.kid);
+      pipe.hold = hover && using ? pipe.hold + dt : 0;
+      if (!pipe.taught) { pipe.taught = true; toast('The pipe splits! A light means that pipe is clear. Brown water means it is blocked.', 6500); }
+      if (hover && pipe.hold > .55) { blip(260, 520, .2, .1, 'triangle'); enterNode(hover.kid, 0); return; }
+    } else if (atEnd && node.end === 'coins' && pipe.pile && Math.abs(pipe.cx) < .4 && pipe.cy < -.15) {
+      addCash(40); jingle(); buzz(60); toast('You found a stash of coins in the pipe! +$40', 3000);
+      node.end = 'dead'; node.looted = true; pipeEnd.remove(pipe.pile); pipe.pile = null;
+    } else if (atEnd && node.end === 'pet' && !node.rescued && pipe.petMesh) {       // an animal is stuck! Be gentle: no spinning.
+      const close = Math.hypot(pipe.cx, pipe.cy + .42) < .34;
+      if (using) { pipe.calm = 0; pipe.petMesh.position.x = rand(-.03, .03); }
+      else if (close) { pipe.calm += dt; pipe.petMesh.position.y = -.42 + Math.abs(Math.sin(pipe.time * 8)) * .05; }
+      else pipe.calm = Math.max(0, pipe.calm - dt);
+      if (pipe.calm > 1.6) {
+        node.rescued = true; pipeEnd.remove(pipe.petMesh); pipe.petMesh = null;
+        addCash(100); jingle(); buzz(80); count('rescue'); job.petSaved(node.pet); toast(`You rescued a ${node.pet}! It is waiting for you up top. +$100`, 4000);
+      }
+    }
+    const crackNear = node.crack && !node.crack.marked && Math.abs(pipe.z + .6 - node.crack.z) < 1.9;
+    $('pipeMark').classList.toggle('hide', !crackNear);
+    tip = jammed ? 'TOO HOT! Wait for the cutter to cool down'
+        : blocked ? (nearest && nd < nearest.r + .45 ? GUNK[nearest.kind].tip : 'Steer the spinning cutter onto the gunk')
+        : crackNear ? 'A cracked pipe! Tap MARK so the repair crew can fix it.'
+        : !atEnd ? `Hold ${USE} to push the snake in`
+        : node.end === 'junction' ? (hover ? `Hold ${USE} to go down this pipe` : net.hard ? 'No clues down here! Use the DYE TEST up top and read the pipe map.' : 'Point the cutter at a pipe to check it with the clog sensor')
+        : node.end === 'pet' && !node.rescued ? (using ? 'Stop the cutter! You are scaring it.' : pipe.calm > 0 ? 'Hold still... it is climbing on!' : `A little ${node.pet} is stuck! Move the cutter to it gently. Do NOT spin.`)
+        : node.end === 'coins' ? 'Coins! Touch them with the cutter'
+        : node.end === 'dead' ? 'Dead end! Tap BACK and try another pipe'
+        : 'This pipe is clear now. Tap BACK and find the next clog';
+  } else {       // every clog is gone: the water rushes away and we pull the snake out
+    job.clogHp = 0; pipe.endTimer += dt; pipe.z += 5 * dt;
+    tip = 'PIPE CLEAR! Here comes the water!'; $('pipeMark').classList.add('hide');
+    if (pipe.endTimer > 1.7) { finishPipe(); return; }
+  }
+  // the cutter gets hot when it works hard. Too hot and it jams for a moment.
+  pipe.heat = clamp(pipe.heat + (pipe.cutting ? heatUp : -.4) * dt, 0, 1);
+  if (pipe.heat >= 1 && !jammed) { pipe.jam = 1.7; blip(900, 200, .5, .12, 'sawtooth'); buzz(150); }
+  cutterMat.emissive.setRGB(.48 + .5 * pipe.heat, .35 * (1 - pipe.heat), 0);
+  const deep = depthOf(node) + pipe.z;
+  pipeScene.fog.far = 15 - Math.min(6, deep / 6);          // it gets darker the deeper you go
+
+  const wob = Math.sin(pipe.time * 9) * .006 * (spinning ? 2 : 1);
+  pipeCam.position.set(pipe.cx * .18 + wob, pipe.cy * .18 + .04, -pipe.z);
+  pipeCam.lookAt(pipe.cx * .55, pipe.cy * .55, -pipe.z - 4);
+  cutter.position.set(pipe.cx, pipe.cy, -(pipe.z + 1.25));
+  if (spinning) cutter.rotation.z += dt * 26;
+  v1.set(pipe.cx * .3, -.55, -pipe.z + .3);
+  pipeCable.position.copy(cutter.position); pipeCable.lookAt(v1); pipeCable.scale.z = cutter.position.distanceTo(v1);
+  updatePoints(pipeBits, dt, 4, -.66);
+  let sensor = !allLeft ? 'all clear' : sense === null ? 'point at a pipe' : Number.isNaN(sense) ? 'no signal round corners' : sense === Infinity ? (net.hard ? 'nothing in this pipe' : 'NOTHING THIS WAY') : `${Math.max(0, Math.round(sense))} m ahead`;
+  if (allLeft && node.end === 'junction' && pipe.openings.some(o => Math.hypot(o.x - pipe.cx, o.y - pipe.cy) < .27 && petLeft(o.kid))) sensor += '  (squeak!)';
+  $('pipeTip').textContent = tip;
+  $('pipeInfo').textContent = `LEVEL ${job.lvl}\nDEPTH ${(deep + 1.25).toFixed(1)} m\nGUNK LEFT ${allLeft}\nHEAT ${Math.round(pipe.heat * 100)}%\nCLOG SENSOR: ${sensor}`;
+  $('pipeFill').style.width = ((1 - allLeft / net.total) * 100) + '%';
+  $('heatFill').style.width = (pipe.heat * 100) + '%';
+  pipe.fade = Math.max(0, pipe.fade - dt * 2.4); $('pipeFade').style.opacity = pipe.fade;
+  drawPipeMap(net);
+}
+// ---- the little map of the pipes you have explored ----
+const pmCtx = $('pipeMap').getContext('2d');
+function drawPipeMap(net, g = pmCtx) {
+  const W = 150, H = 110, live = pipe.active && pipe.job.pipeLayout === net;
+  g.clearRect(0, 0, W, H); g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(0, 0, W, H);
+  const X = n => 16 + (net.slots > 1 ? n.mx / (net.slots - 1) : .5) * (W - 32), Y = d => 16 + d * (H - 30) / (net.junctions + 1);
+  g.lineCap = g.lineJoin = 'round'; g.font = '700 11px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  for (const n of net.nodes) {
+    if (!n.seen && !net.hard) continue;       // on hard levels you get the whole plan of the pipes
+    const x0 = n.parent ? X(n.parent) : X(n), y0 = Y(n.d), x1 = X(n), y1 = Y(n.d + 1), here = live && n === pipe.node;
+    g.setLineDash(n.entered ? [] : [3, 4]); g.lineWidth = here ? 4 : 3;
+    g.strokeStyle = here ? '#ffd23a' : n.entered ? '#e8e8e8' : '#8a8f96';
+    g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y0 + 6); g.lineTo(x1, y1 - (n.kids.length ? 0 : 8)); g.stroke(); g.setLineDash([]);
+    if (net.hard && n.letter) { g.fillStyle = n.man === 'dye' ? '#3ddc6a' : n.man === 'dry' ? '#ff4040' : '#fff'; g.fillText(n.letter, x1, y1 + 5); }
+    if (n.end === 'pet' && n.entered && !n.rescued) { g.fillStyle = '#ff8fb0'; g.fillText('\u2665', x1, y1 - 3); }
+    else if (!n.entered) { if (!net.hard) { g.fillStyle = '#c9ced6'; g.fillText('?', x1, y1 - 2); } }
+    else if (n.pieces.length) { g.fillStyle = n.pieces.some(p => !p.gone) ? '#ff4040' : '#3ddc6a'; g.beginPath(); g.arc(x1, y1 - 3, 5, 0, TAU); g.fill(); }
+    else if (!n.kids.length) { g.fillStyle = n.looted ? '#ffd23a' : '#8a8f96'; g.fillText(n.looted ? '$' : n.end === 'coins' ? '$' : 'x', x1, y1 - 2); }
+  }
+  const n = live ? pipe.node : net.root, f = live ? clamp(pipe.z / n.len, 0, 1) : 0;       // the blinking dot is you
+  if (live && Math.sin(pipe.time * 8) > -.3) { g.fillStyle = '#39a0ff'; g.strokeStyle = '#fff'; g.lineWidth = 1.5; g.beginPath(); g.arc(X(n), lerp(Y(n.d) + 6, Y(n.d + 1) - 4, f), 4, 0, TAU); g.fill(); g.stroke(); }
+  g.fillStyle = '#fff'; g.fillText('DRAIN', X(net.root), 7);
+}
+$('pipeOut').addEventListener('click', endPipe);
+$('pipeBackBtn').addEventListener('click', pipeBack);
+$('pipeMark').addEventListener('click', markCrack);
+const planCtx = $('plan').getContext('2d');
+function doDye() { const j = activeJob; if (j && j.clog && j.pipeLayout.hard && j.clogHp > 0 && !ride && !pipe.active) j.dyeTest(); }
+$('dyeBtn').addEventListener('pointerdown', e => { e.preventDefault(); doDye(); });
+
+// =====================================================================
+//  Coins to collect around town
+// =====================================================================
+const coins = [], COIN_N = 14;
+const coinGeo = new THREE.CylinderGeometry(.24, .24, .05, 16); coinGeo.rotateX(Math.PI / 2);
+const coinMesh = new THREE.InstancedMesh(coinGeo, std({ color: 0xffd23a, roughness: .25, metalness: 1 }), COIN_N);
+coinMesh.frustumCulled = false; coinMesh.castShadow = true; scene.add(coinMesh);
+function placeCoin(c) {
+  for (let i = 0; i < 30; i++) {
+    const main = Math.random() < .5, a = rand(-62, 62), b = rand(-6.2, 6.2);
+    c.x = main ? a : b; c.z = main ? b : a;
+    if (!jobs.some(j => Math.hypot(j.x - c.x, j.z - c.z) < 9) && Math.hypot(c.x - P.x, c.z - P.z) > 6) break;
+  }
+  c.on = true;
+}
+for (let i = 0; i < COIN_N; i++) { const c = { x: 0, z: 0, on: false, back: 0 }; placeCoin(c); coins.push(c); }
+function updateCoins() {
+  const reach = ride ? 2.5 : 1.2;
+  coins.forEach((c, i) => {
+    if (!c.on && T > c.back) placeCoin(c);
+    if (c.on && started && Math.hypot(c.x - P.x, c.z - P.z) < reach) { c.on = false; c.back = T + 25; addCash(5); count('coin'); blip(1200, 1800, .12, .1, 'triangle'); }
+    dummy.position.set(c.x, c.on ? groundHeight(c.x, c.z) + .6 + Math.sin(T * 3 + i) * .1 : -50, c.z);
+    dummy.rotation.set(0, T * 2.5 + i, 0); dummy.scale.setScalar(1); dummy.updateMatrix(); coinMesh.setMatrixAt(i, dummy.matrix);
+  });
+  coinMesh.instanceMatrix.needsUpdate = true;
+}
+
+// =====================================================================
+//  The little map in the corner
+// =====================================================================
+const mapCtx = $('mapc').getContext('2d'), MAP_S = 150 / 140, MX = v => (v + 70) * MAP_S;
+const mapBg = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 150; const g = c.getContext('2d');
+  g.fillStyle = '#3f7a34'; g.fillRect(0, 0, 150, 150);
+  g.fillStyle = '#c9c6be'; for (const r of raised) g.fillRect(MX(r.x0), MX(r.z0), (r.x1 - r.x0) * MAP_S, (r.z1 - r.z0) * MAP_S);
+  g.fillStyle = '#3a3d42'; g.fillRect(0, MX(-4.5), 150, 9 * MAP_S); g.fillRect(MX(-4.5), 0, 9 * MAP_S, 150);
+  g.fillStyle = '#b9b6ad'; g.fillRect(MX(-28), MX(11.5), 12 * MAP_S, 9 * MAP_S);
+  for (const b of boxes) { g.fillStyle = b.h > 3 ? '#e6d2b0' : '#2a5a2c'; g.fillRect(MX(b.x0), MX(b.z0), (b.x1 - b.x0) * MAP_S, (b.z1 - b.z0) * MAP_S); }
+  return c;
+})();
+function drawMap() {
+  const g = mapCtx;
+  g.drawImage(mapBg, 0, 0);
+  g.fillStyle = '#ffd23a'; for (const c of coins) if (c.on) g.fillRect(MX(c.x) - 1.5, MX(c.z) - 1.5, 3, 3);
+  g.strokeStyle = '#fff'; g.lineWidth = 1.5;
+  for (const j of jobs) { if (!j.inPlay) continue; g.fillStyle = j.done ? '#3ddc6a' : '#ffa41c'; g.beginPath(); g.arc(MX(j.x), MX(j.z), j.done ? 4 : 5 + 1.5 * Math.abs(Math.sin(T * 3)), 0, TAU); g.fill(); g.stroke(); }
+  for (const v of vehicles) { if (!v.owned) continue; g.save(); g.translate(MX(v.x), MX(v.z)); g.rotate(-v.yaw); g.fillStyle = v === truck ? '#f2c21a' : '#fff'; g.fillRect(-2.5, -4, 5, 9); g.fillStyle = '#ff7a1a'; g.fillRect(-2.5, 2, 5, 3); g.restore(); }
+  if (emer.on && Math.sin(T * 9) > 0) { g.fillStyle = '#ff2a2a'; g.beginPath(); g.arc(MX(emer.x), MX(emer.z), 6, 0, TAU); g.fill(); g.stroke(); }
+  if (dumpBeam.visible) { g.fillStyle = '#39a0ff'; g.beginPath(); g.arc(MX(DUMP.x), MX(DUMP.z), 5, 0, TAU); g.fill(); g.stroke(); }
+  if (!ride) {       // you are the blue arrow
+    g.save(); g.translate(MX(P.x), MX(P.z)); g.rotate(-P.yaw);
+    g.fillStyle = '#39a0ff'; g.strokeStyle = '#fff'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(0, 7); g.lineTo(5, -5); g.lineTo(0, -2); g.lineTo(-5, -5); g.closePath(); g.fill(); g.stroke(); g.restore();
+  }
+}
+
+// =====================================================================
+//  The upgrade shop
+// =====================================================================
+const UPS = [
+  ['rake', '\u{1F342}', 'Wider rake', 'Rakes more leaves at once'],
+  ['jet', '\u{1F4A6}', 'Power jet', 'Blasts mud faster and wider'],
+  ['snake', '\u{1F40D}', 'Turbo cutter', 'Chews through pipe gunk faster'],
+  ['vac', '\u{1F32A}️', 'Mega vac', 'Stronger suction and a bigger tank'],
+  ['washer', '\u{1F6BF}', 'Wide washer', 'Cleans a wider stripe'],
+  ['boots', '\u{1F97E}', 'Speedy boots', 'Walk faster'],
+];
+function renderShop() {
+  $('shopInfo').textContent = `You have $${cash}  ·  Rank: ${rankName()}  ·  Jobs done: ${stats.jobs}  ·  Stars: ${stats.stars}`;
+  $('ups').innerHTML = UPS.map(([id, ic, name, what]) => {
+    const lv = up[id], max = lv >= UP_COST.length, cost = UP_COST[lv];
+    return `<div class="up"><span class="ic">${ic}</span><span class="tx"><b>${name} <span class="pips">${'●'.repeat(lv)}${'○'.repeat(UP_COST.length - lv)}</span></b>${what}</span><button class="btn" data-up="${id}" ${max || cash < cost ? 'disabled' : ''}>${max ? 'MAX' : '$' + cost}</button></div>`;
+  }).join('');
+  $('ups').innerHTML += `<div class="up"><span class="ic">\u{1F69B}</span><span class="tx"><b>Vac truck</b>A giant hose that sucks up whole floods. Empty it at the blue beam.</span><button class="btn" data-buy="truck" ${truck.owned || cash < 2500 ? 'disabled' : ''}>${truck.owned ? 'OWNED' : '$2500'}</button></div>`;
+  $('ups').innerHTML += `<div class="up"><span class="ic">\u{1F436}</span><span class="tx"><b>Scout the dog</b>He follows you and fetches coins</span><button class="btn" data-buy="dog" ${dog.owned || cash < 600 ? 'disabled' : ''}>${dog.owned ? 'YOURS' : '$600'}</button></div>`;
+  $('swatches').innerHTML = [['van', 'Van'], ['vest', 'Vest'], ['hat', 'Hat']].map(([k, label]) => `<div class="swrow"><span>${label}</span>${SWATCH[k].map(c => `<button class="sw${style[k] === c ? ' on' : ''}" data-style="${k}" data-col="${c}" style="background:${c}"></button>`).join('')}</div>`).join('');
+  $('book').innerHTML = STICKERS.map(([id, ic, name]) => `<div class="stk${stickers.includes(id) ? ' got' : ''}"><i>${stickers.includes(id) ? ic : '❓'}</i>${name}</div>`).join('');
+  $('trophies').textContent = 'Treasures:  ' + PRIZE_KINDS.map(k => found.includes(k) ? PRIZES[k][0] : '❓').join(' ');
+}
+// ---- your style: van paint, vest, hat and company name ----
+const style = Object.assign({ van: '#f5f5f2', vest: '#ff7a1a', hat: '#ffd21f', name: GAME_NAME }, store.get('style', {}));
+const SWATCH = { van: ['#f5f5f2', '#ff4d4d', '#39a0ff', '#3ddc6a', '#ffd23a', '#a56bff', '#22252a'], vest: ['#ff7a1a', '#d7ff3a', '#ff4dc4', '#39a0ff', '#3ddc6a'], hat: ['#ffd21f', '#ffffff', '#ff4d4d', '#39a0ff', '#ff8fd0'] };
+function applyStyle(save) {
+  vanMat.color.set(style.van); player.vest.color.set(style.vest); player.hat.color.set(style.hat); drawVanSign(style.name || GAME_NAME);
+  if (save) store.set('style', style);
+}
+$('coName').value = style.name;
+$('coName').addEventListener('input', () => { style.name = $('coName').value.slice(0, 18); applyStyle(true); });
+$('shop').addEventListener('click', e => {
+  const sw = e.target.closest('button[data-style]'), buy = e.target.closest('button[data-buy]');
+  if (sw) { style[sw.dataset.style] = sw.dataset.col; applyStyle(true); renderShop(); }
+  if (buy && buy.dataset.buy === 'dog' && !dog.owned && cash >= 600) { addCash(-600); dog.owned = true; dog.x = P.x + 1; dog.z = P.z + 1; store.set('dog', true); jingle(); toast('Meet Scout! He will follow you and fetch coins.', 4000); renderShop(); }
+  if (buy && buy.dataset.buy === 'truck' && !truck.owned && cash >= 2500) { addCash(-2500); truck.owned = true; truck.g.visible = true; store.set('truck', true); jingle(); toast('You bought the VAC TRUCK! It is parked behind your van.', 4000); renderShop(); }
+});
+// ---- the sticker book ----
+const STICKERS = [
+  ['first', '\u{1F6A7}', 'First job done', () => stats.jobs >= 1],
+  ['ten', '\u{1F3C5}', '10 jobs done', () => stats.jobs >= 10],
+  ['lvl5', '⛈️', 'Reached level 5', () => level >= 5],
+  ['lvl10', '\u{1F329}️', 'Reached level 10', () => level >= 10],
+  ['stars', '⭐', '30 stars', () => stats.stars >= 30],
+  ['coins', '\u{1FA99}', '50 coins grabbed', () => (counts.coin || 0) >= 50],
+  ['treasure', '\u{1F451}', 'Every treasure found', () => new Set(found).size >= PRIZE_KINDS.length],
+  ['rescue', '\u{1F431}', 'Animal rescuer', () => (counts.rescue || 0) >= 1],
+  ['vet', '\u{1F43E}', '5 animals rescued', () => (counts.rescue || 0) >= 5],
+  ['crack', '\u{1F4CD}', 'Crack spotter (5 cracks)', () => (counts.crack || 0) >= 5],
+  ['dye', '\u{1F9EA}', 'Dye detective', () => (counts.dye || 0) >= 1],
+  ['hero', '\u{1F6A8}', 'Emergency hero (3 fixed)', () => (counts.emergency || 0) >= 3],
+  ['shiny', '\u{1F690}', 'Shiny van', () => (counts.vanWash || 0) >= 1],
+  ['honk', '\u{1F4EF}', 'Honk honk! (50 honks)', () => (counts.honk || 0) >= 50],
+  ['driver', '\u{1F6E3}️', 'Road trip (5 km driven)', () => (counts.drive || 0) >= 5000],
+  ['trucker', '\u{1F69B}', 'Vac truck owner', () => truck.owned],
+  ['washer', '\u{1F6BF}', 'Wash master (10 minutes)', () => (counts.wash || 0) >= 600],
+  ['tunnel', '\u{1F573}️', 'Tunnel explorer', () => (counts.tunnel || 0) >= 1],
+  ['maxed', '\u{1F527}', 'Fully upgraded tool', () => Object.values(up).some(v => v >= UP_COST.length)],
+  ['rich', '\u{1F4B0}', 'Saved up $5,000', () => cash >= 5000],
+  ['dog', '\u{1F436}', 'Best friend (Scout)', () => dog.owned],
+  ['fire', '\u{1F525}', 'Firefighter (3 fires out)', () => (counts.fire || 0) >= 3],
+  ['tidy', '\u{1F5D1}\uFE0F', 'Litter picker (30 bits of trash)', () => (counts.trash || 0) >= 30],
+  ['night', '\u{1F319}', 'Night owl (finish a night shift)', () => (counts.night || 0) >= 1],
+];
+const stickers = store.get('stickers', []);
+function checkStickers() {       // did you just earn a new sticker?
+  if (!started) return;
+  for (const [id, ic, name, test] of STICKERS) if (!stickers.includes(id) && test()) { stickers.push(id); store.set('stickers', stickers); toast(`New sticker: ${ic} ${name}!`, 4000); jingle(); return; }
+}
+function openShop(on) { shopOpen = on; $('shop').classList.toggle('hide', !on); if (on) renderShop(); }
+$('btnShop').addEventListener('click', () => { openShop(true); $('btnShop').blur(); });
+$('shopClose').addEventListener('click', () => openShop(false));
+$('ups').addEventListener('click', e => {
+  const b = e.target.closest('button[data-up]'); if (!b) return;
+  const id = b.dataset.up, cost = UP_COST[up[id]];
+  if (cost === undefined || cash < cost) return;
+  addCash(-cost); up[id]++; store.set('up', up); jingle(); renderShop();
+});
+
+// =====================================================================
+//  Driving: the van, and the big vac truck you can buy
+// =====================================================================
+let ride = null, siren = false, hornWas = false;       // ride = the thing you are driving right now
+Object.assign(van, { name: 'van', owned: true, top: 14, probes: [2.4, -1.6], wide: 1.1, body: [2.6, 1.0, -.6, -2.0], camDist: 9 });
+const truck = { name: 'vac truck', x: -18.5, z: 3.25, yaw: Math.PI / 2, speed: 0, g: new THREE.Group(), owned: store.get('truck', false), top: 10, probes: [3.3, -2.6], wide: 1.25, body: [3.4, 1.8, .2, -1.4, -2.8], camDist: 11.5, tank: 0 };
+{
+  const g = truck.g; scene.add(g);
+  const add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; g.add(m); return m; };
+  const B = (w, h, d) => new THREE.BoxGeometry(w, h, d);
+  add(B(2.2, .3, 7.2), MAT.dark, 0, .75, 0);                                   // the frame
+  add(B(2.2, 1.7, 1.7), MAT.yellow, 0, 1.75, 2.7);                             // the cab
+  add(B(2.0, .7, .08), MAT.glass, 0, 2.1, 3.56); add(B(2.24, .6, 1.0), MAT.glass, 0, 2.1, 2.9);
+  const tankGeo = new THREE.CylinderGeometry(1.05, 1.05, 4.4, 20); tankGeo.rotateX(Math.PI / 2);
+  add(tankGeo, std({ color: 0x9aa3ad, roughness: .25, metalness: .9 }), 0, 1.95, -.9);     // the big shiny tank
+  add(B(2.3, .25, 4.5), MAT.orange, 0, 1.0, -.9);
+  const reel = new THREE.CylinderGeometry(.5, .5, .5, 14); reel.rotateZ(Math.PI / 2); add(reel, MAT.dark, 0, 1.5, -3.3);   // hose reel
+  add(B(.3, .16, .06), MAT.lamp, -.7, 1.2, 3.6); add(B(.3, .16, .06), MAT.lamp, .7, 1.2, 3.6);
+  const wheelGeo = new THREE.CylinderGeometry(.5, .5, .34, 14); wheelGeo.rotateZ(Math.PI / 2);
+  for (const wz of [2.6, -1.3, -2.6]) for (const wx of [-1.05, 1.05]) add(wheelGeo, MAT.tire, wx, .5, wz);
+  truck.beacon = add(B(.6, .16, .22), new THREE.MeshStandardMaterial({ color: 0xffa41c, emissive: 0xff8a00, emissiveIntensity: 1 }), 0, 2.7, 2.7);
+  g.position.set(truck.x, 0, truck.z); g.rotation.y = truck.yaw; g.visible = truck.owned;
+}
+const vehicles = [van, truck];
+// Where the vac truck empties its tank.
+const DUMP = { x: 61, z: 0 };
+const dumpBeam = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 46, 18, 1, true), new THREE.MeshBasicMaterial({ color: 0x39a0ff, transparent: true, opacity: .2, side: THREE.DoubleSide, depthWrite: false, fog: false }));
+dumpBeam.position.set(DUMP.x, 23, DUMP.z); dumpBeam.visible = false; scene.add(dumpBeam);
+
+// The van gets muddy on every new level. Washing it is a bonus job.
+const vanMud = [1, -1].map(s => {
+  const p = new WashPatch(3.5, 1.9, { tint: '#6b5132', onDone: () => { if (vanMud.every(q => q.done)) { addCash(60); toast('Your van is shiny again! +$60', 3000); jingle(); count('vanWash'); } } });
+  p.mesh.position.set(s * 1.03, 1.45, -.6); p.mesh.rotation.y = s * Math.PI / 2; van.g.add(p.mesh); return p;
+});
+function muddyVan() { vanMud.forEach(p => p.paint()); }
+
+function nearRide() { let best = null, bd = 4.8; for (const v of vehicles) { if (!v.owned) continue; const d = Math.hypot(P.x - v.x, P.z - v.z); if (d < bd) { bd = d; best = v; } } return best; }
+function rideHits(v, x, z, s, c) {
+  for (const o of v.probes) {
+    const px = x + s * o, pz = z + c * o;
+    if (Math.abs(px) > 67 || Math.abs(pz) > 67 || insideBox(px, pz, v.wide)) return true;
+    for (const p of posts) if (Math.hypot(px - p.x, pz - p.z) < p.r + v.wide - .1) return true;
+    for (const w of vehicles) if (w !== v && w.owned && Math.hypot(px - w.x, pz - w.z) < 2.6) return true;
+  }
+  return false;
+}
+function driveRide(dt, ix, iz) {
+  const v = ride;
+  if (iz > .05) v.speed += 10 * iz * dt; else if (iz < -.05) v.speed += 12 * iz * dt;
+  v.speed *= Math.exp(-(Math.abs(iz) > .05 ? .25 : 1.6) * dt);
+  v.speed = clamp(v.speed, -5, v.top);
+  const yaw = v.yaw - ix * 1.9 * clamp(v.speed / 5, -1, 1) * dt;
+  if (!rideHits(v, v.x, v.z, Math.sin(yaw), Math.cos(yaw))) v.yaw = yaw;
+  const s = Math.sin(v.yaw), c = Math.cos(v.yaw), nx = v.x + s * v.speed * dt, nz = v.z + c * v.speed * dt;
+  if (rideHits(v, nx, nz, s, c)) { if (Math.abs(v.speed) > 3) { blip(110, 60, .18, .2, 'square'); buzz(40); } v.speed *= -.3; }
+  else { count('drive', Math.abs(v.speed) * dt); v.x = nx; v.z = nz; }
+  v.g.position.set(v.x, 0, v.z); v.g.rotation.y = v.yaw;
+  P.x = v.x; P.z = v.z; P.y = 0; P.yaw = v.yaw;
+}
+function toggleDrive() {
+  if (pipe.active || sewer.active || !started || shopOpen) return;
+  if (!ride) {
+    const v = nearRide(); if (!v) return;
+    ride = v; player.g.visible = false; cam.dist = v.camDist; document.body.classList.add('driving');
+    toast(v === truck ? `Park by a flood and hold ${coarse ? 'USE' : 'SPACE'} to suck it up with the giant hose!` : coarse ? 'Use the stick to drive. USE is the horn!' : 'W A S D to drive. SPACE is the horn, G is the siren!', 3600);
+    blip(90, 140, .4, .12, 'sawtooth');
+  } else {
+    const v = ride, s = Math.sin(v.yaw), c = Math.cos(v.yaw), side = v.wide + 1.1;       // step out of the driver's door
+    ride = null; v.speed = 0; siren = false; player.g.visible = true; cam.dist = 5.6; document.body.classList.remove('driving');
+    for (const [ox, oz] of [[c * side, -s * side], [-c * side, s * side], [-s * 5.5, -c * 5.5]]) {
+      P.x = v.x + ox; P.z = v.z + oz;
+      if (!insideBox(P.x, P.z, .5) && !posts.some(p => Math.hypot(P.x - p.x, P.z - p.z) < p.r + .5)) break;
+    }
+  }
+  lastSteps = null; refreshHud();
+}
+// The vac truck's giant hose: sucks up a whole flood, and all the mess around it.
+function truckSuck(dt) {
+  let job = null, bd = 15;
+  for (const j of jobs) { const d = Math.hypot(j.x - truck.x, j.z - truck.z); if (j.inPlay && d < bd) { bd = d; job = j; } }
+  if (!job) { nag('Park the vac truck closer to a flood.'); return false; }
+  if (truck.tank >= 100) { nag('The tank is full! Drive to the blue light beam to empty it.'); return false; }
+  const got = job.truckSuck(truck, dt);
+  if (!got) { nag('Nothing left to suck up here.'); return false; }
+  truck.tank = Math.min(100, truck.tank + got); count('truck', got);
+  const top = v1.set(truck.x - Math.sin(truck.yaw) * 3.3, 1.6, truck.z - Math.cos(truck.yaw) * 3.3);
+  setHose(top, v2.set(job.x, .1, job.z), .14, 0x2a2d31, true); spawnMist(job.x, .2, job.z, 3, 2);
+  return true;
+}
+$('drive').addEventListener('pointerdown', e => { e.preventDefault(); toggleDrive(); });
+function findDirt() { dirtFlash = 3; toast('The glowing spots are still dirty!', 2200); }
+$('dirt').addEventListener('pointerdown', e => { e.preventDefault(); findDirt(); });
+function toggleNozzle() { nozzle = nozzle === 'wide' ? 'narrow' : 'wide'; blip(700, 900, .06, .06, 'triangle'); refreshHud(); }
+$('nozzle').addEventListener('pointerdown', e => { e.preventDefault(); toggleNozzle(); });
+function toggleBlow() { blowMode = !blowMode; blip(500, 300, .08, .06, 'triangle'); refreshHud(); }
+$('blow').addEventListener('pointerdown', e => { e.preventDefault(); toggleBlow(); });
+function toggleSiren() { if (ride) { siren = !siren; refreshHud(); } }
+$('siren').addEventListener('pointerdown', e => { e.preventDefault(); toggleSiren(); });
 
 // =====================================================================
 //  The screen words (job list, arrow, money)
 // =====================================================================
 let lastSteps = '', hudTimer = 0, navJob = null;
-function nextJob() { let best = null, bd = 1e9; for (const j of jobs) { if (j.done) continue; const d = Math.hypot(j.x - P.x, j.z - P.z); if (d < bd) { bd = d; best = j; } } return best; }
+const mmss = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+function nextJob() { let best = null, bd = 1e9; for (const j of jobs) { if (j.done || !j.inPlay) continue; const d = Math.hypot(j.x - P.x, j.z - P.z); if (d < bd) { bd = d; best = j; } } return best; }
 function refreshHud() {
-  const j = activeJob; let want = null, html = '';
+  const j = activeJob; let want = null, html = '', sub = '';
   if (j && !j.done) {
     const steps = j.steps(), next = steps.find(s => !s.done);
     $('jt').textContent = j.title;
+    sub = `⏱ ${mmss(j.timer)}   ⭐⭐⭐ if you finish before ${mmss(j.parTime())}`;
     html = steps.map(s => `<div class="st${s.done ? ' done' : ''}${s === next ? ' next' : ''}"><span class="ck">${s.done ? '✔' : s === next ? '➤' : '•'}</span><span>${s.label}</span><span class="pc">${Math.floor(s.pct * 100)}%</span></div>`).join('');
     $('hint').textContent = next ? next.hint : '';
     $('nav').classList.add('hide'); navJob = null;
     want = next ? next.tool : null;
   } else {
     navJob = nextJob();
-    $('jt').textContent = j ? 'This job is done!' : navJob ? 'Next job' : 'All jobs done!';
+    const leftN = jobs.filter(x => x.inPlay && !x.done).length;
+    $('jt').textContent = navJob ? `Level ${level}: ${leftN} job${leftN > 1 ? 's' : ''} left` : `Level ${level} complete!`;
     $('nav').classList.toggle('hide', !navJob);
     if (navJob) $('navText').textContent = `${navJob.title} · ${Math.round(Math.hypot(navJob.x - P.x, navJob.z - P.z))} m`;
-    $('hint').textContent = navJob ? 'Follow the arrow to the orange light beam.' : 'You cleaned up the whole town!';
+    $('hint').textContent = navJob ? (ride ? 'Drive to the orange light beam.' : 'Follow the arrow to the orange light beam.') : `Tap START LEVEL ${level + 1} when you are ready. Maybe visit the shop first!`;
   }
+  $('jsub').textContent = sub; $('jsub').classList.toggle('hide', !sub);
   if (html !== lastSteps) { $('steps').innerHTML = html; lastSteps = html; }
   for (const b of $('tools').children) b.classList.toggle('want', b.dataset.tool === want && want !== tool);
-  $('cash').textContent = '$' + cash;
-  $('found').textContent = [...new Set(found)].map(k => PRIZE_ICON[k]).join('');
+  $('cash').textContent = '$' + cash; $('lvl').textContent = 'Level ' + level;
+  $('found').textContent = '\u{1F3C6}' + new Set(found).size + '/' + PRIZE_KINDS.length;
   $('fill').style.width = (tank.fill / tank.cap * 100) + '%';
   $('empty').style.background = tank.fill >= tank.cap ? '#ffb020' : '';
+  // buttons that come and go
+  const nr = ride || nearRide();
+  $('drive').classList.toggle('hide', !(started && nr));
+  $('drive').textContent = (ride ? '\u{1F6AA} Get out' : nr === truck ? '\u{1F69B} Drive vac truck' : '\u{1F690} Drive van') + (coarse ? '' : ' (F)');
+  $('dirt').classList.toggle('hide', !(j && tool === 'washer' && !ride));
+  $('nozzle').classList.toggle('hide', !(j && tool === 'washer' && !ride));
+  $('nozzle').textContent = (nozzle === 'wide' ? '\u{1F4A8} Nozzle: WIDE' : '\u{1F4CD} Nozzle: NARROW') + (coarse ? '' : ' (T)');
+  $('siren').classList.toggle('hide', !ride);
+  $('siren').style.background = siren ? '#ff4d4d' : '';
+  $('blow').textContent = blowMode ? 'SUCK' : 'BLOW';
+  useBtn.textContent = ride === truck ? 'SUCK' : ride ? 'HORN' : 'USE';
+  const atDoor = sewer.active || (j && j.tunnel && !j.done && !ride && Math.hypot(P.x, P.z + 61) < 7);
+  $('tunnelBtn').classList.toggle('hide', !atDoor);
+  $('tunnelBtn').textContent = (sewer.active ? '\u2B06 Climb out' : '\u2B07 Enter the tunnel') + (coarse ? '' : ' (C)');
+  const muddy = vanMud.some(p => !p.done);
+  $('bonus').textContent = muddy ? 'Bonus: your van is muddy! Park it at a job and wash it.' : truck.owned && truck.tank > 0 ? `Vac truck tank: ${Math.round(truck.tank)}% full` : '';
+  $('bonus').classList.toggle('hide', !$('bonus').textContent);
 }
 
 // =====================================================================
@@ -1313,42 +2418,77 @@ function collide() {
     }
   }
   for (const c of posts) { const dx = P.x - c.x, dz = P.z - c.z, d = Math.hypot(dx, dz), R = c.r + r * .8; if (d < R && d > 1e-4) { P.x = c.x + dx / d * R; P.z = c.z + dz / d * R; } }
+  for (const v of vehicles) {       // you cannot walk through the van or the truck
+    if (!v.owned) continue;
+    const s = Math.sin(v.yaw), c = Math.cos(v.yaw), R = v.wide + .3;
+    for (const o of v.body) { const cx = v.x + s * o, cz = v.z + c * o, dx = P.x - cx, dz = P.z - cz, d = Math.hypot(dx, dz); if (d < R && d > 1e-4) { P.x = cx + dx / d * R; P.z = cz + dz / d * R; } }
+  }
   P.x = clamp(P.x, -66, 66); P.z = clamp(P.z, -66, 66);
 }
 function camBlocked(x, y, z) { for (const b of boxes) if (y < b.h + .3 && x > b.x0 - .3 && x < b.x1 + .3 && z > b.z0 - .3 && z < b.z1 + .3) return true; return false; }
 
-let snakeStatus = '', fpsTime = 0, fpsFrames = 0;
+let fpsTime = 0, fpsFrames = 0, lastWall = null;
+const ringOf = t => t === 'rake' ? U.rakeR() : t === 'jet' ? U.jetR() : t === 'vac' ? (blowMode ? 1.6 : U.vacR() * .95) : t === 'washer' ? (nozzle === 'narrow' ? .3 : U.washR()) : .4;
 function update(dt) {
   T += dt;
-  // ---- walking ----
+  // ---- what are your hands doing? ----
   let ix = (keys.has('KeyD') ? 1 : 0) - (keys.has('KeyA') ? 1 : 0) + joy.x;
   let iz = (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0) - (keys.has('KeyS') || keys.has('ArrowDown') ? 1 : 0) - joy.y;
+  if (!started || shopOpen) ix = iz = 0;
+  if (!started) cam.yaw += dt * .08;
+  const il = Math.hypot(ix, iz); if (il > 1) { ix /= il; iz /= il; }
+  const using = started && !shopOpen && (keys.has('Space') || mouseUse || touchUse);
+  dirtFlash = Math.max(0, dirtFlash - dt);
+
+  // ---- down the pipe, or inside the storm tunnel: little games of their own ----
+  if (pipe.active) {
+    updatePipe(dt, ix, iz, using);
+    for (const job of jobs) if (job.inPlay) { job.useFancy = false; job.update(dt); }
+    if (sfx.ctx) { for (const n of ['gurgle', 'hiss', 'engine', 'vac', 'van', 'siren', 'rain']) setLoop(n, 0); setLoop('grind', pipe.cutting ? .13 : using ? .05 : 0); }
+    hudTimer -= dt; if (hudTimer <= 0) { hudTimer = .14; refreshHud(); }
+    return;
+  }
+  if (sewer.active) { updateSewer(dt, ix, iz, using); return; }
+
+  // ---- driving or walking ----
   if (keys.has('ArrowLeft')) cam.yaw += 1.9 * dt;
   if (keys.has('ArrowRight')) cam.yaw -= 1.9 * dt;
-  if (!started) { cam.yaw += dt * .08; ix = iz = 0; }
-  const il = Math.hypot(ix, iz); if (il > 1) { ix /= il; iz /= il; }
-  const using = started && (keys.has('Space') || mouseUse || touchUse);
+  let sucking = false;
+  if (ride) {
+    driveRide(dt, ix, iz);
+    if (look.id === null && Math.abs(ride.speed) > 1) cam.yaw = angleLerp(cam.yaw, ride.yaw, damp(2.2, dt));
+    if (ride === truck) { if (using && Math.abs(truck.speed) < 1.5) sucking = truckSuck(dt); }
+    else if (using && !hornWas) { blip(330, 330, .4, .13, 'square'); blip(415, 415, .4, .11, 'square'); count('honk'); }
+    if (ride === truck && truck.tank > 0 && Math.hypot(truck.x - DUMP.x, truck.z - DUMP.z) < 6) {       // empty the tank at the dump
+      addCash(Math.round(truck.tank)); toast(`Glug glug glug! Tank emptied. +$${Math.round(truck.tank)}`, 3000); truck.tank = 0; count('dump');
+      [0, 110, 220, 330].forEach(t => setTimeout(() => blip(220, 90, .16, .14), t)); spawnMist(DUMP.x, .3, DUMP.z, 40, 3);
+    }
+  }
+  hornWas = using;
   const fx = Math.sin(cam.yaw), fz = Math.cos(cam.yaw), rx = -fz, rz = fx;      // forward and right
-  const speed = using ? 2.4 : 5.4;
-  const vx = (fx * iz + rx * ix) * speed, vz = (fz * iz + rz * ix) * speed;
-  P.x += vx * dt; P.z += vz * dt; collide();
-  const moving = Math.hypot(vx, vz) > .2;
-  P.moveAmt = lerp(P.moveAmt, moving ? 1 : 0, damp(10, dt));
-  if (moving) P.phase += dt * (using ? 6 : 10);
-  P.y = lerp(P.y, groundHeight(P.x, P.z), damp(14, dt));
+  let vx = 0, vz = 0, moving = false;
+  if (!ride) {
+    const speed = using ? 2.4 : U.walk();
+    vx = (fx * iz + rx * ix) * speed; vz = (fz * iz + rz * ix) * speed;
+    P.x += vx * dt; P.z += vz * dt; collide();
+    moving = Math.hypot(vx, vz) > .2;
+    P.moveAmt = lerp(P.moveAmt, moving ? 1 : 0, damp(10, dt));
+    if (moving) P.phase += dt * (using ? 6 : 10);
+    P.y = lerp(P.y, groundHeight(P.x, P.z), damp(14, dt));
+  }
 
   // ---- which job are we at? ----
   let near = null, nd = 1e9;
-  for (const j of jobs) { const d = Math.hypot(j.x - P.x, j.z - P.z); if (d < j.zone && d < nd) { nd = d; near = j; } }
+  for (const job of jobs) { const d = Math.hypot(job.x - P.x, job.z - P.z); if (job.inPlay && d < job.zone && d < nd) { nd = d; near = job; } }
   if (near !== activeJob) {
-    activeJob = near; lastSteps = '';
-    if (near && !near.done && started) { toast(near.title, 2600); blip(440, 660, .18, .1, 'triangle'); }
+    activeJob = near; lastSteps = null;
+    if (near && !near.done && started && !ride) { toast(near.title, 2600); blip(440, 660, .18, .1, 'triangle'); }
   }
-  const j = activeJob;
+  const j = activeJob, working = using && !ride, holding = !!j && !ride;
 
   // ---- camera ----
-  const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
-  const tx = P.x + rx * .9, ty = P.y + 1.75, tz = P.z + rz * .9;
+  const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch), side = ride ? 0 : .9;
+  const tx = P.x + rx * side, ty = P.y + (ride ? 2.3 : 1.75), tz = P.z + rz * side;
   let want = cam.dist;
   for (let i = 1; i <= 8; i++) { const k = cam.dist * i / 8; if (camBlocked(tx - fx * cp * k, ty + sp * k, tz - fz * cp * k)) { want = Math.max(.9, cam.dist * (i - 1) / 8); break; } }
   cam.d = lerp(cam.d, want, damp(want < cam.d ? 30 : 6, dt));
@@ -1362,43 +2502,73 @@ function update(dt) {
   const TL = TOOLS[tool];
   camera.getWorldDirection(v1);
   const t = v1.y < -.03 ? Math.min(60, (.03 - camera.position.y) / v1.y) : 60;
-  let ax = camera.position.x + v1.x * t - P.x, az = camera.position.z + v1.z * t - P.z;
+  const ax = camera.position.x + v1.x * t - P.x, az = camera.position.z + v1.z * t - P.z;
   const ad = Math.hypot(ax, az) || 1, ar = clamp(ad, TL.min, TL.max);
   aim.set(P.x + ax / ad * ar, 0, P.z + az / ad * ar);
   if (tool === 'snake' && j && j.gw) aim.set(j.x, 0, j.z);
-  const aimY = j && j.contains(aim.x, aim.z) ? j.waterY() : groundHeight(aim.x, aim.z);
+  let aimY = j && j.contains(aim.x, aim.z) ? j.waterY() : groundHeight(aim.x, aim.z);
+  // the pressure washer can also hit walls, fences, garage doors and the van
+  let wall = null, wallN = null;
+  if (holding && tool === 'washer') {
+    camera.updateMatrixWorld(); van.g.updateMatrixWorld(); washRay.setFromCamera(SCREEN_MID, camera);
+    const meshes = []; for (const p of washPatches) if (!p.done && p.live()) meshes.push(p.mesh);
+    for (const h of washRay.intersectObjects(meshes, false)) if (Math.hypot(h.point.x - P.x, h.point.z - P.z) < 6.2) { wall = h; break; }
+    if (wall) { wallN = wall.face.normal.clone().transformDirection(wall.object.matrixWorld); aim.set(wall.point.x, 0, wall.point.z); aimY = wall.point.y - .05; }
+  }
 
   // ---- turn to face where we walk, or where we work ----
-  if (using && j) P.yaw = angleLerp(P.yaw, Math.atan2(aim.x - P.x, aim.z - P.z), damp(14, dt));
-  else if (moving) P.yaw = angleLerp(P.yaw, Math.atan2(vx, vz), damp(10, dt));
+  if (!ride) {
+    if (working && j) P.yaw = angleLerp(P.yaw, Math.atan2(aim.x - P.x, aim.z - P.z), damp(14, dt));
+    else if (moving) P.yaw = angleLerp(P.yaw, Math.atan2(vx, vz), damp(10, dt));
+  }
 
   // ---- use the tool ----
-  snakeStatus = '';
-  if (using && !j) nag('Follow the arrow and walk up to a job first!');
-  if (using && j) {
+  if (working && !j && !updateEvents.busy) nag('Follow the arrow and walk up to a job first!');
+  if (working && j && j.liftManhole(dt)) { /* busy lifting a manhole cover */ }
+  else if (working && j) {
     if (tool === 'rake') j.rake(aim, prevAim, dt);
+    else if (tool === 'grab') { if (!j.grab(aim) && !j.trash.length) nag('No bottles or cans left here!'); }
     else if (tool === 'jet') { if (!j.gw) nag('There is no drain here. Try the vac or the washer!'); j.jet(aim, dt); spawnMist(aim.x, aimY + .06, aim.z, 3, 1.6); }
     else if (tool === 'snake') {
-      snakeStatus = j.snake(dt);
-      const msg = { none: 'This one has no deep clog. Try another tool!', far: 'Stand right next to the drain to snake it.', leaves: 'Rake the leaves off first.', mud: 'Too much mud! Jet the mud out first.', done: 'The pipe is already clear!' }[snakeStatus];
-      if (msg) nag(msg);
-      if (snakeStatus === 'bust') { toast('CLOG BUSTED! Here comes the water!', 3000); blip(140, 60, .6, .2, 'sawtooth'); spawnMist(j.x, .3, j.z, 40, 3); }
+      const st = j.snakeCheck();
+      if (st === 'go') startPipe(j);
+      else nag({ none: 'This one has no deep clog. Try another tool!', far: 'Stand right next to the drain to snake it.', leaves: 'Rake the leaves off first.', mud: 'Too much mud! Jet the mud out first.', done: 'The pipe is already clear!' }[st]);
     }
-    else if (tool === 'vac') { if (j.vac(aim, dt) === 'full') nag(coarse ? 'The vac is full! Tap EMPTY.' : 'The vac is full! Press E to empty it.'); }
-    else if (tool === 'washer') { if (j.wash(prevAim, aim, dt) === 'wet') nag('Drain the water before you wash here.'); spawnMist(aim.x, aimY + .06, aim.z, 4, 2); }
+    else if (tool === 'vac') {
+      if (blowMode) { j.blowAway(aim, dt); if (Math.random() < dt * 20) spawnMist(aim.x, aimY + .1, aim.z, 1, 2.5); }
+      else if (j.vac(aim, dt) === 'full') nag(coarse ? 'The vac is full! Tap EMPTY.' : 'The vac is full! Press E to empty it.');
+    }
+    else if (tool === 'washer') {
+      const R = nozzle === 'narrow' ? .3 : U.washR();
+      if (wall) {       // washing a wall: paint a clean stripe from the last spot to this one
+        const p = wall.object.userData.patch, u = wall.uv.x, v = wall.uv.y, from = lastWall && lastWall.p === p ? lastWall : { u, v };
+        const n = clamp(Math.ceil(Math.hypot((u - from.u) * p.w, (v - from.v) * p.h) / .25), 1, 12);
+        for (let i = 1; i <= n; i++) p.wash(lerp(from.u, u, i / n), lerp(from.v, v, i / n), R, dt / n);
+        lastWall = { p, u, v }; spawnMist(wall.point.x + wallN.x * .1, wall.point.y, wall.point.z + wallN.z * .1, 4, 2); count('wash', dt);
+      } else {
+        const st = j.wash(prevAim, aim, dt);
+        if (st === 'wet') nag('Drain the water before you wash here.'); else if (st === 'stain') nag(`That stain is stuck on! Switch to the NARROW nozzle${coarse ? '' : ' (T)'}.`);
+        spawnMist(aim.x, aimY + .06, aim.z, 4, 2); lastWall = null; count('wash', dt);
+      }
+    }
   }
+  if (!(working && wall)) lastWall = null;
   prevAim.copy(aim);
   if (moving && j && j.contains(P.x, P.z) && Math.random() < dt * 14) spawnMist(P.x, j.waterY() + .05, P.z, 2, 1.1);
+  if (ride && j && Math.abs(ride.speed) > 1) {       // the van splashes and blows leaves about
+    j.blow(P, 2.8, Math.abs(ride.speed) * dt * 2);
+    if (j.contains(P.x, P.z)) spawnMist(P.x + rand(-1, 1), j.waterY() + .05, P.z + rand(-1, 1), 4, 2.4);
+  }
 
   // ---- move the worker's body ----
-  const sw = Math.sin(P.phase) * .75 * P.moveAmt, holding = !!j;
+  const sw = Math.sin(P.phase) * .75 * P.moveAmt;
   player.g.position.set(P.x, P.y + Math.abs(Math.sin(P.phase)) * .05 * P.moveAmt, P.z);
   player.g.rotation.y = P.yaw;
   player.legL.rotation.x = sw; player.legR.rotation.x = -sw; player.armL.rotation.x = -sw * .8;
-  player.armR.rotation.x = holding ? -1.05 + (using ? Math.sin(T * 34) * .02 : 0) : sw * .8;
+  player.armR.rotation.x = holding ? -1.05 + (working ? Math.sin(T * 34) * .02 : 0) : sw * .8;
 
   // ---- show the tool, hose, spray and aiming ring ----
-  toolRoot.visible = holding; hose.visible = false; beam.visible = false;
+  toolRoot.visible = holding; if (!sucking) hose.visible = false; beam.visible = false;
   reticle.visible = holding && tool !== 'snake';
   if (holding) {
     const px = Math.sin(P.yaw), pz = Math.cos(P.yaw);
@@ -1407,53 +2577,348 @@ function update(dt) {
     for (const id of TOOL_IDS) toolModels[id].g.visible = id === tool;
     const tm = toolModels[tool], reachLen = toolRoot.position.distanceTo(v2.set(aim.x, aimY + .05, aim.z));
     if (tm.pole) { tm.pole.scale.z = reachLen; tm.head.position.z = reachLen; }
-    if (tm.drum && using) tm.drum.rotation.x += dt * 14;
+    if (tm.drum && working) tm.drum.rotation.x += dt * 14;
     if (tool === 'snake') { if (j.gw && Math.hypot(P.x - j.x, P.z - j.z) < 3.6) setHose(toolRoot.localToWorld(v1.set(0, 0, .3)), v2.set(j.x, -.1, j.z), .014, 0xb9c0c9, false); }
-    else if (tool !== 'rake') setHose(j.anchors[tool], toolRoot.position, tool === 'vac' ? .055 : .028, tool === 'vac' ? 0x3c4046 : tool === 'jet' ? 0x2f6fb0 : 0x1c1c1c, true);
-    if (using && (tool === 'jet' || tool === 'washer')) {
+    else if (tool !== 'rake' && tool !== 'grab') setHose(j.anchors[tool], toolRoot.position, tool === 'vac' ? .055 : .028, tool === 'vac' ? 0x3c4046 : tool === 'jet' ? 0x2f6fb0 : 0x1c1c1c, true);
+    if (working && (tool === 'jet' || tool === 'washer')) {
       toolRoot.localToWorld(v1.set(0, 0, tm.tip)); beam.position.copy(v1); beam.lookAt(aim.x, aimY + .04, aim.z);
-      beam.scale.set(tool === 'washer' ? 2.6 : 1, 1, v1.distanceTo(v2.set(aim.x, aimY + .04, aim.z))); beam.visible = true;
+      beam.scale.set(tool === 'washer' && nozzle === 'wide' ? 2.6 : 1, 1, v1.distanceTo(v2.set(aim.x, aimY + .04, aim.z))); beam.visible = true;
     }
-    reticle.position.set(aim.x, aimY + .07, aim.z); reticle.scale.setScalar(TL.ring * (using ? 1 + Math.sin(T * 20) * .05 : 1));
-    reticle.material.color.setHex(using ? 0xffd23a : 0xffffff);
+    if (wall) { reticle.position.copy(wall.point).addScaledVector(wallN, .05); reticle.quaternion.setFromUnitVectors(Z_AXIS, wallN); }
+    else { reticle.rotation.set(-Math.PI / 2, 0, 0); reticle.position.set(aim.x, aimY + .07, aim.z); }
+    reticle.scale.setScalar(ringOf(tool) * (working ? 1 + Math.sin(T * 20) * .05 : 1));
+    reticle.material.color.setHex(working ? 0xffd23a : 0xffffff);
   }
 
   // ---- everything else ----
   let mirror = null, md = 60;
-  for (const job of jobs) { const d = Math.hypot(job.x - P.x, job.z - P.z); if (job.flood && job.level > 0 && d < md) { md = d; mirror = job; } }
-  for (const job of jobs) { job.useFancy = fancy && job === mirror; job.update(dt); }
+  for (const job of jobs) { const d = Math.hypot(job.x - P.x, job.z - P.z); if (job.inPlay && job.flood && job.level > 0 && d < md) { md = d; mirror = job; } }
+  for (const job of jobs) if (job.inPlay) { job.useFancy = fancy && job === mirror; job.update(dt); }
+  for (const p of vanMud) p.update(dt);
+  if (levelDoneAt && T > levelDoneAt) { levelDoneAt = 0; onLevelDone(); }
+  updateEvents(dt, using);
+  updateCoins(); updateDog(dt);
   updatePoints(mist, dt, 5); updatePoints(confetti, dt, 9);
-  beacon.material.emissiveIntensity = Math.sin(T * 7) > 0 ? 2.2 : .15;
+  // flashing lights: orange normally, red and blue with the siren on
+  const flash = Math.sin(T * (ride ? 16 : 7)) > 0;
+  for (const b of [beacon, truck.beacon]) { b.material.emissive.setHex(siren && ride ? (flash ? 0xff2020 : 0x2040ff) : 0xff8a00); b.material.emissiveIntensity = siren && ride ? 3 : flash ? 2.2 : .15; }
+  dumpBeam.visible = truck.owned && truck.tank > 0;
 
   if (sfx.ctx) {
     setLoop('gurgle', j && j.flow > .03 && j.level > 0 ? .05 + .3 * j.flow : 0);
-    setLoop('hiss', using && j && (tool === 'jet' || tool === 'washer') ? .14 : 0);
-    setLoop('engine', j && tool === 'washer' ? (using ? .07 : .022) : 0);
-    setLoop('vac', using && j && tool === 'vac' && tank.fill < tank.cap ? .13 : 0);
-    setLoop('grind', snakeStatus === 'grind' || snakeStatus === 'feed' ? .1 : 0);
+    setLoop('hiss', updateEvents.spray || (working && j && (tool === 'jet' || tool === 'washer')) ? .14 : 0);
+    setLoop('engine', holding && tool === 'washer' ? (working ? .07 : .022) : 0);
+    setLoop('vac', sucking || (working && j && tool === 'vac' && (blowMode || tank.fill < tank.cap)) ? .13 : 0);
+    setLoop('grind', 0);
+    setLoop('van', ride ? .05 + .04 * Math.abs(ride.speed) / 14 : 0);
+    setLoop('siren', ride && siren ? .07 : 0);
+    if (ride) sfx.vanOsc.frequency.setTargetAtTime((ride === truck ? 40 : 52) + Math.abs(ride.speed) * 7, sfx.ctx.currentTime, .1);
   }
 
-  // ---- screen words ----
-  const showPipe = !!(j && j.clog && tool === 'snake' && Math.hypot(P.x - j.x, P.z - j.z) < 3.6);
-  $('pipe').classList.toggle('hide', !showPipe);
-  if (showPipe) drawPipeCam(j);
+  // ---- screen words and the little map ----
+  const planOn = !!(j && j.clog && j.pipeLayout.hard && j.clogHp > 0 && !ride);       // the plan of the pipes, for the dye test
+  $('planBox').classList.toggle('hide', !planOn); if (planOn) drawPipeMap(j.pipeLayout, planCtx);
+  $('dyeBtn').classList.toggle('hide', !(planOn && Math.hypot(P.x - j.x, P.z - j.z) < 5));
   if (navJob) $('arrow').style.transform = `rotate(${-(Math.atan2(navJob.x - P.x, navJob.z - P.z) - cam.yaw)}rad)`;
+  drawMap();
   hudTimer -= dt; if (hudTimer <= 0) { hudTimer = .14; refreshHud(); }
+  saveCounts(dt);
 
-  // ---- if the game is running slowly, switch to Fast graphics by itself ----
-  fpsTime += dt; fpsFrames++;
-  if (fpsTime > 4) { const fps = fpsFrames / fpsTime; fpsTime = fpsFrames = 0; if (started && autoQuality && quality > 0 && fps > 5 && fps < 24) { setQuality(quality - 1, false); toast('Switched to faster graphics so it runs smoothly.'); } }
+  // ---- if the game is running slowly, switch to faster graphics by itself ----
+  fpsFrames++;
+  const now = performance.now();
+  if (now - fpsTime > 4000) {
+    const fps = fpsFrames * 1000 / (now - fpsTime); fpsTime = now; fpsFrames = 0;
+    if (started && autoQuality && quality > 0 && fps > 5 && fps < 24) { setQuality(quality - 1, false); toast('Switched to faster graphics so it runs smoothly.'); }
+  }
+}
+
+// ---- Scout the dog: buy him in the shop and he follows you and fetches coins ----
+const dog = { owned: store.get('dog', false), x: -5, z: 2.5, yaw: 0, phase: 0, g: new THREE.Group(), legs: [], tail: null };
+{
+  const g = dog.g; scene.add(g);
+  const fur = std({ color: 0xb5793a, roughness: .9 }), dark = std({ color: 0x5a3a1c, roughness: .9 });
+  const add = (w, h, d, mat, x, y, z, parent = g) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); m.castShadow = true; parent.add(m); return m; };
+  add(.3, .3, .7, fur, 0, .45, 0); add(.26, .26, .28, fur, 0, .66, .42); add(.14, .12, .16, dark, 0, .61, .6);
+  add(.07, .16, .1, dark, -.11, .82, .38); add(.07, .16, .1, dark, .11, .82, .38); add(.05, .05, .02, MAT.dark, 0, .66, .69);
+  add(.3, .08, .12, MAT.red, 0, .58, .3);                                                  // his collar
+  for (const [x, z] of [[-.1, .25], [.1, .25], [-.1, -.25], [.1, -.25]]) { const pv = new THREE.Group(); pv.position.set(x, .32, z); g.add(pv); add(.09, .32, .09, fur, 0, -.16, 0, pv); dog.legs.push(pv); }
+  dog.tail = new THREE.Group(); dog.tail.position.set(0, .56, -.35); g.add(dog.tail); add(.06, .06, .3, fur, 0, .06, -.14, dog.tail);
+  g.visible = dog.owned;
+}
+function updateDog(dt) {
+  dog.g.visible = dog.owned;
+  if (!dog.owned) return;
+  let coin = null, bd = 11;       // fetch a coin near you, or else trot along beside you
+  for (const c of coins) { if (!c.on) continue; const d = Math.hypot(c.x - P.x, c.z - P.z); if (d < bd) { bd = d; coin = c; } }
+  const tx = coin ? coin.x : P.x - Math.sin(P.yaw) * 1.5 + Math.cos(P.yaw) * 1.1, tz = coin ? coin.z : P.z - Math.cos(P.yaw) * 1.5 - Math.sin(P.yaw) * 1.1;
+  const dx = tx - dog.x, dz = tz - dog.z, d = Math.hypot(dx, dz);
+  let moving = false;
+  if (d > 45) { dog.x = tx; dog.z = tz; }
+  else if (d > (coin ? .3 : .7)) {
+    const sp = Math.min(coin ? 9 : 3.5 + d * 1.6, 15, d / Math.max(dt, .001));
+    dog.x += dx / d * sp * dt; dog.z += dz / d * sp * dt; dog.yaw = angleLerp(dog.yaw, Math.atan2(dx, dz), damp(10, dt)); dog.phase += dt * sp * 2.4; moving = true;
+  }
+  if (coin && d < .9) { coin.on = false; coin.back = T + 25; addCash(5); count('coin'); count('fetch'); blip(700, 900, .07, .1, 'square'); setTimeout(() => blip(650, 850, .07, .1, 'square'), 110); }
+  const sw = moving ? Math.sin(dog.phase) * .7 : 0;
+  dog.legs[0].rotation.x = sw; dog.legs[3].rotation.x = sw; dog.legs[1].rotation.x = -sw; dog.legs[2].rotation.x = -sw;
+  dog.tail.rotation.y = Math.sin(T * 14) * .6;
+  dog.g.position.set(dog.x, groundHeight(dog.x, dog.z) + (moving ? Math.abs(Math.sin(dog.phase)) * .05 : 0), dog.z); dog.g.rotation.y = dog.yaw;
+}
+
+// ---- EVENTS (emergency calls, fires, rain and night shifts) ----
+const TIME = { night: false, sun: 2.9, exp: .95 };
+const FOG_DRY = new THREE.Color(0xcfe0ea), FOG_WET = new THREE.Color(0x7f8c96);
+const torch = new THREE.PointLight(0xfff0d0, 0, 17, 1.5); scene.add(torch);              // your flashlight on night shifts
+const fireGlow = new THREE.PointLight(0xff7a1a, 0, 18, 1.6); scene.add(fireGlow);        // the glow from a fire
+function setNight(on) {
+  TIME.night = on; TIME.sun = on ? .35 : 2.9; TIME.exp = on ? .82 : .95;
+  sun.color.set(on ? 0x9db4ff : 0xfff0d6); hemi.intensity = on ? .22 : .5; scene.environment = on ? ENV.night : ENV.day;
+  sky.material.color.set(on ? 0x1b2744 : 0xffffff); FOG_DRY.set(on ? 0x141c2c : 0xcfe0ea); FOG_WET.set(on ? 0x0e131c : 0x7f8c96);
+  MAT.lamp.emissiveIntensity = on ? 3.5 : .6; MAT.glass.emissive.set(on ? 0xffc46b : 0x000000); MAT.glass.emissiveIntensity = on ? .7 : 0;
+  lampPools.visible = on; torch.intensity = on ? 11 : 0;
+}
+const emer = { on: false, kind: '', x: 0, z: 0, t: 0, prog: 0, need: 3, next: 1e9, level: 0, siren: false, hyd: [0, 0], cool: 0 };
+emer.beam = new THREE.Mesh(new THREE.CylinderGeometry(.9, .9, 46, 18, 1, true), new THREE.MeshBasicMaterial({ color: 0xff2a2a, transparent: true, opacity: .25, side: THREE.DoubleSide, depthWrite: false, fog: false }));
+emer.puddle = new THREE.Mesh(puddleGeo, waterSimpleMat);
+emer.beam.visible = emer.puddle.visible = false; scene.add(emer.beam, emer.puddle);
+// a burning dumpster, for fire calls
+const FIRE_SPOTS = [[-10, 10], [12, 11], [-12, -10], [47, 9.5]];
+const fire = new THREE.Group(), flames = []; fire.visible = false; scene.add(fire);
+{
+  const add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); fire.add(m); return m; };
+  add(new THREE.BoxGeometry(1.7, 1.1, 1.1), std({ color: 0x2f5a3a, roughness: .7 }), 0, .55, 0).castShadow = true;
+  add(new THREE.BoxGeometry(1.8, .08, 1.2), MAT.dark, 0, 1.14, 0);
+  for (let i = 0; i < 6; i++) flames.push(add(new THREE.ConeGeometry(.3, 1.3, 7), new THREE.MeshBasicMaterial({ color: i % 2 ? 0xffc21a : 0xff5a1a, transparent: true, opacity: .9 }), rand(-.6, .6), 1.8, rand(-.35, .35)));
+}
+const smoke = makePoints(90, .8, 0x2c2c2c, false); smoke.pts.material.opacity = .45;
+const rain = { on: false, t: 0, next: 1e9, k: 0, n: 260, group: new THREE.Group() };
+{
+  const pos = new Float32Array(rain.n * 6); rain.drops = [];
+  for (let i = 0; i < rain.n; i++) rain.drops.push({ x: rand(-16, 16), y: rand(0, 13), z: rand(-16, 16) });
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3).setUsage(THREE.DynamicDrawUsage));
+  rain.lines = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: 0xcfe2ff, transparent: true, opacity: .55 }));
+  rain.lines.frustumCulled = false; rain.group.add(rain.lines); rain.group.visible = false; scene.add(rain.group);
+}
+function startEmergency(force) {
+  const roll = Math.random(), kind = force || (level >= 3 && roll < .4 ? 'fire' : roll < .7 ? 'basement' : 'hydrant');
+  const spots = kind === 'fire' ? FIRE_SPOTS : kind === 'basement' ? doors : HYDRANTS, far = spots.filter(s => Math.hypot(s[0] - P.x, s[1] - P.z) > 18), s = pick(far.length ? far : spots);
+  Object.assign(emer, { on: true, kind, x: s[0], z: s[1], t: 80, prog: 0, need: kind === 'hydrant' ? 2.5 : 5, siren: false, cool: 0 });
+  emer.hyd = HYDRANTS.reduce((a, b) => Math.hypot(b[0] - s[0], b[1] - s[1]) < Math.hypot(a[0] - s[0], a[1] - s[1]) ? b : a);
+  emer.beam.position.set(emer.x, 23, emer.z); emer.beam.visible = true;
+  emer.puddle.visible = kind !== 'fire'; emer.puddle.position.set(emer.x, groundHeight(emer.x, emer.z) + .03, emer.z); emer.puddle.scale.set(.3, 1, .3);
+  if (kind === 'fire') { fire.position.set(emer.x, 0, emer.z); fire.visible = true; for (const f of flames) f.visible = true; }
+  toast(kind === 'fire' ? '\u{1F525} FIRE! A dumpster is burning! Follow the red light and hose it down.' : kind === 'basement' ? '\u{1F6A8} EMERGENCY! A basement is flooding! Follow the red light and pump it out.' : '\u{1F6A8} EMERGENCY! A fire hydrant has burst! Follow the red light and shut it off.', 5000);
+  [0, 250, 500, 750].forEach((t, i) => setTimeout(() => blip(i % 2 ? 660 : 880, i % 2 ? 660 : 880, .22, .14, 'square'), t));
+}
+function endEmergency(won) {
+  emer.on = false; emer.beam.visible = false; emer.next = T + rand(70, 120); emer.cool = 6; fireGlow.intensity = 0; $('alarm').classList.add('hide');
+  for (const f of flames) f.visible = false;
+  if (!won) { emer.puddle.visible = false; toast(emer.kind === 'fire' ? 'Too late! The fire burned itself out.' : 'Too late! Another crew fixed the emergency.', 3000); return; }
+  const pay = 60 + Math.round(emer.t / 5) * 5 + (emer.siren ? 30 : 0);
+  addCash(pay); count('emergency'); if (emer.kind === 'fire') count('fire'); jingle(); buzz(120); spawnConfetti(emer.x, emer.z); lastNag = T + 3;
+  toast(`${emer.kind === 'fire' ? 'Fire out!' : 'Emergency fixed!'} +$${pay}${emer.siren ? ' (with a siren bonus!)' : ''}`, 4000);
+}
+function updateEvents(dt, using) {
+  updateEvents.busy = updateEvents.spray = false;
+  if (emer.level !== level) { emer.level = level; emer.next = T + rand(40, 75); rain.next = T + rand(30, 70); rain.on = false; }     // a new level: plan the surprises
+  const playing = started && !levelDone && jobs.some(j => j.inPlay && !j.done);
+  torch.position.set(P.x + Math.sin(P.yaw) * 1.2, 2.3, P.z + Math.cos(P.yaw) * 1.2);
+  // --- emergency calls: optional, but they pay well if you are quick ---
+  if (!emer.on) {
+    if (emer.puddle.visible) { emer.puddle.scale.x -= dt * .6; emer.puddle.scale.z = emer.puddle.scale.x; if (emer.puddle.scale.x < .1) emer.puddle.visible = false; }
+    if (fire.visible && (emer.cool -= dt) < 0) fire.visible = false;
+    if (playing && level >= 2 && T > emer.next) startEmergency();
+  } else {
+    emer.t -= dt; if (ride && siren) emer.siren = true;
+    const d = Math.hypot(P.x - emer.x, P.z - emer.z), isFire = emer.kind === 'fire', reach = isFire ? 8 : 3;
+    emer.beam.material.opacity = .2 + .12 * Math.sin(T * 8);
+    if (isFire) {       // flames, smoke and a flickering glow
+      const big = 1 - emer.prog * .85;
+      flames.forEach((f, i) => { f.scale.set(big, big * (1 + .35 * Math.sin(T * (9 + i) + i)), big); f.position.y = 1.2 + .65 * f.scale.y; f.rotation.z = Math.sin(T * 5 + i) * .15; });
+      fireGlow.position.set(emer.x, 2, emer.z); fireGlow.intensity = 26 * big * (.8 + .2 * Math.sin(T * 23));
+      if (Math.random() < dt * 25) { const k = smoke.i = (smoke.i + 1) % smoke.n; smoke.pos.setXYZ(k, emer.x + rand(-.5, .5), 2.2, emer.z + rand(-.3, .3)); smoke.vel[k * 3] = rand(-.4, .4); smoke.vel[k * 3 + 1] = rand(1.5, 3); smoke.vel[k * 3 + 2] = rand(-.4, .4); smoke.life[k] = rand(1.5, 2.6); }
+    } else {
+      const s = Math.min(3.2, emer.puddle.scale.x + dt * .05); emer.puddle.scale.set(s, 1, s);
+      if (emer.kind === 'hydrant') { for (let i = 0; i < 3; i++) { const k = mist.i = (mist.i + 1) % mist.n; mist.pos.setXYZ(k, emer.x, 1, emer.z); mist.vel[k * 3] = rand(-1.5, 1.5); mist.vel[k * 3 + 1] = rand(5, 9); mist.vel[k * 3 + 2] = rand(-1.5, 1.5); mist.life[k] = rand(.6, 1.1); } }
+      else if (Math.random() < dt * 20) spawnMist(emer.x + rand(-.5, .5), .2, emer.z + rand(-.5, .5), 2, 1.5);
+    }
+    let word = isFire ? 'Dumpster fire!' : emer.kind === 'hydrant' ? 'Burst hydrant!' : 'Flooding basement!';
+    if (!ride && d < reach) {
+      updateEvents.busy = true;
+      if (using) {
+        emer.prog += dt / emer.need; if (Math.random() < dt * 9) blip(emer.kind === 'hydrant' ? 240 : 150, 120, .08, .08, 'square');
+        if (isFire) {       // grab the fire hose and spray!
+          updateEvents.spray = true; P.yaw = Math.atan2(emer.x - P.x, emer.z - P.z);
+          const px = Math.sin(P.yaw), pz = Math.cos(P.yaw);
+          toolRoot.visible = true; toolRoot.position.set(P.x + px * .42 - pz * .34, P.y + 1.08, P.z + pz * .42 + px * .34); v2.set(emer.x, 1.3, emer.z); toolRoot.lookAt(v2);
+          for (const id of TOOL_IDS) toolModels[id].g.visible = id === 'jet';
+          toolRoot.localToWorld(v1.set(0, 0, toolModels.jet.tip)); beam.position.copy(v1); beam.lookAt(v2); beam.scale.set(1.8, 1, v1.distanceTo(v2)); beam.visible = true;
+          setHose(new THREE.Vector3(emer.hyd[0], .5, emer.hyd[1]), toolRoot.position, .04, 0xb02a2a, true);
+          spawnMist(emer.x + rand(-.6, .6), 1.4, emer.z + rand(-.4, .4), 5, 2.6); player.armR.rotation.x = -1.05;
+        }
+      }
+      word = using ? (isFire ? 'Spraying...' : emer.kind === 'hydrant' ? 'Shutting the valve...' : 'Pumping...') + ' ' + Math.round(emer.prog * 100) + '%' : `Hold ${coarse ? 'USE' : 'SPACE'} to ${isFire ? 'spray the fire' : emer.kind === 'hydrant' ? 'shut it off' : 'pump it out'}!`;
+      if (emer.prog >= 1) { endEmergency(true); return; }
+    }
+    $('alarm').classList.remove('hide');
+    $('alarmText').textContent = `${word}  ${Math.max(0, Math.ceil(emer.t))} s  ·  ${Math.round(d)} m`;
+    $('alarmArrow').style.transform = `rotate(${-(Math.atan2(emer.x - P.x, emer.z - P.z) - cam.yaw)}rad)`;
+    if (emer.t <= 0) endEmergency(false);
+  }
+  updatePoints(smoke, dt, -1.2, 0);
+  // --- rain: the floods creep back up until the drains are clear ---
+  if (!rain.on && playing && level >= 3 && T > rain.next) {
+    rain.on = true; rain.t = 38; rain.next = 1e9; blip(70, 40, 1.2, .2, 'sawtooth');
+    toast('\u{1F327}️ It is raining again! The floods will creep back up until the drains are clear.', 5000);
+  }
+  if (rain.on) { rain.t -= dt; if (rain.t <= 0 || !playing) rain.on = false; for (const j of jobs) if (j.inPlay && j.flood && !j.drained && j.level < 1) j.level = Math.min(1, j.level + .012 * dt); }
+  rain.k = lerp(rain.k, rain.on ? 1 : 0, damp(1.2, dt));
+  rain.group.visible = rain.k > .02;
+  if (rain.group.visible) {
+    const p = rain.lines.geometry.attributes.position; rain.group.position.set(camera.position.x, 0, camera.position.z);
+    rain.drops.forEach((d, i) => { d.y -= 20 * dt; if (d.y < 0) { d.y = 13; d.x = rand(-16, 16); d.z = rand(-16, 16); } p.setXYZ(i * 2, d.x, d.y, d.z); p.setXYZ(i * 2 + 1, d.x + .05, d.y - .55, d.z); });
+    p.needsUpdate = true; rain.lines.material.opacity = .55 * rain.k;
+  }
+  sun.intensity = lerp(TIME.sun, TIME.sun * .45, rain.k); renderer.toneMappingExposure = lerp(TIME.exp, TIME.exp * .82, rain.k); scene.fog.color.lerpColors(FOG_DRY, FOG_WET, rain.k);
+  if (sfx.ctx) setLoop('rain', .09 * rain.k);
+}
+// ---- the help screen ----
+const HELP = (coarse ? [
+  ['Walk', 'Left stick'], ['Look and aim', 'Drag the screen'], ['Use your tool', 'Hold USE'], ['Pick a tool', 'Tap it'],
+  ['Drive', 'Stand by the van, tap DRIVE'], ['Horn / siren', 'USE / SIREN while driving'], ['Empty the vac', 'Tap EMPTY'], ['Blow leaves', 'Tap BLOW'],
+  ['Washer nozzle', 'Tap NOZZLE'], ['Find missed dirt', 'Tap FIND DIRT'], ['Lift a manhole', 'Stand by it, hold USE'], ['Dye test', 'Tap DYE TEST at a drain'],
+  ['Pipe cam', 'Stick steers, USE pushes and spins'], ['Shop and stickers', 'Tap SHOP'],
+] : [
+  ['Walk', 'W A S D'], ['Look and aim', 'Drag the mouse'], ['Use your tool', 'Hold SPACE or the mouse button'], ['Pick a tool', 'Keys 1 to 6'],
+  ['Drive', 'F next to the van'], ['Horn / siren', 'SPACE / G while driving'], ['Empty the vac', 'E'], ['Blow leaves', 'V'],
+  ['Washer nozzle', 'T'], ['Find missed dirt', 'Q'], ['Lift a manhole', 'Stand by it, hold SPACE'], ['Dye test', 'Y at a drain'],
+  ['Pipe cam', 'W A S D steers, SPACE pushes, R goes back, X marks a crack'], ['Storm tunnel', 'C'], ['Shop and stickers', 'B'],
+]);
+$('helpRows').innerHTML = HELP.map(([a, b]) => `<div class="up"><span class="tx"><b>${a}</b></span><span>${b}</span></div>`).join('');
+function openHelp(on) { shopOpen = on; $('help').classList.toggle('hide', !on); $('wipe').textContent = 'Start again from level 1'; }
+$('btnHelp').addEventListener('click', () => { openHelp(true); $('btnHelp').blur(); });
+$('helpClose').addEventListener('click', () => openHelp(false));
+$('wipe').addEventListener('click', () => {       // two taps, so nobody wipes their game by accident
+  if ($('wipe').textContent.startsWith('Start')) { $('wipe').textContent = 'Tap again to erase EVERYTHING'; return; }
+  try { for (const k of Object.keys(localStorage)) if (k.startsWith('sds.')) localStorage.removeItem(k); } catch (e) {}
+  location.reload();
+});
+// ---- SEWER (walk-in storm tunnel) ----
+Object.assign(sewer, { scene: new THREE.Scene(), patches: [], coins: [], job: null, back: null, pct: 0, LEN: 46, W: 3.2 });
+{
+  const sc = sewer.scene, L = sewer.LEN, W = sewer.W;
+  sc.background = new THREE.Color(0x060708); sc.fog = new THREE.Fog(0x060708, 5, 32);
+  sc.add(new THREE.AmbientLight(0x6a7a8a, .45));
+  sewer.light = new THREE.PointLight(0xfff0d0, 16, 22, 1.4); sc.add(sewer.light);       // your flashlight
+  const wallTex = makeTexture(256, (g, s) => {
+    g.fillStyle = '#8a8478'; g.fillRect(0, 0, s, s); speckle(g, s, 1200, ['#777166', '#99938a', '#6a655c'], .6, 2.4);
+    g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(0, 0, s, 4); g.fillRect(0, 0, 4, s);
+  });
+  const mk = (rx, ry) => { const t = wallTex.clone(); t.repeat.set(rx, ry); t.needsUpdate = true; return new THREE.MeshStandardMaterial({ map: t, roughness: .8, side: THREE.DoubleSide }); };
+  const add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); sc.add(m); return m; };
+  add(new THREE.PlaneGeometry(W * 2, L), mk(3, 20), 0, 0, -L / 2).rotation.x = -Math.PI / 2;
+  add(new THREE.PlaneGeometry(1.3, L), new THREE.MeshStandardMaterial({ color: 0x1c2a36, roughness: .08 }), 0, .008, -L / 2).rotation.x = -Math.PI / 2;     // the water channel
+  for (const s of [-1, 1]) add(new THREE.PlaneGeometry(L, 2.4), mk(20, 1), s * W, 1.2, -L / 2).rotation.y = -s * Math.PI / 2;
+  const arch = new THREE.CylinderGeometry(W, W, L, 20, 1, true, Math.PI / 2, Math.PI); arch.rotateX(Math.PI / 2);
+  add(arch, mk(4, 20), 0, 2.4, -L / 2);
+  for (const z of [0, -L]) add(new THREE.PlaneGeometry(W * 2, 5.7), mk(3, 2.5), 0, 2.85, z);
+  add(new THREE.CircleGeometry(1.1, 24), new THREE.MeshBasicMaterial({ color: 0xbfe6ff }), 0, 1.5, -L + .02);                                     // daylight at the far end
+  for (let z = -6; z > -L; z -= 11) add(new THREE.CircleGeometry(.5, 16), new THREE.MeshBasicMaterial({ color: 0xfff6d8 }), 0, 5.55, z).rotation.x = Math.PI / 2;   // manholes in the roof
+  // the grime: four bits of floor and four bits of each wall
+  const live = () => sewer.active;
+  for (let i = 0; i < 4; i++) {
+    const zc = -(i + .5) * L / 4;
+    const f = new WashPatch(W * 2, L / 4, { tint: '#4a4030', live }); f.mesh.rotation.x = -Math.PI / 2; f.mesh.position.set(0, .02, zc); sc.add(f.mesh); sewer.patches.push(f);
+    for (const s of [-1, 1]) { const w = new WashPatch(L / 4, 2.4, { tint: '#3f4a33', spots: ['#2c3a22', '#56653a', '#39361f', '#6a6a44'], live }); w.mesh.rotation.y = -s * Math.PI / 2; w.mesh.position.set(s * (W - .02), 1.2, zc); sc.add(w.mesh); sewer.patches.push(w); }
+  }
+  for (let i = 0; i < 6; i++) { const c = add(coinGeo, std({ color: 0xffd23a, roughness: .25, metalness: 1 }), rand(-2.3, 2.3), .9, -6 - i * 7); sewer.coins.push(c); }
+}
+sewer.reset = () => { for (const p of sewer.patches) p.paint(); for (const c of sewer.coins) c.visible = true; sewer.pct = 0; };
+function enterSewer(job) {
+  if (sewer.active || ride || pipe.active) return;
+  sewer.active = true; sewer.job = job; sewer.back = { x: P.x, z: P.z };
+  for (const o of [player.g, toolRoot, beam, reticle, mist.pts]) sewer.scene.add(o);
+  hose.visible = false; P.x = 0; P.z = -2.5; P.y = 0; P.yaw = Math.PI; cam.yaw = Math.PI; cam.pitch = .3; cam.dist = 4.2;
+  sewer.scene.updateMatrixWorld(true);
+  setTool('washer'); document.body.classList.add('sewer'); lastSteps = null;
+  toast('You climbed down into the storm tunnel. Wash the floor and both walls!', 4500); blip(200, 90, .5, .14);
+}
+function exitSewer() {
+  if (!sewer.active) return;
+  sewer.active = false; for (const o of [player.g, toolRoot, beam, reticle, mist.pts]) scene.add(o);
+  P.x = sewer.back.x; P.z = sewer.back.z; cam.dist = 5.6; cam.yaw = 0; reticle.visible = beam.visible = false;
+  document.body.classList.remove('sewer'); lastSteps = null; blip(90, 200, .5, .14);
+}
+function toggleSewer() {
+  if (sewer.active) exitSewer();
+  else if (activeJob && activeJob.tunnel && !activeJob.done && Math.hypot(P.x, P.z + 61) < 7) enterSewer(activeJob);
+}
+$('tunnelBtn').addEventListener('pointerdown', e => { e.preventDefault(); toggleSewer(); });
+function updateSewer(dt, ix, iz, using) {
+  const job = sewer.job, L = sewer.LEN, W = sewer.W;
+  if (keys.has('ArrowLeft')) cam.yaw += 1.9 * dt;
+  if (keys.has('ArrowRight')) cam.yaw -= 1.9 * dt;
+  const fx = Math.sin(cam.yaw), fz = Math.cos(cam.yaw), rx = -fz, rz = fx, speed = using ? 2.4 : U.walk();
+  const vx = (fx * iz + rx * ix) * speed, vz = (fz * iz + rz * ix) * speed, moving = Math.hypot(vx, vz) > .2;
+  P.x = clamp(P.x + vx * dt, -W + .5, W - .5); P.z = clamp(P.z + vz * dt, -L + 1, -1); P.y = 0;
+  P.moveAmt = lerp(P.moveAmt, moving ? 1 : 0, damp(10, dt)); if (moving) P.phase += dt * (using ? 6 : 10);
+  // the camera has to stay inside the tunnel
+  const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch), tx = P.x + rx * .7, ty = 1.75, tz = P.z + rz * .7;
+  camera.position.set(clamp(tx - fx * cp * cam.dist, -W + .3, W - .3), clamp(ty + sp * cam.dist, .4, 4.7), clamp(tz - fz * cp * cam.dist, -L + .3, -.3));
+  camera.lookAt(tx, ty, tz); camera.updateMatrixWorld();
+  sewer.light.position.set(P.x, 2.3, P.z);
+  // the washer hits whatever dirty bit of floor or wall is in the middle of the screen
+  washRay.setFromCamera(SCREEN_MID, camera);
+  const meshes = []; for (const p of sewer.patches) if (!p.done) meshes.push(p.mesh);
+  let hit = null;
+  for (const h of washRay.intersectObjects(meshes, false)) if (Math.hypot(h.point.x - P.x, h.point.z - P.z) < 7) { hit = h; break; }
+  const ap = hit ? hit.point : v2.set(P.x + fx * 3, .05, P.z + fz * 3);
+  if (using) P.yaw = angleLerp(P.yaw, Math.atan2(ap.x - P.x, ap.z - P.z), damp(14, dt)); else if (moving) P.yaw = angleLerp(P.yaw, Math.atan2(vx, vz), damp(10, dt));
+  if (using && hit) {
+    const p = hit.object.userData.patch, u = hit.uv.x, v = hit.uv.y, from = lastWall && lastWall.p === p ? lastWall : { u, v }, R = nozzle === 'narrow' ? .3 : U.washR();
+    const n = clamp(Math.ceil(Math.hypot((u - from.u) * p.w, (v - from.v) * p.h) / .25), 1, 12);
+    for (let i = 1; i <= n; i++) p.wash(lerp(from.u, u, i / n), lerp(from.v, v, i / n), R, dt / n);
+    lastWall = { p, u, v }; spawnMist(hit.point.x, hit.point.y + .08, hit.point.z, 4, 2); count('wash', dt);
+  } else lastWall = null;
+  // your body, the washer and the aiming ring
+  const sw = Math.sin(P.phase) * .75 * P.moveAmt, px = Math.sin(P.yaw), pz = Math.cos(P.yaw);
+  player.g.position.set(P.x, Math.abs(Math.sin(P.phase)) * .05 * P.moveAmt, P.z); player.g.rotation.y = P.yaw;
+  player.legL.rotation.x = sw; player.legR.rotation.x = -sw; player.armL.rotation.x = -sw * .8; player.armR.rotation.x = -1.05;
+  toolRoot.visible = true; toolRoot.position.set(P.x + px * .42 - pz * .34, 1.08, P.z + pz * .42 + px * .34); toolRoot.lookAt(ap);
+  for (const id of TOOL_IDS) toolModels[id].g.visible = id === 'washer';
+  beam.visible = using;
+  if (using) { toolRoot.localToWorld(v1.set(0, 0, toolModels.washer.tip)); beam.position.copy(v1); beam.lookAt(ap); beam.scale.set(nozzle === 'wide' ? 2.6 : 1, 1, v1.distanceTo(ap)); }
+  reticle.visible = !!hit;
+  if (hit) { const nrm = hit.face.normal.clone().transformDirection(hit.object.matrixWorld); reticle.position.copy(hit.point).addScaledVector(nrm, .05); reticle.quaternion.setFromUnitVectors(Z_AXIS, nrm); reticle.scale.setScalar(nozzle === 'narrow' ? .3 : U.washR()); reticle.material.color.setHex(using ? 0xffd23a : 0xffffff); }
+  // coins, grime and the finish
+  for (const c of sewer.coins) { c.rotation.y += dt * 2.5; if (c.visible && Math.hypot(c.position.x - P.x, c.position.z - P.z) < 1.1) { c.visible = false; addCash(10); count('coin'); blip(1200, 1800, .12, .1, 'triangle'); } }
+  for (const p of sewer.patches) p.update(dt);
+  updatePoints(mist, dt, 5); updatePoints(confetti, dt, 9);
+  sewer.pct = sewer.patches.reduce((s, p) => s + (p.done ? 1 : p.clean), 0) / sewer.patches.length;
+  if (!job.tunnelDone && sewer.patches.every(p => p.done)) { job.tunnelDone = true; count('tunnel'); jingle(); toast('The storm tunnel is sparkling clean! Climb out when you are ready.', 5000); }
+  for (const j of jobs) if (j.inPlay) { j.useFancy = false; j.update(dt); }
+  if (levelDoneAt && T > levelDoneAt) { levelDoneAt = 0; onLevelDone(); }
+  if (sfx.ctx) { for (const n of ['gurgle', 'vac', 'van', 'siren', 'rain', 'grind']) setLoop(n, 0); setLoop('hiss', using ? .14 : 0); setLoop('engine', using ? .07 : .022); }
+  hudTimer -= dt; if (hudTimer <= 0) { hudTimer = .14; refreshHud(); }
+  saveCounts(dt);
+}
+// ---- STICKERS ----
+let stickT = 0;
+function saveCounts(dt) {
+  if (countsDirty && (countsDirty += dt) > 6) { countsDirty = 0; store.set('counts', counts); }
+  if ((stickT += dt) > 2.5) { stickT = 0; checkStickers(); }
 }
 
 const clock = new THREE.Clock();
 function frame() {
   update(Math.min(clock.getDelta(), .05));
-  renderer.render(scene, camera);
+  if (pipe.active) renderer.render(pipeScene, pipeCam); else renderer.render(sewer.active ? sewer.scene : scene, camera);
   requestAnimationFrame(frame);
 }
-setTool('rake'); applyQuality(); refreshHud();
+startLevel(level, true); setTool('rake'); applyQuality(); applyStyle(false); refreshHud();
 window.__booted = true;
-window.game = { P, cam, jobs, tank, aim, keys, setTool, setFancy, setQuality, step: update, get activeJob() { return activeJob; }, get tool() { return tool; } };
+window.game = { P, cam, jobs, tank, aim, keys, van, truck, vehicles, washPatches, vanMud, muddyVan, counts, sewer, pipe, up, stats, coins, get ride() { return ride; }, get nozzle() { return nozzle; }, toggleNozzle, toggleBlow, toggleSiren, emer, rain, startEmergency, dog, TIME, setNight, openHelp, enterSewer, exitSewer, toggleSewer, style, applyStyle, stickers, checkStickers, setTool, setFancy, setQuality, step: update, startPipe, endPipe, toggleDrive, openShop, addCash, startLevel, nextLevel, pipeBack, clogLeft, senseAhead, petLeft, blockedTo, markCrack, doDye, get cash() { return cash; }, get level() { return level; }, get levelDone() { return levelDone; }, get activeJob() { return activeJob; }, get tool() { return tool; } };
 frame();
 </script>
 </body>
