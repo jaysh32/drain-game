@@ -1,0 +1,5 @@
+# Only the game itself goes online. Everything else stays on this computer.
+/*
+!/index.html
+!/.nojekyll
+!/.gitignore
