@@ -57,6 +57,10 @@
   body.touch #stick, body.touch #use { display: block; }
   body.touch .tool .k { display: none; }
 
+  #bossBar { position: fixed; left: 50%; top: 64px; transform: translateX(-50%); z-index: 7; text-align: center; font-weight: 900; font-size: 13px; letter-spacing: 1px; text-shadow: 0 1px 3px #000; }
+  #bossBar > div { width: min(420px, 50vw); height: 18px; border-radius: 9px; background: rgba(0,0,0,.6); border: 2px solid #fff; overflow: hidden; margin-top: 3px; }
+  #bossFill { height: 100%; width: 100%; background: linear-gradient(90deg, #7ad94a, #d9c94a); }
+  #splat { position: fixed; inset: 0; z-index: 4; pointer-events: none; opacity: 0; background: radial-gradient(ellipse at center, rgba(90,62,26,.15) 20%, rgba(74,49,25,.92) 100%); }
   #alarm { position: fixed; left: 50%; top: 12px; transform: translateX(-50%); z-index: 7; background: #d62828; color: #fff; font-weight: 900; font-size: 15px;
     padding: 8px 16px; border-radius: 999px; border: 2px solid #fff; display: flex; gap: 10px; align-items: center; white-space: nowrap; animation: pulse .9s infinite; }
   #alarmArrow { display: inline-block; font-size: 18px; }
@@ -123,6 +127,10 @@
   #heatFill { height: 100%; width: 0; background: linear-gradient(90deg, #ffd23a, #ff3b3b); }
   body.piping #nextLvl { display: none !important; }
 
+  #fix { position: fixed; inset: 0; z-index: 16; display: flex; align-items: center; justify-content: center; background: rgba(8,14,22,.6); }
+  #fix .card { background: rgba(14,22,32,.97); border: 2px solid var(--line); border-radius: 20px; padding: 14px 18px; width: min(420px, 94vw); }
+  #fix h2 { margin: 0 0 4px; color: var(--acc); font-size: 22px; display: flex; justify-content: space-between; align-items: center; }
+  #fixMsg { font-size: 14px; font-weight: 700; } #fixCan { display: block; width: min(360px, 80vw); height: auto; margin: 10px auto 0; border-radius: 12px; touch-action: none; }
   #help { position: fixed; inset: 0; z-index: 15; display: flex; align-items: center; justify-content: center; background: rgba(8,14,22,.6); }
   #help .card { background: rgba(14,22,32,.97); border: 2px solid var(--line); border-radius: 20px; padding: 14px 18px; width: min(560px, 94vw); max-height: 94vh; overflow: auto; touch-action: pan-y; }
   #help h2 { margin: 0 0 4px; color: var(--acc); font-size: 24px; display: flex; justify-content: space-between; align-items: center; }
@@ -192,6 +200,10 @@
   <button id="pipeBackBtn" class="btn">&#8617; Back</button><button id="pipeOut" class="btn">&#11013; Pull out</button>
   <div id="pipeFade"></div>
 </div>
+<div id="fix" class="hide"><div class="card">
+  <h2><span>&#128295; Fix the cracked pipe</span><button id="fixLater" class="btn">Later</button></h2>
+  <div id="fixMsg"></div><canvas id="fixCan" width="360" height="360"></canvas>
+</div></div>
 <div id="help" class="hide"><div class="card">
   <h2><span>&#10067; How to play</span><button id="helpClose" class="btn">Close</button></h2>
   <div id="shopInfo2">Follow the arrow to an orange light beam. Do the jobs on the list, top to bottom. Finish every job to beat the level.</div>
@@ -211,6 +223,8 @@
 <div id="tools" class="pan"></div>
 <div id="stick"><div id="knob"></div></div>
 <button id="use">USE</button>
+<div id="bossBar" class="hide"><span>GIANT FATBERG</span><div><div id="bossFill"></div></div></div>
+<div id="splat"></div>
 <div id="alarm" class="hide"><span id="alarmArrow">&#9650;</span><span id="alarmText"></span></div>
 <div id="toast"></div>
 <div id="banner" class="hide"><div class="big" id="bannerBig"></div><div id="bannerSub"></div><button id="again" class="btn hide">Bring on the next storm now</button></div>
@@ -806,7 +820,7 @@ const aim = new THREE.Vector3(), prevAim = new THREE.Vector3();
 const tank = { fill: 0, get cap() { return U.tankCap(); } };       // the shop vac tank
 let activeJob = null, started = false, T = 0;
 let cash = store.get('cash', 0), found = store.get('found', []);
-let shopOpen = false, dirtFlash = 0;
+let shopOpen = false, dirtFlash = 0, WINTER = false;       // WINTER: this level is frozen
 const sewer = { active: false };                              // the walk-in storm tunnel
 const counts = Object.assign({}, store.get('counts', {}));    // things you have done, for the sticker book
 let countsDirty = 0;
@@ -836,6 +850,7 @@ function nag(msg) { if (T - lastNag > 2.6) { lastNag = T; toast(msg, 2200); } }
 //  A Job: one blocked drain and everything around it
 // =====================================================================
 const dummy = new THREE.Object3D();
+const SNOW_COLORS = [0xf4f8ff, 0xc9d8ec, 0xb3c5de].map(c => new THREE.Color(c));
 const LEAF_COLORS = [0xc8641e, 0xd98a1f, 0xb5431a, 0x8a5a22, 0xe0a92e, 0x7a8a2a, 0xa83c1c].map(c => new THREE.Color(c));
 const leafShape = new THREE.Shape(); leafShape.moveTo(-.5, 0); leafShape.quadraticCurveTo(0, .42, .5, 0); leafShape.quadraticCurveTo(0, -.42, -.5, 0);
 const leafGeo = new THREE.ShapeGeometry(leafShape, 4); leafGeo.rotateX(-Math.PI / 2);
@@ -1145,6 +1160,14 @@ class Job {
     this.waterSimple = setup(new THREE.Mesh(geo, waterSimpleMat)); this.waterSimple.receiveShadow = true;
     this.waterFancy = setup(new Reflector(geo, { textureWidth: 512, textureHeight: 512, clipBias: .003, shader: WATER_SHADER, color: 0x5a4a33, multisample: 0 }));
     this.waterFancy.visible = false;
+    // on winter levels the flood is frozen over, and the hot jet has to melt it
+    this.iceBox = { cx: this.fx, cz: this.fz + (f.kind === 'rect' ? f.d / 2 : 0), w: f.kind === 'rect' ? f.w : f.r * 2, d: f.kind === 'rect' ? f.d : f.r * 2 };
+    this.iceCan = document.createElement('canvas'); this.iceCan.width = this.iceCan.height = 128; this.iceCtx = this.iceCan.getContext('2d');
+    this.iceBrush = this.iceCtx.createRadialGradient(0, 0, 0, 0, 0, 1); this.iceBrush.addColorStop(0, 'rgba(0,0,0,1)'); this.iceBrush.addColorStop(.6, 'rgba(0,0,0,.85)'); this.iceBrush.addColorStop(1, 'rgba(0,0,0,0)');
+    this.iceTex = new THREE.CanvasTexture(this.iceCan); this.iceTex.colorSpace = THREE.SRGBColorSpace;
+    this.iceMat = new THREE.MeshStandardMaterial({ map: this.iceTex, transparent: true, roughness: .12, depthWrite: false });
+    this.iceMesh = new THREE.Mesh(new THREE.PlaneGeometry(this.iceBox.w, this.iceBox.d), this.iceMat);
+    this.iceMesh.rotation.x = -Math.PI / 2; this.iceMesh.position.set(this.iceBox.cx, .12, this.iceBox.cz); this.iceMesh.visible = false; this.group.add(this.iceMesh);
     this.whirl = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: spiralTex, transparent: true, depthWrite: false, opacity: 0 }));
     this.whirl.rotation.x = -Math.PI / 2; this.whirl.position.set(this.x, .1, this.z); this.whirl.visible = false; this.group.add(this.whirl);
   }
@@ -1203,7 +1226,7 @@ class Job {
         x = this.x + tx * a + fv[0] * o; z = this.z + tz * a + fv[1] * o;
       } else { x = this.dirt.cx + gauss() * this.dirt.w * .5; z = this.dirt.cz + gauss() * this.dirt.d * .5; }
       const p = { kind: stick ? 1 : 0, x, z, vx: 0, vz: 0, rot: rand(TAU), spin: 0, tiltX: rand(-.3, .3), tiltZ: rand(-.3, .3),
-        size: stick ? rand(.5, .9) : rand(.24, .38), scale: 1, color: pick(LEAF_COLORS), lift: 0, loose: true, goTo: null, shrink: 3 };
+        size: stick ? rand(.5, .9) : rand(.24, .38), scale: 1, color: pick(WINTER ? SNOW_COLORS : LEAF_COLORS), lift: 0, loose: true, goTo: null, shrink: 3 };
       p.loose = !this.onGrate(x, z);
       p.lift = this.gw ? Math.max(0, .17 - .1 * Math.hypot(x - this.x, z - this.z)) * Math.random() : 0;
       this.items.push(p);
@@ -1216,6 +1239,8 @@ class Job {
     }
     if (this.dirt) this.paintDirt();
     for (const p of this.walls) p.paint();
+    this.iceOn = !!this.flood && WINTER; this.iceDone = !this.iceOn; this.iceMelt = 0; this.iceTimer = 0;
+    if (this.flood) { this.iceMesh.visible = this.iceOn; this.iceMat.opacity = 1; if (this.iceOn) this.paintIce(); }
     this.trash = [];       // bottles and cans floating about. Too big for the vac: use the grabber.
     if (this.flood && this.lvl >= 2) for (let i = 0; i < Math.min(6, this.lvl + 1); i++) { const [x, z] = this.floodPoint(); this.trash.push({ x, z, rot: rand(TAU), scale: 1, goTo: null, color: pick(TRASH_COLORS) }); }
     this.trashTotal = this.trash.length;
@@ -1252,6 +1277,20 @@ class Job {
       this.puddles.push({ x, z, r: rand(.5, .95) }); this.messTotal++;
     }
   }
+  paintIce() {       // freeze the flood: a sheet of ice in the same shape as the water
+    const g = this.iceCtx, S = 128, f = this.flood;
+    g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, S, S); g.fillStyle = 'rgba(214,236,250,.94)';
+    if (f.kind === 'rect') g.fillRect(0, 0, S, S);
+    else { const a = f.kind === 'full' ? 0 : Math.atan2(this.faceVec[1], this.faceVec[0]) - Math.PI / 2; g.beginPath(); g.arc(64, 64, 63, a, a + (f.kind === 'full' ? TAU : Math.PI)); g.closePath(); g.fill(); }
+    g.globalCompositeOperation = 'source-atop'; g.strokeStyle = 'rgba(255,255,255,.95)'; g.lineWidth = 1.2;
+    for (let i = 0; i < 16; i++) { g.beginPath(); let x = rand(S), y = rand(S); g.moveTo(x, y); for (let k = 0; k < 4; k++) { x += rand(-18, 18); y += rand(-18, 18); g.lineTo(x, y); } g.stroke(); }
+    g.globalCompositeOperation = 'source-over'; this.iceTex.needsUpdate = true; this.iceStart = this.measureIce();
+  }
+  measureIce() {
+    measureCtx.clearRect(0, 0, 32, 32); measureCtx.drawImage(this.iceCan, 0, 0, 32, 32);
+    const d = measureCtx.getImageData(0, 0, 32, 32).data; let s = 0; for (let i = 3; i < d.length; i += 4) s += d[i];
+    return s || 1;
+  }
   floodPoint() {       // a random spot somewhere in the flood
     const f = this.flood;
     if (f.kind === 'rect') return [this.fx + rand(-.38, .38) * f.w, this.fz + rand(.9, f.d - .4)];
@@ -1276,8 +1315,9 @@ class Job {
   mudClear() { if (!this.mud) return 1; let s = 0; for (const h of this.mudH) s += h; return 1 - s / this.mudH.length; }
   steps() {
     const s = [];
-    if (this.startStuck) { const p = this.leavesClear(); if (p >= .93) this.rakeDone = true; s.push({ id: 'rake', tool: 'rake', label: 'Rake the leaves off the drain', pct: this.rakeDone ? 1 : p, done: this.rakeDone, hint: `Pick the RAKE, aim at the leaves and hold ${USE}.` }); }
+    if (this.startStuck) { const p = this.leavesClear(); if (p >= .93) this.rakeDone = true; s.push({ id: 'rake', tool: 'rake', label: WINTER ? 'Shovel the snow off the drain' : 'Rake the leaves off the drain', pct: this.rakeDone ? 1 : p, done: this.rakeDone, hint: `Pick the RAKE, aim at the ${WINTER ? 'snow' : 'leaves'} and hold ${USE}.` }); }
     if (this.trashTotal) s.push({ id: 'trash', tool: 'grab', label: 'Grab the bottles and cans', pct: 1 - this.trash.length / this.trashTotal, done: !this.trash.length, hint: `Pick the GRABBER, aim at a bottle or can and press ${USE}.` });
+    if (this.iceOn) s.push({ id: 'ice', tool: 'jet', label: 'Melt the ice with the hot jet', pct: this.iceDone ? 1 : Math.min(1, this.iceMelt / .85), done: this.iceDone, hint: `Pick the JET and sweep it all over the ice. Hold ${USE}.` });
     if (this.mud) { const p = this.mudClear(); s.push({ id: 'jet', tool: 'jet', label: 'Jet the mud out of the drain', pct: p, done: p >= .97, hint: `Pick the JET, aim at the brown mud and hold ${USE}.` }); }
     if (this.clog) s.push({ id: 'snake', tool: 'snake', label: 'Snake the clog in the pipe', pct: 1 - this.clogHp, done: this.clogHp <= 0, hint: `Pick the SNAKE, stand next to the drain and hold ${USE} to start the pipe camera.` });
     if (this.flood) s.push({ id: 'drain', tool: null, label: 'Let the flood drain away', pct: 1 - this.level, done: this.level <= 0, hint: 'WHOOSH! Watch the water go down the drain.' });
@@ -1290,6 +1330,7 @@ class Job {
     }
     if (this.tunnel) s.push({ id: 'tunnel', tool: 'washer', label: 'Wash the big storm tunnel clean', pct: this.tunnelDone ? 1 : sewer.pct || 0, done: !!this.tunnelDone,
       hint: sewer.active ? 'Wash the floor and both walls. Grab the coins too!' : `Stand by the tunnel door and tap ENTER THE TUNNEL${coarse ? '' : ' (C)'}.` });
+    if (this.tunnel) s.push({ id: 'boss', tool: 'washer', label: 'Beat the giant fatberg', pct: boss.alive ? 1 - Math.max(0, boss.hp) / boss.max : 1, done: !boss.alive, hint: 'It lives at the far end of the tunnel. Blast it with the washer and step sideways to dodge the gunk!' });
     return s;
   }
 
@@ -1321,6 +1362,15 @@ class Job {
         if ((h > .5 && nh <= .5) || nh === 0) { this.spawnSludge(x, z); plop(); }
       }
       if (this.mudClear() > .97) { this.mudH.fill(0); this.mudDirty = true; }
+    }
+    if (this.iceOn && !this.iceDone) {       // the hot jet melts a hole in the ice
+      const B = this.iceBox, g = this.iceCtx;
+      g.save(); g.globalCompositeOperation = 'destination-out'; g.translate(((a.x - B.cx) / B.w + .5) * 128, ((a.z - B.cz) / B.d + .5) * 128); g.scale(1.1 / B.w * 128, 1.1 / B.d * 128);
+      g.fillStyle = this.iceBrush; g.beginPath(); g.arc(0, 0, 1, 0, TAU); g.fill(); g.restore(); this.iceTex.needsUpdate = true;
+      if ((this.iceTimer -= dt) <= 0) {
+        this.iceTimer = .25; this.iceMelt = clamp(1 - this.measureIce() / this.iceStart, 0, 1);
+        if (this.iceMelt >= .85) { this.iceDone = true; count('ice'); blip(880, 1320, .3, .12, 'triangle'); if (this === activeJob) toast('The ice has melted! Now clear the drain.', 3500); }
+      }
     }
     this.blow(a, 1.1, 9 * dt);
   }
@@ -1443,6 +1493,7 @@ class Job {
     // The flood. Leaves, mud and the pipe clog all slow the water down.
     if (this.flood && this.level > 0) {
       let flow = Math.pow(this.leavesClear(), 1.5) * (.04 + .96 * Math.pow(this.mudClear(), 1.5));
+      if (this.iceOn && !this.iceDone) flow *= .03;       // frozen solid: nothing drains until the ice has gone
       if (this.clog) flow *= .04 + .96 * Math.pow(1 - this.clogHp, 2);
       this.flow = flow;
       this.level = Math.max(0, this.level - flow * dt / 10);
@@ -1504,6 +1555,7 @@ class Job {
 
     if (!this.flood && !this.puddles.length && !this.sludge.length && (this.puddleCount || this.done)) this.spawnPrize();      // something was hiding in the mud
     for (const p of this.walls) p.update(dt);
+    if (this.iceOn && this.iceDone && this.iceMesh.visible) { this.iceMat.opacity -= dt; if (this.iceMat.opacity <= 0) this.iceMesh.visible = false; }
     if (this.petObj) { this.petObj.position.y = .3 + Math.abs(Math.sin(T * 5)) * .25; this.petObj.rotation.y += dt; }
     if (this.dirt) { const k = dirtFlash > 0 && this === activeJob ? (.55 + .45 * Math.sin(T * 10)) * Math.min(1, dirtFlash) : 0; this.dmat.emissive.setRGB(1.8 * k, .8 * k, 0); }
 
@@ -1536,6 +1588,7 @@ class Job {
     if (this.flood) {
       const on = this.level > 0, s = this.ws;
       for (const m of [this.waterSimple, this.waterFancy]) { m.scale.set(s, s, 1); m.position.y = wy; }
+      this.iceMesh.position.y = wy + .012;
       this.waterSimple.visible = on && !this.useFancy; this.waterFancy.visible = on && !!this.useFancy;
       if (this.useFancy) this.waterFancy.material.uniforms.time.value = T;
       const power = on ? Math.min(1, this.flow * 1.6) : 0;
@@ -1711,7 +1764,7 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyY') doDye();
   if (e.code === 'KeyC') toggleSewer();
   if (e.code === 'KeyB' && started && !pipe.active) openShop(!shopOpen);
-  if (e.code === 'Escape') { endPipe(); openShop(false); openHelp(false); exitSewer(); }
+  if (e.code === 'Escape') { if (fix.open) { closeFix(false); return; } endPipe(); openShop(false); openHelp(false); exitSewer(); }
   if (e.code === 'Enter') nextLevel();
   if (e.code === 'KeyR' || e.code === 'Backspace') pipeBack();
 });
@@ -1809,10 +1862,13 @@ function jobsForLevel(n) {       // which drains are blocked on this level?
 function startLevel(n, quiet) {
   level = n; levelDone = false; levelDoneAt = 0; store.set('level', level);
   const ids = jobsForLevel(n);
+  WINTER = n % 5 === 0;       // every fifth level is frozen
   for (const j of jobs) { j.inPlay = ids.includes(j.id); j.group.visible = j.inPlay; if (j.inPlay) { j.lvl = n; j.reset(); } }
   $('nextLvl').classList.add('hide'); $('banner').classList.add('hide'); lastSteps = null;
   if (n > 1) muddyVan();
   setNight(n % 4 === 0);       // every fourth level is a night shift
+  setWinter(WINTER);
+  if (!quiet && WINTER) setTimeout(() => toast('\u2744\uFE0F Winter storm! The floods have frozen. Melt the ice with the hot jet.', 5000), 4300);
   if (!quiet) {
     toast(`${n % 4 === 0 ? '\u{1F319} Night shift! ' : '\u26C8\uFE0F '}Level ${n}: ${ids.length} job${ids.length > 1 ? 's' : ''} to do!`, 4000);
     [0, 180, 600, 780].forEach(t => setTimeout(() => blip(880, 880, .12, .1, 'square'), t));
@@ -1902,8 +1958,85 @@ function markCrack() {       // spray paint the crack so the repair crew can fin
   const c = pipe.active && pipe.node.crack;
   if (!c || c.marked || Math.abs(pipe.z + .6 - c.z) > 1.9) return;
   c.marked = true; if (pipe.crackMesh) pipe.crackMesh.material = crackMatDone;
-  addCash(30); count('crack'); blip(700, 1100, .2, .1, 'triangle'); toast('Crack marked for the repair crew! +$30', 3000);
+  addCash(30); count('crack'); blip(700, 1100, .2, .1, 'triangle'); toast('Crack marked! +$30. Now see if you can fix it yourself.', 3000);
+  openFix(c);
 }
+// ---- fixing a cracked pipe: turn the pieces until the water can flow from IN to OUT ----
+const fix = { open: false, n: 4, tiles: [], inRow: 0, outRow: 0, crack: null, solved: false };
+const fixCan = $('fixCan'), fixCtx = fixCan.getContext('2d');
+const rotTile = m => ((m << 1) & 15) | (m >> 3);       // a quarter turn. Bits: 1 = up, 2 = right, 4 = down, 8 = left
+function flowFix() {       // which pieces has the water reached?
+  const n = fix.n, wet = new Set(), tl = fix.tiles, start = fix.inRow * n;
+  if (!(tl[start] & 8)) return { wet, done: false };
+  const q = [start], steps = [[1, 0, -1, 4], [2, 1, 0, 8], [4, 0, 1, 1], [8, -1, 0, 2]]; wet.add(start);
+  while (q.length) {
+    const c = q.pop(), x = c % n, y = (c - x) / n;
+    for (const [bit, dx, dy, opp] of steps) {
+      if (!(tl[c] & bit)) continue;
+      const a = x + dx, b = y + dy; if (a < 0 || a >= n || b < 0 || b >= n) continue;
+      const d = b * n + a; if (!wet.has(d) && (tl[d] & opp)) { wet.add(d); q.push(d); }
+    }
+  }
+  const end = fix.outRow * n + n - 1;
+  return { wet, done: wet.has(end) && !!(tl[end] & 2) };
+}
+function drawFix() {
+  const g = fixCtx, n = fix.n, S = 360, M = 40, cs = (S - M * 2) / n, { wet } = flowFix();
+  g.clearRect(0, 0, S, S); g.fillStyle = '#2a2f36'; g.fillRect(0, 0, S, S);
+  g.lineCap = 'round';
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+    const i = y * n + x, m = fix.tiles[i], cx = M + (x + .5) * cs, cy = M + (y + .5) * cs;
+    g.fillStyle = (x + y) % 2 ? '#3a4049' : '#414852'; g.fillRect(M + x * cs + 1, M + y * cs + 1, cs - 2, cs - 2);
+    for (const pass of [0, 1]) {       // a dark outline first, then the pipe itself
+      g.strokeStyle = pass ? (wet.has(i) ? '#39a0ff' : '#aab2bb') : '#15181c'; g.lineWidth = cs * (pass ? .26 : .36);
+      for (const [bit, dx, dy] of [[1, 0, -1], [2, 1, 0], [4, 0, 1], [8, -1, 0]]) if (m & bit) { g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + dx * cs * .5, cy + dy * cs * .5); g.stroke(); }
+    }
+  }
+  g.fillStyle = '#39a0ff'; g.font = '900 15px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText('IN', M / 2, M + (fix.inRow + .5) * cs - 12); g.fillText('▶', M / 2, M + (fix.inRow + .5) * cs + 6);
+  g.fillStyle = fix.solved ? '#3ddc6a' : '#ffd23a'; g.fillText('OUT', S - M / 2, M + (fix.outRow + .5) * cs - 12); g.fillText('▶', S - M / 2, M + (fix.outRow + .5) * cs + 6);
+}
+function openFix(crack) {
+  const n = fix.n = level >= 9 ? 5 : 4; fix.crack = crack; fix.solved = false; fix.open = true; shopOpen = true;
+  // make a wiggly path from the left side to the right side, then hide it by spinning every piece
+  let path = null;
+  for (let tries = 0; tries < 300 && !path; tries++) {
+    const p = [[0, Math.floor(rand(n))]], seen = new Set([p[0].join()]);
+    while (p[p.length - 1][0] < n - 1) {
+      const [x, y] = p[p.length - 1], opts = [[1, 0], [1, 0], [0, 1], [0, -1], [-1, 0]].map(([dx, dy]) => [x + dx, y + dy]).filter(([a, b]) => a >= 0 && a < n && b >= 0 && b < n && !seen.has(a + ',' + b));
+      if (!opts.length) break;
+      const nx = pick(opts); seen.add(nx.join()); p.push(nx);
+    }
+    if (p[p.length - 1][0] === n - 1 && p.length >= n + 2) path = p;
+  }
+  if (!path) { path = []; for (let x = 0; x < n; x++) path.push([x, 1]); }
+  fix.inRow = path[0][1]; fix.outRow = path[path.length - 1][1];
+  const dirBit = (dx, dy) => dx === 1 ? 2 : dx === -1 ? 8 : dy === 1 ? 4 : 1;
+  fix.tiles = []; for (let i = 0; i < n * n; i++) fix.tiles.push(pick([5, 5, 3, 3, 3, 11]));
+  path.forEach(([x, y], i) => {
+    const a = i === 0 ? 8 : dirBit(path[i - 1][0] - x, path[i - 1][1] - y), b = i === path.length - 1 ? 2 : dirBit(path[i + 1][0] - x, path[i + 1][1] - y);
+    fix.tiles[y * n + x] = a | b;
+  });
+  do { fix.tiles = fix.tiles.map(m => { for (let k = Math.floor(rand(4)); k > 0; k--) m = rotTile(m); return m; }); } while (flowFix().done);
+  $('fix').classList.remove('hide'); $('fixMsg').textContent = 'Tap the pipe pieces to turn them. Join IN to OUT so the water can flow!'; drawFix();
+}
+function closeFix(won) {
+  if (!fix.open) return;
+  fix.open = false; shopOpen = false; $('fix').classList.add('hide');
+  if (!won) return;
+  fix.crack.fixed = true; if (pipe.crackMesh) { pipeScene.remove(pipe.crackMesh); pipe.crackMesh = null; }
+  addCash(80); count('fix'); jingle(); buzz(80); toast('Pipe repaired! The water flows again. +$80', 3500);
+}
+fixCan.addEventListener('pointerdown', e => {
+  e.preventDefault(); if (fix.solved) return;
+  const r = fixCan.getBoundingClientRect(), S = 360, M = 40, cs = (S - M * 2) / fix.n;
+  const x = Math.floor(((e.clientX - r.left) / r.width * S - M) / cs), y = Math.floor(((e.clientY - r.top) / r.height * S - M) / cs);
+  if (x < 0 || x >= fix.n || y < 0 || y >= fix.n) return;
+  fix.tiles[y * fix.n + x] = rotTile(fix.tiles[y * fix.n + x]); blip(520, 640, .05, .07, 'triangle');
+  if (flowFix().done) { fix.solved = true; $('fixMsg').textContent = 'Fixed! The water is flowing.'; blip(660, 990, .25, .12, 'triangle'); setTimeout(() => closeFix(true), 1000); }
+  drawFix();
+});
+$('fixLater').addEventListener('click', () => closeFix(false));
 // ---- what you find at the end of each pipe ----
 const pipeEnd = new THREE.Group(); pipeScene.add(pipeEnd);
 const END_MATS = {
@@ -1948,7 +2081,7 @@ function enterNode(node, z) {       // move the snake into a pipe
   }
   buildEnd(node);
   if (pipe.crackMesh) { pipeScene.remove(pipe.crackMesh); pipe.crackMesh = null; }
-  if (node.crack) {
+  if (node.crack && !node.crack.fixed) {
     const c = node.crack, m = new THREE.Mesh(crackGeo, c.marked ? crackMatDone : crackMat);
     m.position.set(Math.cos(c.a) * .96, Math.sin(c.a) * .96, -c.z); m.lookAt(0, 0, -c.z); pipeScene.add(m); pipe.crackMesh = m;
   }
@@ -2241,6 +2374,9 @@ const STICKERS = [
   ['fire', '\u{1F525}', 'Firefighter (3 fires out)', () => (counts.fire || 0) >= 3],
   ['tidy', '\u{1F5D1}\uFE0F', 'Litter picker (30 bits of trash)', () => (counts.trash || 0) >= 30],
   ['night', '\u{1F319}', 'Night owl (finish a night shift)', () => (counts.night || 0) >= 1],
+  ['fix', '\u{1F527}', 'Pipe fixer (3 pipes repaired)', () => (counts.fix || 0) >= 3],
+  ['ice', '\u2744\uFE0F', 'Ice breaker (melt a frozen flood)', () => (counts.ice || 0) >= 1],
+  ['boss', '\u{1F479}', 'Fatberg buster', () => (counts.boss || 0) >= 1],
 ];
 const stickers = store.get('stickers', []);
 function checkStickers() {       // did you just earn a new sticker?
@@ -2470,6 +2606,8 @@ function update(dt) {
   if (!ride) {
     const speed = using ? 2.4 : U.walk();
     vx = (fx * iz + rx * ix) * speed; vz = (fz * iz + rz * ix) * speed;
+    if (activeJob && activeJob.iceOn && !activeJob.iceDone && activeJob.contains(P.x, P.z)) { P.sx = lerp(P.sx || 0, vx, damp(1.6, dt)); P.sz = lerp(P.sz || 0, vz, damp(1.6, dt)); vx = P.sx; vz = P.sz; }       // ice is slippery!
+    else { P.sx = vx; P.sz = vz; }
     P.x += vx * dt; P.z += vz * dt; collide();
     moving = Math.hypot(vx, vz) > .2;
     P.moveAmt = lerp(P.moveAmt, moving ? 1 : 0, damp(10, dt));
@@ -2678,6 +2816,15 @@ function setNight(on) {
   MAT.lamp.emissiveIntensity = on ? 3.5 : .6; MAT.glass.emissive.set(on ? 0xffc46b : 0x000000); MAT.glass.emissiveIntensity = on ? .7 : 0;
   lampPools.visible = on; torch.intensity = on ? 11 : 0;
 }
+const snowTex = makeTexture(128, (g, s) => { g.fillStyle = '#eef3f8'; g.fillRect(0, 0, s, s); speckle(g, s, 500, ['#dde6ef', '#ffffff', '#cfd9e4'], .6, 2); });
+const WHITE = new THREE.Color(0xffffff), SUMMER = { roofs: MAT.roofs.map(m => m.color.clone()), foliage: MAT.foliage.map(m => m.color.clone()), hedge: MAT.hedge.color.clone(), hill: MAT.hill.color.clone() };
+function setWinter(on) {       // snow on the grass, the roofs and the trees
+  MAT.grass.map = on ? snowTex : grassTex;
+  MAT.roofs.forEach((m, i) => m.color.copy(SUMMER.roofs[i]).lerp(WHITE, on ? .75 : 0));
+  MAT.foliage.forEach((m, i) => m.color.copy(SUMMER.foliage[i]).lerp(WHITE, on ? .7 : 0));
+  MAT.hedge.color.copy(SUMMER.hedge).lerp(WHITE, on ? .6 : 0); MAT.hill.color.copy(SUMMER.hill).lerp(WHITE, on ? .8 : 0);
+  if (!TIME.night) FOG_DRY.set(on ? 0xe6eef5 : 0xcfe0ea);
+}
 const emer = { on: false, kind: '', x: 0, z: 0, t: 0, prog: 0, need: 3, next: 1e9, level: 0, siren: false, hyd: [0, 0], cool: 0 };
 emer.beam = new THREE.Mesh(new THREE.CylinderGeometry(.9, .9, 46, 18, 1, true), new THREE.MeshBasicMaterial({ color: 0xff2a2a, transparent: true, opacity: .25, side: THREE.DoubleSide, depthWrite: false, fog: false }));
 emer.puddle = new THREE.Mesh(puddleGeo, waterSimpleMat);
@@ -2768,17 +2915,19 @@ function updateEvents(dt, using) {
   }
   updatePoints(smoke, dt, -1.2, 0);
   // --- rain: the floods creep back up until the drains are clear ---
-  if (!rain.on && playing && level >= 3 && T > rain.next) {
+  if (!rain.on && playing && level >= 3 && !WINTER && T > rain.next) {
     rain.on = true; rain.t = 38; rain.next = 1e9; blip(70, 40, 1.2, .2, 'sawtooth');
     toast('\u{1F327}️ It is raining again! The floods will creep back up until the drains are clear.', 5000);
   }
   if (rain.on) { rain.t -= dt; if (rain.t <= 0 || !playing) rain.on = false; for (const j of jobs) if (j.inPlay && j.flood && !j.drained && j.level < 1) j.level = Math.min(1, j.level + .012 * dt); }
   rain.k = lerp(rain.k, rain.on ? 1 : 0, damp(1.2, dt));
-  rain.group.visible = rain.k > .02;
+  const fall = Math.max(rain.k, WINTER ? .75 : 0);       // on winter levels it snows gently instead
+  rain.group.visible = fall > .02;
   if (rain.group.visible) {
     const p = rain.lines.geometry.attributes.position; rain.group.position.set(camera.position.x, 0, camera.position.z);
-    rain.drops.forEach((d, i) => { d.y -= 20 * dt; if (d.y < 0) { d.y = 13; d.x = rand(-16, 16); d.z = rand(-16, 16); } p.setXYZ(i * 2, d.x, d.y, d.z); p.setXYZ(i * 2 + 1, d.x + .05, d.y - .55, d.z); });
-    p.needsUpdate = true; rain.lines.material.opacity = .55 * rain.k;
+    const sp = WINTER ? 3.2 : 20, len = WINTER ? .08 : .55;
+    rain.drops.forEach((d, i) => { d.y -= sp * dt; if (d.y < 0) { d.y = 13; d.x = rand(-16, 16); d.z = rand(-16, 16); } p.setXYZ(i * 2, d.x, d.y, d.z); p.setXYZ(i * 2 + 1, d.x + .05, d.y - len, d.z); });
+    p.needsUpdate = true; rain.lines.material.opacity = (WINTER ? .95 : .55) * fall;
   }
   sun.intensity = lerp(TIME.sun, TIME.sun * .45, rain.k); renderer.toneMappingExposure = lerp(TIME.exp, TIME.exp * .82, rain.k); scene.fog.color.lerpColors(FOG_DRY, FOG_WET, rain.k);
   if (sfx.ctx) setLoop('rain', .09 * rain.k);
@@ -2834,11 +2983,38 @@ Object.assign(sewer, { scene: new THREE.Scene(), patches: [], coins: [], job: nu
   }
   for (let i = 0; i < 6; i++) { const c = add(coinGeo, std({ color: 0xffd23a, roughness: .25, metalness: 1 }), rand(-2.3, 2.3), .9, -6 - i * 7); sewer.coins.push(c); }
 }
-sewer.reset = () => { for (const p of sewer.patches) p.paint(); for (const c of sewer.coins) c.visible = true; sewer.pct = 0; };
+// ---- the tunnel boss: a giant grumpy fatberg at the far end ----
+const boss = { hp: 1, max: 1, alive: false, g: new THREE.Group(), meshes: [], eyes: [], shots: [], t: 0, z: -sewer.LEN + 3.4, hurt: 0 };
+let splatT = 0;
+{
+  sewer.scene.add(boss.g); boss.g.position.set(0, 1.5, boss.z);
+  const mats = [CLOG_MATS.boss, CLOG_MATS.grease, CLOG_MATS.mud, CLOG_MATS.slime];
+  for (let i = 0; i < 11; i++) {
+    const m = new THREE.Mesh(lumpGeo, mats[i % 4]), r = i === 0 ? 1.5 : rand(.5, .9);
+    m.scale.set(r, r * rand(.8, 1), r * .8); if (i) m.position.set(rand(-1.5, 1.5), rand(-1.1, 1.3), rand(-.3, .6));
+    m.userData.boss = true; boss.g.add(m); boss.meshes.push(m);
+  }
+  for (const sd of [-1, 1]) {       // two big angry eyes that follow you
+    const w = new THREE.Mesh(new THREE.SphereGeometry(.28, 14, 10), new THREE.MeshBasicMaterial({ color: 0xffffff })); w.position.set(sd * .55, .45, 1.25);
+    const pupil = new THREE.Mesh(new THREE.SphereGeometry(.12, 10, 8), new THREE.MeshBasicMaterial({ color: 0x111111 })); pupil.position.z = .22; w.add(pupil);
+    const brow = new THREE.Mesh(new THREE.BoxGeometry(.55, .1, .1), new THREE.MeshBasicMaterial({ color: 0x1a1208 })); brow.position.set(sd * .55, .85, 1.32); brow.rotation.z = sd * .45;
+    boss.g.add(w, brow); boss.eyes.push(w);
+  }
+  for (let i = 0; i < 6; i++) { const m = new THREE.Mesh(sludgeGeo, sludgeMat); m.visible = false; m.scale.setScalar(.45); sewer.scene.add(m); boss.shots.push({ m, on: false, vx: 0, vz: 0 }); }
+}
+function bossDown() {
+  boss.alive = false; boss.g.visible = false; for (const sh of boss.shots) { sh.on = false; sh.m.visible = false; }
+  addCash(300); count('boss'); jingle(); buzz(200); spawnConfetti(0, boss.z + 1.5); spawnMist(0, 1.5, boss.z + 1, 60, 5);
+  toast('YOU BEAT THE GIANT FATBERG! +$300', 5000); lastSteps = null;
+}
+sewer.reset = () => {
+  for (const p of sewer.patches) p.paint(); for (const c of sewer.coins) c.visible = true; sewer.pct = 0;
+  boss.max = boss.hp = 24 + level * 2; boss.alive = true; boss.g.visible = true; boss.t = 3; for (const sh of boss.shots) { sh.on = false; sh.m.visible = false; }
+};
 function enterSewer(job) {
   if (sewer.active || ride || pipe.active) return;
   sewer.active = true; sewer.job = job; sewer.back = { x: P.x, z: P.z };
-  for (const o of [player.g, toolRoot, beam, reticle, mist.pts]) sewer.scene.add(o);
+  for (const o of [player.g, toolRoot, beam, reticle, mist.pts, confetti.pts]) sewer.scene.add(o);
   hose.visible = false; P.x = 0; P.z = -2.5; P.y = 0; P.yaw = Math.PI; cam.yaw = Math.PI; cam.pitch = .3; cam.dist = 4.2;
   sewer.scene.updateMatrixWorld(true);
   setTool('washer'); document.body.classList.add('sewer'); lastSteps = null;
@@ -2846,7 +3022,8 @@ function enterSewer(job) {
 }
 function exitSewer() {
   if (!sewer.active) return;
-  sewer.active = false; for (const o of [player.g, toolRoot, beam, reticle, mist.pts]) scene.add(o);
+  sewer.active = false; for (const o of [player.g, toolRoot, beam, reticle, mist.pts, confetti.pts]) scene.add(o);
+  $('bossBar').classList.add('hide'); $('splat').style.opacity = 0; splatT = 0;
   P.x = sewer.back.x; P.z = sewer.back.z; cam.dist = 5.6; cam.yaw = 0; reticle.visible = beam.visible = false;
   document.body.classList.remove('sewer'); lastSteps = null; blip(90, 200, .5, .14);
 }
@@ -2861,7 +3038,7 @@ function updateSewer(dt, ix, iz, using) {
   if (keys.has('ArrowRight')) cam.yaw -= 1.9 * dt;
   const fx = Math.sin(cam.yaw), fz = Math.cos(cam.yaw), rx = -fz, rz = fx, speed = using ? 2.4 : U.walk();
   const vx = (fx * iz + rx * ix) * speed, vz = (fz * iz + rz * ix) * speed, moving = Math.hypot(vx, vz) > .2;
-  P.x = clamp(P.x + vx * dt, -W + .5, W - .5); P.z = clamp(P.z + vz * dt, -L + 1, -1); P.y = 0;
+  P.x = clamp(P.x + vx * dt, -W + .5, W - .5); P.z = clamp(P.z + vz * dt, boss.alive ? boss.z + 2.6 : -L + 1, -1); P.y = 0;
   P.moveAmt = lerp(P.moveAmt, moving ? 1 : 0, damp(10, dt)); if (moving) P.phase += dt * (using ? 6 : 10);
   // the camera has to stay inside the tunnel
   const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch), tx = P.x + rx * .7, ty = 1.75, tz = P.z + rz * .7;
@@ -2871,11 +3048,16 @@ function updateSewer(dt, ix, iz, using) {
   // the washer hits whatever dirty bit of floor or wall is in the middle of the screen
   washRay.setFromCamera(SCREEN_MID, camera);
   const meshes = []; for (const p of sewer.patches) if (!p.done) meshes.push(p.mesh);
+  if (boss.alive) { boss.g.updateMatrixWorld(true); meshes.push(...boss.meshes); }
   let hit = null;
   for (const h of washRay.intersectObjects(meshes, false)) if (Math.hypot(h.point.x - P.x, h.point.z - P.z) < 7) { hit = h; break; }
   const ap = hit ? hit.point : v2.set(P.x + fx * 3, .05, P.z + fz * 3);
   if (using) P.yaw = angleLerp(P.yaw, Math.atan2(ap.x - P.x, ap.z - P.z), damp(14, dt)); else if (moving) P.yaw = angleLerp(P.yaw, Math.atan2(vx, vz), damp(10, dt));
-  if (using && hit) {
+  if (using && hit && hit.object.userData.boss) {       // blast the fatberg! The narrow nozzle hurts it more.
+    boss.hp -= (nozzle === 'narrow' ? 2.2 : 1) * dt; boss.hurt = .15; lastWall = null; count('wash', dt);
+    spawnMist(hit.point.x, hit.point.y, hit.point.z + .2, 5, 2.5); if (Math.random() < dt * 12) blip(rand(160, 240), 90, .08, .07, 'square');
+    if (boss.hp <= 0) bossDown();
+  } else if (using && hit) {
     const p = hit.object.userData.patch, u = hit.uv.x, v = hit.uv.y, from = lastWall && lastWall.p === p ? lastWall : { u, v }, R = nozzle === 'narrow' ? .3 : U.washR();
     const n = clamp(Math.ceil(Math.hypot((u - from.u) * p.w, (v - from.v) * p.h) / .25), 1, 12);
     for (let i = 1; i <= n; i++) p.wash(lerp(from.u, u, i / n), lerp(from.v, v, i / n), R, dt / n);
@@ -2891,6 +3073,24 @@ function updateSewer(dt, ix, iz, using) {
   if (using) { toolRoot.localToWorld(v1.set(0, 0, toolModels.washer.tip)); beam.position.copy(v1); beam.lookAt(ap); beam.scale.set(nozzle === 'wide' ? 2.6 : 1, 1, v1.distanceTo(ap)); }
   reticle.visible = !!hit;
   if (hit) { const nrm = hit.face.normal.clone().transformDirection(hit.object.matrixWorld); reticle.position.copy(hit.point).addScaledVector(nrm, .05); reticle.quaternion.setFromUnitVectors(Z_AXIS, nrm); reticle.scale.setScalar(nozzle === 'narrow' ? .3 : U.washR()); reticle.material.color.setHex(using ? 0xffd23a : 0xffffff); }
+  // the fatberg wobbles, glares at you and spits gunk. Step sideways to dodge!
+  if (boss.alive) {
+    const k = .55 + .45 * boss.hp / boss.max; boss.hurt = Math.max(0, boss.hurt - dt);
+    boss.g.scale.setScalar(k * (1 + Math.sin(T * 3) * .03)); boss.g.position.set(boss.hurt > 0 ? rand(-.06, .06) : 0, 1.5 * k, boss.z);
+    for (const e of boss.eyes) e.lookAt(P.x, 1.6, P.z);
+    if (P.z < boss.z + 24 && (boss.t -= dt) < 0) {
+      boss.t = 1.1 + 1.6 * boss.hp / boss.max; const sh = boss.shots.find(q => !q.on);
+      if (sh) { sh.on = true; sh.m.visible = true; sh.m.position.set(rand(-1, 1), 1.1, boss.z + 1.5); const dx = P.x - sh.m.position.x, dz = P.z - sh.m.position.z, d = Math.hypot(dx, dz) || 1; sh.vx = dx / d * 8; sh.vz = dz / d * 8; blip(180, 70, .25, .12, 'sawtooth'); }
+    }
+  }
+  for (const sh of boss.shots) {
+    if (!sh.on) continue;
+    sh.m.position.x += sh.vx * dt; sh.m.position.z += sh.vz * dt; sh.m.rotation.x += dt * 6;
+    if (Math.hypot(sh.m.position.x - P.x, sh.m.position.z - P.z) < .75) { sh.on = false; sh.m.visible = false; P.z = Math.min(-1, P.z + 3); splatT = 1; blip(120, 50, .3, .18, 'square'); buzz(120); nag('SPLAT! Step sideways to dodge the gunk.'); }
+    else if (sh.m.position.z > -1 || Math.abs(sh.m.position.x) > 3.4) { sh.on = false; sh.m.visible = false; }
+  }
+  $('bossBar').classList.toggle('hide', !(boss.alive && P.z < boss.z + 24)); $('bossFill').style.width = (Math.max(0, boss.hp) / boss.max * 100) + '%';
+  splatT = Math.max(0, splatT - dt * 1.2); $('splat').style.opacity = splatT;
   // coins, grime and the finish
   for (const c of sewer.coins) { c.rotation.y += dt * 2.5; if (c.visible && Math.hypot(c.position.x - P.x, c.position.z - P.z) < 1.1) { c.visible = false; addCash(10); count('coin'); blip(1200, 1800, .12, .1, 'triangle'); } }
   for (const p of sewer.patches) p.update(dt);
@@ -2918,7 +3118,7 @@ function frame() {
 }
 startLevel(level, true); setTool('rake'); applyQuality(); applyStyle(false); refreshHud();
 window.__booted = true;
-window.game = { P, cam, jobs, tank, aim, keys, van, truck, vehicles, washPatches, vanMud, muddyVan, counts, sewer, pipe, up, stats, coins, get ride() { return ride; }, get nozzle() { return nozzle; }, toggleNozzle, toggleBlow, toggleSiren, emer, rain, startEmergency, dog, TIME, setNight, openHelp, enterSewer, exitSewer, toggleSewer, style, applyStyle, stickers, checkStickers, setTool, setFancy, setQuality, step: update, startPipe, endPipe, toggleDrive, openShop, addCash, startLevel, nextLevel, pipeBack, clogLeft, senseAhead, petLeft, blockedTo, markCrack, doDye, get cash() { return cash; }, get level() { return level; }, get levelDone() { return levelDone; }, get activeJob() { return activeJob; }, get tool() { return tool; } };
+window.game = { P, cam, jobs, tank, aim, keys, van, truck, vehicles, washPatches, vanMud, muddyVan, counts, sewer, pipe, up, stats, coins, get ride() { return ride; }, get nozzle() { return nozzle; }, toggleNozzle, toggleBlow, toggleSiren, emer, rain, startEmergency, fix, openFix, closeFix, flowFix, boss, setWinter, get winter() { return WINTER; }, dog, TIME, setNight, openHelp, enterSewer, exitSewer, toggleSewer, style, applyStyle, stickers, checkStickers, setTool, setFancy, setQuality, step: update, startPipe, endPipe, toggleDrive, openShop, addCash, startLevel, nextLevel, pipeBack, clogLeft, senseAhead, petLeft, blockedTo, markCrack, doDye, get cash() { return cash; }, get level() { return level; }, get levelDone() { return levelDone; }, get activeJob() { return activeJob; }, get tool() { return tool; } };
 frame();
 </script>
 </body>
