@@ -42,6 +42,7 @@
   .tool .nm { font-size: 11px; font-weight: 800; }
   .tool .k { position: absolute; top: 3px; left: 6px; font-size: 10px; opacity: .55; }
   .tool.on { background: #fff3cf; color: #222; border-color: var(--acc); }
+  .tool.runb { margin-left: 6px; border-style: dashed; } .tool.runb.going { background: #b6ff9a; color: #123; border-color: #3ddc6a; border-style: solid; }
   .tool.want { animation: pulse .9s infinite; }
   @keyframes pulse { 50% { box-shadow: 0 0 0 6px rgba(255,176,32,.55); border-color: var(--acc); } }
 
@@ -160,6 +161,7 @@
   .stk.got { opacity: 1; background: rgba(255,176,32,.2); border-color: var(--acc); } .stk i { font-style: normal; font-size: 18px; margin-right: 6px; }
   #trophies { font-size: 20px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
 
+  @media (max-width: 940px) { .tool { width: 60px; } }
   @media (max-width: 720px) {
     :root { --mid: 50%; }
     .tool { width: 56px; height: 60px; } .tool .ic { font-size: 21px; } .tool .nm { font-size: 9px; }
@@ -177,7 +179,7 @@
     :root { --mid: calc(50% + 80px); }
     #job { width: min(270px, 40vw); padding: 7px 9px; } .jt { font-size: 13px; margin-bottom: 2px; } #nav { font-size: 12px; } #arrow { font-size: 18px; }
     .st { font-size: 12px; padding: 1px 0; } .st:not(.next) { display: none; } #hint { font-size: 11px; margin-top: 3px; padding-top: 3px; } #jsub, #bonus { font-size: 11px; }
-    #tools { gap: 5px; padding: 5px; bottom: 6px; } .tool { width: 52px; height: 50px; } .tool .ic { font-size: 20px; } .tool .nm { font-size: 9px; }
+    #tools { gap: 5px; padding: 5px; bottom: 6px; } .tool { width: 50px; height: 50px; } .tool .ic { font-size: 20px; } .tool .nm { font-size: 9px; }
     #stick { width: 120px; height: 120px; left: 14px; bottom: 14px; } #use { width: 100px; height: 100px; right: 14px; bottom: 18px; font-size: 20px; }
     #top { padding: 4px 6px; gap: 5px; } #top .btn { padding: 4px 7px; font-size: 12px; } #cash { font-size: 14px; }
     #mapc { width: 96px; height: 96px; } #map { top: 50px; }
@@ -294,7 +296,7 @@ import { Reflector } from 'three/addons/objects/Reflector.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const GAME_NAME = 'Storm Drain Squad';     // <-- change the name of the game here!
-const VERSION = '2.1';                      // shown on the start screen, so you can tell the tablet has the newest game
+const VERSION = '2.2';                      // shown on the start screen, so you can tell the tablet has the newest game
 
 // =====================================================================
 //  Little helpers
@@ -887,7 +889,9 @@ const U = {      // what the upgrades change
   cutter: () => 1 + .4 * up.snake,
   vacR: () => 1.15 + .2 * up.vac, tankCap: () => 100 + 50 * up.vac,
   washR: () => .68 + .13 * up.washer,
-  walk: () => 5.4 + .6 * up.boots,
+  walk: () => 5.4 + .6 * up.boots,       // normal walking speed, in metres a second. Speedy boots add more
+  run: () => (5.4 + .6 * up.boots) * 1.5,       // with RUN switched on. Change the 1.5 to make running faster or slower
+  work: () => 2.4,                       // slow and careful while he is using a tool
 };
 const RANKS = [[0, 'Rookie'], [3, 'Helper'], [6, 'Drain Tech'], [10, 'Pipe Pro'], [15, 'Flood Fighter'], [25, 'Drain Hero'], [40, 'Storm Legend']];
 const rankName = () => { let r = RANKS[0][1]; for (const [n, name] of RANKS) if (stats.jobs >= n) r = name; return r; };
@@ -1824,14 +1828,27 @@ function setHose(from, to, radius, color, sag) {
 // =====================================================================
 $('title').textContent = GAME_NAME.toUpperCase(); document.title = GAME_NAME; $('ver').textContent = 'Version ' + VERSION;
 $('how').innerHTML = coarse
-  ? 'Left stick: walk &nbsp;•&nbsp; Drag the screen: look around<br>Hold USE: use your tool &nbsp;•&nbsp; Tap a tool to pick it<br>Walk up to your van and tap DRIVE VAN'
-  : 'W A S D: walk &nbsp;•&nbsp; Drag the mouse: look around<br>Hold SPACE or the mouse button: use your tool &nbsp;•&nbsp; 1 to 6: pick a tool<br>F: drive your van &nbsp;\u2022&nbsp; B: upgrade shop';
+  ? 'Left stick: walk &nbsp;•&nbsp; Drag the screen: look around<br>Hold USE: use your tool &nbsp;•&nbsp; Tap a tool to pick it<br>Walk up to your van and tap DRIVE VAN &nbsp;&bull;&nbsp; Tap RUN to go fast'
+  : 'W A S D: walk &nbsp;•&nbsp; Drag the mouse: look around<br>Hold SPACE or the mouse button: use your tool &nbsp;•&nbsp; 1 to 6: pick a tool<br>F: drive your van &nbsp;\u2022&nbsp; B: upgrade shop &nbsp;&bull;&nbsp; Hold SHIFT: run';
 TOOL_IDS.forEach((id, i) => {
   const b = document.createElement('button'); b.className = 'tool'; b.dataset.tool = id;
   b.innerHTML = `<span class="k">${i + 1}</span><span class="ic">${TOOLS[id].icon}</span><span class="nm">${TOOLS[id].name}</span>`;
   b.addEventListener('pointerdown', e => { e.preventDefault(); setTool(id); });
   $('tools').appendChild(b);
 });
+// ---- RUN: tap it to switch running on, tap it again to walk at the normal speed ----
+let runMode = false, runTipped = false;
+const running = () => runMode !== (keys.has('ShiftLeft') || keys.has('ShiftRight'));       // on a keyboard, holding SHIFT flips it for a moment
+const pace = () => running() ? U.run() : U.walk();
+const legRate = using => using ? 6 : running() ? 4 + U.run() * 1.3 : 10;       // his legs swing faster when he runs
+const runBtn = document.createElement('button'); runBtn.className = 'tool runb'; runBtn.id = 'runBtn';
+function showRun() {
+  runBtn.classList.toggle('going', runMode);
+  runBtn.innerHTML = `<span class="k">⇧</span><span class="ic">${runMode ? '\u{1F3C3}' : '\u{1F6B6}'}</span><span class="nm">Run: ${runMode ? 'ON' : 'off'}</span>`;
+}
+function toggleRun() { runMode = !runMode; blip(runMode ? 520 : 440, runMode ? 820 : 300, .09, .07, 'triangle'); showRun(); }
+runBtn.addEventListener('pointerdown', e => { e.preventDefault(); toggleRun(); });
+$('tools').appendChild(runBtn); showRun();
 function setTool(id) {
   tool = id; blip(500, 700, .06, .06, 'triangle');
   for (const b of $('tools').children) b.classList.toggle('on', b.dataset.tool === id);
@@ -2729,14 +2746,15 @@ function update(dt) {
   const fx = Math.sin(cam.yaw), fz = Math.cos(cam.yaw), rx = -fz, rz = fx;      // forward and right
   let vx = 0, vz = 0, moving = false;
   if (!ride) {
-    const speed = using ? 2.4 : U.walk();
+    const speed = using ? U.work() : pace();
     vx = (fx * iz + rx * ix) * speed; vz = (fz * iz + rz * ix) * speed;
     if (activeJob && activeJob.iceOn && !activeJob.iceDone && activeJob.contains(P.x, P.z)) { P.sx = lerp(P.sx || 0, vx, damp(1.6, dt)); P.sz = lerp(P.sz || 0, vz, damp(1.6, dt)); vx = P.sx; vz = P.sz; }       // ice is slippery!
     else { P.sx = vx; P.sz = vz; }
-    P.x += vx * dt; P.z += vz * dt; collide();
+    const hops = Math.max(1, Math.ceil(Math.hypot(vx, vz) * dt / .25));       // take small hops, so a fast worker cannot skip through a thin fence
+    for (let i = 0; i < hops; i++) { P.x += vx * dt / hops; P.z += vz * dt / hops; collide(); }
     moving = Math.hypot(vx, vz) > .2;
     P.moveAmt = lerp(P.moveAmt, moving ? 1 : 0, damp(10, dt));
-    if (moving) P.phase += dt * (using ? 6 : 10);
+    if (moving) P.phase += dt * legRate(using);
     P.y = lerp(P.y, groundHeight(P.x, P.z), damp(14, dt));
   }
 
@@ -2893,6 +2911,9 @@ function update(dt) {
   $('dyeBtn').classList.toggle('hide', !(planOn && Math.hypot(P.x - j.x, P.z - j.z) < 5));
   if (navJob) $('arrow').style.transform = `rotate(${-(Math.atan2(navJob.x - P.x, navJob.z - P.z) - cam.yaw)}rad)`;
   if (mapNow) drawMap();
+  if (!runTipped && started && !ride && moving && !running() && navJob && Math.hypot(navJob.x - P.x, navJob.z - P.z) > 30) {
+    runTipped = true; toast(coarse ? 'It is a long way! Tap RUN to get there faster.' : 'It is a long way! Hold SHIFT to run.', 3600);
+  }
   hudTimer -= dt; if (hudTimer <= 0) { hudTimer = .14; refreshHud(); }
   saveCounts(dt);
 }
@@ -3077,12 +3098,12 @@ function updateEvents(dt, using) {
 }
 // ---- the help screen ----
 const HELP = (coarse ? [
-  ['Walk', 'Left stick'], ['Look and aim', 'Drag the screen'], ['Use your tool', 'Hold USE'], ['Pick a tool', 'Tap it'],
+  ['Walk', 'Left stick'], ['Run', 'Tap RUN at the end of the tool bar. Tap again to walk'], ['Look and aim', 'Drag the screen'], ['Use your tool', 'Hold USE'], ['Pick a tool', 'Tap it'],
   ['Drive', 'Stand by the van, tap DRIVE'], ['Horn / siren', 'USE / SIREN while driving'], ['Empty the vac', 'Tap EMPTY'], ['Blow leaves', 'Tap BLOW'],
   ['Washer nozzle', 'Tap NOZZLE'], ['Find missed dirt', 'Tap FIND DIRT'], ['Lift a manhole', 'Stand by it, hold USE'], ['Dye test', 'Tap DYE TEST at a drain'],
   ['Pipe cam', 'Stick steers, USE pushes and spins'], ['Storm tunnel', 'Tap ENTER THE TUNNEL at its door'], ['Tall walls', 'Drag up to look up'], ['Shop and stickers', 'Tap SHOP'],
 ] : [
-  ['Walk', 'W A S D'], ['Look and aim', 'Drag the mouse'], ['Use your tool', 'Hold SPACE or the mouse button'], ['Pick a tool', 'Keys 1 to 6'],
+  ['Walk', 'W A S D'], ['Run', 'Hold SHIFT, or click RUN in the tool bar'], ['Look and aim', 'Drag the mouse'], ['Use your tool', 'Hold SPACE or the mouse button'], ['Pick a tool', 'Keys 1 to 6'],
   ['Drive', 'F next to the van'], ['Horn / siren', 'SPACE / G while driving'], ['Empty the vac', 'E'], ['Blow leaves', 'V'],
   ['Washer nozzle', 'T'], ['Find missed dirt', 'Q'], ['Lift a manhole', 'Stand by it, hold SPACE'], ['Dye test', 'Y at a drain'],
   ['Pipe cam', 'W A S D steers, SPACE pushes, R goes back, X marks a crack'], ['Storm tunnel', 'C'], ['Tall walls', 'Move the mouse up to look up'], ['Shop and stickers', 'B'],
@@ -3184,10 +3205,10 @@ function updateSewer(dt, ix, iz, using) {
   const job = sewer.job, L = sewer.LEN, W = sewer.W;
   if (keys.has('ArrowLeft')) cam.yaw += 1.9 * dt;
   if (keys.has('ArrowRight')) cam.yaw -= 1.9 * dt;
-  const fx = Math.sin(cam.yaw), fz = Math.cos(cam.yaw), rx = -fz, rz = fx, speed = using ? 2.4 : U.walk();
+  const fx = Math.sin(cam.yaw), fz = Math.cos(cam.yaw), rx = -fz, rz = fx, speed = using ? U.work() : pace();
   const vx = (fx * iz + rx * ix) * speed, vz = (fz * iz + rz * ix) * speed, moving = Math.hypot(vx, vz) > .2;
   P.x = clamp(P.x + vx * dt, -W + .5, W - .5); P.z = clamp(P.z + vz * dt, boss.alive ? boss.z + 2.6 : -L + 1, -1); P.y = 0;
-  P.moveAmt = lerp(P.moveAmt, moving ? 1 : 0, damp(10, dt)); if (moving) P.phase += dt * (using ? 6 : 10);
+  P.moveAmt = lerp(P.moveAmt, moving ? 1 : 0, damp(10, dt)); if (moving) P.phase += dt * legRate(using);
   // the camera has to stay inside the tunnel
   const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch), tx = P.x + rx * .7, ty = 1.75, tz = P.z + rz * .7;
   camera.position.set(clamp(tx - fx * cp * cam.dist, -W + .3, W - .3), clamp(ty + sp * cam.dist, .4, 4.7), clamp(tz - fz * cp * cam.dist, -L + .3, -.3));
